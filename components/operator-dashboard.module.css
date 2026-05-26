@@ -1,0 +1,310 @@
+.page {
+  min-height: 100vh;
+  padding: 2rem clamp(1rem, 3vw, 2rem) 4rem;
+  background:
+    radial-gradient(circle at top left, rgba(15, 76, 129, 0.16), transparent 32%),
+    radial-gradient(circle at 90% 15%, rgba(255, 180, 84, 0.18), transparent 26%),
+    #09111e;
+  color: #f4f7fb;
+}
+
+.hero,
+.stats,
+.section {
+  width: min(1180px, 100%);
+  margin: 0 auto 1rem;
+}
+
+.hero,
+.statCard,
+.formCard,
+.companyCard,
+.emptyState {
+  border: 1px solid rgba(164, 181, 213, 0.18);
+  background: rgba(10, 18, 31, 0.9);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.24);
+  border-radius: 28px;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.hero h1,
+.sectionHeading h2,
+.companyHeader h3 {
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  text-transform: uppercase;
+  line-height: 0.95;
+}
+
+.hero h1 {
+  max-width: 12ch;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+}
+
+.hero p,
+.companyHeader p,
+.inlineMuted,
+.field span,
+.field input,
+.field textarea,
+.field select {
+  color: rgba(233, 240, 251, 0.82);
+}
+
+.hero p {
+  margin: 0.9rem 0 0;
+  max-width: 58ch;
+  line-height: 1.65;
+}
+
+.heroActions {
+  display: flex;
+  align-items: flex-start;
+}
+
+.eyebrow,
+.companySlug {
+  display: inline-flex;
+  font-family: var(--font-heading), sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6ee0cc;
+}
+
+.eyebrow {
+  margin-bottom: 0.9rem;
+  font-size: 0.82rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.statCard {
+  padding: 1.3rem 1.4rem;
+}
+
+.statCard span {
+  display: block;
+  color: rgba(233, 240, 251, 0.7);
+  margin-bottom: 0.4rem;
+}
+
+.statCard strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(2rem, 6vw, 3.7rem);
+}
+
+.section {
+  margin-top: 1.25rem;
+}
+
+.sectionHeading {
+  margin-bottom: 0.8rem;
+}
+
+.sectionHeading h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+}
+
+.formCard,
+.companyCard {
+  padding: 1.4rem;
+}
+
+.formGrid,
+.companyGrid {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.formGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field,
+.checkboxField {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.field span {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 18px;
+  border: 1px solid rgba(164, 181, 213, 0.22);
+  background: rgba(5, 10, 20, 0.9);
+  font: inherit;
+}
+
+.field textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.checkboxField {
+  align-content: center;
+  grid-column: 1 / -1;
+}
+
+.checkboxField span {
+  color: rgba(233, 240, 251, 0.85);
+}
+
+.primaryButton,
+.secondaryButton,
+.ghostButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.primaryButton {
+  margin-top: 1rem;
+  border: none;
+  background: linear-gradient(120deg, #6ee0cc, #ffc86b);
+  color: #07121c;
+}
+
+.secondaryButton,
+.ghostButton {
+  border: 1px solid rgba(164, 181, 213, 0.22);
+  background: rgba(16, 24, 39, 0.9);
+  color: #f4f7fb;
+}
+
+.error,
+.success,
+.inlineMuted {
+  margin: 0.65rem 0 0;
+  font-size: 0.92rem;
+}
+
+.error {
+  color: #ff9898;
+}
+
+.success {
+  color: #84efb3;
+}
+
+.companyGrid {
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+}
+
+.companyHeader,
+.metrics,
+.subForm,
+.userList,
+.userRow {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.companyHeader {
+  margin-bottom: 1rem;
+}
+
+.companyHeader h3 {
+  font-size: 1.8rem;
+}
+
+.companyHeader p,
+.companyMeta span,
+.metrics span,
+.userRow p {
+  margin: 0;
+  color: rgba(233, 240, 251, 0.76);
+}
+
+.companyMeta,
+.metrics,
+.userActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.companyMeta span,
+.metrics span,
+.userStatus {
+  padding: 0.38rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.82rem;
+}
+
+.subForm {
+  padding-top: 1rem;
+  border-top: 1px solid rgba(164, 181, 213, 0.16);
+}
+
+.credentialsBox {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.85rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.credentialRow,
+.userRow {
+  padding: 0.85rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.credentialRow {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.credentialRow code,
+.success code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  color: #ffe7a7;
+}
+
+.userActions {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.emptyState {
+  padding: 1.4rem;
+  color: rgba(233, 240, 251, 0.82);
+}
+
+@media (max-width: 860px) {
+  .hero,
+  .stats,
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    flex-direction: column;
+  }
+}

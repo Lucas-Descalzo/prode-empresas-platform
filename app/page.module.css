@@ -1,0 +1,174 @@
+.page {
+  min-height: 100vh;
+  padding: 3rem clamp(1.25rem, 4vw, 3rem) 4rem;
+  background:
+    radial-gradient(circle at top left, rgba(15, 76, 129, 0.16), transparent 30%),
+    radial-gradient(circle at 85% 20%, rgba(255, 145, 77, 0.18), transparent 24%),
+    linear-gradient(180deg, #f4efe6 0%, #efe6d8 100%);
+  color: #1b1d24;
+}
+
+.hero,
+.section {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.heroCopy,
+.heroPanel,
+.card,
+.stepList {
+  border: 1px solid rgba(27, 29, 36, 0.08);
+  border-radius: 32px;
+  background: rgba(255, 252, 247, 0.88);
+  box-shadow: 0 22px 60px rgba(27, 29, 36, 0.08);
+}
+
+.heroCopy {
+  padding: clamp(2rem, 4vw, 3.2rem);
+}
+
+.heroCopy h1,
+.sectionHeading h2 {
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  text-transform: uppercase;
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+}
+
+.heroCopy h1 {
+  max-width: 11ch;
+  font-size: clamp(3rem, 8vw, 6rem);
+}
+
+.heroCopy p,
+.card p,
+.panelList,
+.stepList {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: rgba(27, 29, 36, 0.8);
+}
+
+.heroCopy p {
+  max-width: 54ch;
+  margin: 1.1rem 0 0;
+}
+
+.eyebrow,
+.panelLabel {
+  display: inline-flex;
+  margin-bottom: 1rem;
+  font-family: var(--font-heading), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.82rem;
+  color: #0f4c81;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 1.8rem;
+}
+
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  padding: 0 1.35rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.primaryAction {
+  background: #0f4c81;
+  color: #ffffff;
+}
+
+.secondaryAction {
+  border: 1px solid rgba(27, 29, 36, 0.14);
+  color: #1b1d24;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.heroPanel {
+  padding: 1.8rem;
+  background:
+    linear-gradient(180deg, rgba(15, 76, 129, 0.96), rgba(10, 42, 71, 0.96)),
+    #0f4c81;
+  color: #f7fbff;
+}
+
+.panelLabel {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.panelList {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: rgba(247, 251, 255, 0.9);
+}
+
+.section {
+  margin-top: 1.5rem;
+}
+
+.sectionHeading {
+  margin-bottom: 0.9rem;
+}
+
+.sectionHeading h2 {
+  max-width: 16ch;
+  font-size: clamp(2rem, 5vw, 3.6rem);
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  padding: 1.5rem;
+}
+
+.card h3 {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-heading), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 1.35rem;
+}
+
+.stepList {
+  margin: 0;
+  padding: 1.5rem 1.5rem 1.5rem 2.7rem;
+}
+
+.stepList li + li {
+  margin-top: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .hero,
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .page {
+    padding-top: 1.5rem;
+  }
+}
