@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -29,6 +30,11 @@ export function CorporateHeader({ client, participantName }: CorporateHeaderProp
   const pathname = usePathname() ?? "";
   const activeTab = activeTabFromPath(pathname, client.slug);
   const logoText = client.branding.logoText?.trim() || client.shortName;
+  const [logoFailed, setLogoFailed] = useState(false);
+
+  useEffect(() => {
+    setLogoFailed(false);
+  }, [client.branding.logoUrl]);
 
   return (
     <header className={styles.unifiedHeader}>
@@ -38,11 +44,12 @@ export function CorporateHeader({ client, participantName }: CorporateHeaderProp
           className={styles.brandWrap}
           aria-label={client.displayName}
         >
-          {client.branding.logoUrl ? (
+          {client.branding.logoUrl && !logoFailed ? (
             <img
               src={client.branding.logoUrl}
               alt={client.displayName}
               className={styles.brandLogoImage}
+              onError={() => setLogoFailed(true)}
             />
           ) : (
             <span className={styles.brandTextLogo}>{logoText}</span>
@@ -52,13 +59,13 @@ export function CorporateHeader({ client, participantName }: CorporateHeaderProp
           <span className={styles.brandTitle}>
             <span className={styles.brandTitleStrong}>Mundial 2026</span>
             <span className={styles.brandTitleSmall}>
-              {participantName ? `Hola, ${participantName}` : "Activación interna"}
+              {participantName ? `Hola, ${participantName}` : "Activacion interna"}
             </span>
           </span>
         </Link>
       </div>
 
-      <nav className={styles.progressSteps} aria-label="Navegación">
+      <nav className={styles.progressSteps} aria-label="Navegacion">
         {TABS.map((tab) => (
           <Link
             key={tab.id}

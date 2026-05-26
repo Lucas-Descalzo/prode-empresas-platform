@@ -51,6 +51,15 @@ export function CorporateShell({
     "--client-card-shadow-strong": darkBackground
       ? "0 14px 36px rgba(0, 0, 0, 0.34)"
       : "0 12px 32px rgba(244, 0, 9, 0.1)",
+    "--client-header-bg": darkBackground
+      ? "rgba(10, 14, 24, 0.88)"
+      : "rgba(255, 250, 240, 0.92)",
+    "--client-header-soft": darkBackground
+      ? "rgba(255,255,255,0.045)"
+      : "rgba(255,255,255,0.78)",
+    "--client-hover-soft": darkBackground
+      ? "rgba(255,255,255,0.06)"
+      : "rgba(244, 0, 9, 0.06)",
   } as React.CSSProperties;
 
   return (
