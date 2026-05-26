@@ -10,9 +10,15 @@ interface CorporateShellProps {
   participantName?: string;
 }
 
-function isDarkHex(hex: string) {
+function normalizeHex(hex: string) {
   const safe = hex.trim().replace("#", "");
-  if (!/^[0-9a-fA-F]{6}$/.test(safe)) {
+  return /^[0-9a-fA-F]{6}$/.test(safe) ? safe : null;
+}
+
+function isDarkHex(hex: string) {
+  const safe = normalizeHex(hex);
+
+  if (!safe) {
     return false;
   }
 
@@ -23,40 +29,108 @@ function isDarkHex(hex: string) {
   return luminance < 0.45;
 }
 
+function withAlpha(hex: string, alpha: number) {
+  const safe = normalizeHex(hex);
+
+  if (!safe) {
+    return `rgba(255, 255, 255, ${alpha})`;
+  }
+
+  const red = Number.parseInt(safe.slice(0, 2), 16);
+  const green = Number.parseInt(safe.slice(2, 4), 16);
+  const blue = Number.parseInt(safe.slice(4, 6), 16);
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
 export function CorporateShell({
   client,
   children,
   participantName,
 }: CorporateShellProps) {
   const darkBackground = isDarkHex(client.branding.background);
+  const brandPrimary = client.branding.primary;
+  const brandPrimaryHover = client.branding.primaryHover;
+  const brandBackground = client.branding.background;
+  const brandText = client.branding.foreground;
+  const brandTextMuted = client.branding.muted;
+  const brandBorder = darkBackground
+    ? "rgba(255,255,255,0.12)"
+    : client.branding.line;
+  const brandSurface = darkBackground ? "#101113" : "#ffffff";
+  const brandSurface2 = darkBackground ? "#18191C" : "#f3ede0";
+  const stateSuccess = darkBackground ? "#45D6B0" : "#1A8359";
+  const stateDanger = darkBackground ? "#FF7A7A" : "#B42318";
+
   const cssVars = {
-    "--client-primary": client.branding.primary,
-    "--client-primary-hover": client.branding.primaryHover,
+    "--brand-bg": brandBackground,
+    "--brand-surface": brandSurface,
+    "--brand-surface-2": brandSurface2,
+    "--brand-border": brandBorder,
+    "--brand-border-strong": darkBackground
+      ? "rgba(255,255,255,0.18)"
+      : "rgba(26, 20, 16, 0.16)",
+    "--brand-primary": brandPrimary,
+    "--brand-primary-hover": brandPrimaryHover,
+    "--brand-primary-muted": withAlpha(brandPrimary, 0.14),
+    "--brand-primary-border": withAlpha(brandPrimary, 0.35),
+    "--brand-text": brandText,
+    "--brand-text-muted": brandTextMuted,
+    "--brand-text-soft": darkBackground
+      ? "rgba(255,255,255,0.45)"
+      : "rgba(26, 20, 16, 0.45)",
+    "--brand-on-primary": client.branding.contrastOnPrimary,
+    "--brand-label": withAlpha(brandPrimary, darkBackground ? 0.82 : 0.74),
+    "--brand-shadow": darkBackground
+      ? "0 14px 40px rgba(0, 0, 0, 0.34)"
+      : "0 10px 28px rgba(0, 0, 0, 0.12)",
+    "--brand-shadow-soft": darkBackground
+      ? "0 10px 28px rgba(0, 0, 0, 0.22)"
+      : "0 6px 18px rgba(0, 0, 0, 0.08)",
+    "--brand-focus-ring": withAlpha(brandPrimary, 0.36),
+    "--state-success": stateSuccess,
+    "--state-success-bg": withAlpha(stateSuccess, 0.12),
+    "--state-success-border": withAlpha(stateSuccess, 0.35),
+    "--state-warning": brandPrimary,
+    "--state-warning-bg": withAlpha(brandPrimary, 0.12),
+    "--state-warning-border": withAlpha(brandPrimary, 0.35),
+    "--state-danger": stateDanger,
+    "--state-danger-bg": withAlpha(stateDanger, 0.12),
+    "--state-danger-border": withAlpha(stateDanger, 0.28),
+    "--state-disabled": darkBackground
+      ? "rgba(255,255,255,0.28)"
+      : "rgba(26, 20, 16, 0.28)",
+    "--cta-from": brandPrimary,
+    "--cta-to": brandPrimaryHover,
+    "--line": brandBorder,
+    "--foreground": brandText,
+    "--muted": brandTextMuted,
+    "--client-primary": brandPrimary,
+    "--client-primary-hover": brandPrimaryHover,
     "--client-on-primary": client.branding.contrastOnPrimary,
-    "--client-glow": `${client.branding.primary}24`,
-    "--client-eyebrow": client.branding.primaryDark,
-    "--client-bg": client.branding.background,
-    "--client-bg-strong": client.branding.background,
-    "--client-fg": client.branding.foreground,
-    "--client-fg-soft": client.branding.foreground,
-    "--client-muted": client.branding.muted,
-    "--client-muted-strong": client.branding.muted,
-    "--client-line": client.branding.line,
-    "--client-line-strong": client.branding.line,
-    "--client-card-bg": darkBackground ? "rgba(255,255,255,0.035)" : "#ffffff",
-    "--client-card-soft": darkBackground ? "rgba(255,255,255,0.05)" : "#fff8ec",
+    "--client-glow": withAlpha(brandPrimary, 0.24),
+    "--client-eyebrow": brandPrimary,
+    "--client-bg": brandBackground,
+    "--client-bg-strong": brandBackground,
+    "--client-fg": brandText,
+    "--client-fg-soft": brandText,
+    "--client-muted": brandTextMuted,
+    "--client-muted-strong": brandTextMuted,
+    "--client-line": brandBorder,
+    "--client-line-strong": darkBackground
+      ? "rgba(255,255,255,0.18)"
+      : "rgba(26, 20, 16, 0.16)",
+    "--client-card-bg": brandSurface,
+    "--client-card-soft": brandSurface2,
     "--client-card-shadow": darkBackground
       ? "0 10px 30px rgba(0, 0, 0, 0.26)"
-      : "0 6px 18px rgba(244, 0, 9, 0.06)",
+      : "0 6px 18px rgba(0, 0, 0, 0.08)",
     "--client-card-shadow-strong": darkBackground
       ? "0 14px 36px rgba(0, 0, 0, 0.34)"
-      : "0 12px 32px rgba(244, 0, 9, 0.1)",
+      : "0 12px 32px rgba(0, 0, 0, 0.14)",
     "--client-header-bg": darkBackground
-      ? "rgba(10, 14, 24, 0.88)"
+      ? "rgba(5, 5, 5, 0.94)"
       : "rgba(255, 250, 240, 0.92)",
-    "--client-header-soft": darkBackground
-      ? "rgba(255,255,255,0.045)"
-      : "rgba(255,255,255,0.78)",
+    "--client-header-soft": darkBackground ? brandSurface2 : "rgba(255,255,255,0.78)",
     "--client-hover-soft": darkBackground
       ? "rgba(255,255,255,0.06)"
       : "rgba(244, 0, 9, 0.06)",

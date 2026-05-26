@@ -1,4 +1,37 @@
 .pageShell {
+  --brand-bg: #08101d;
+  --brand-surface: #101722;
+  --brand-surface-2: #181f2b;
+  --brand-border: rgba(255, 255, 255, 0.12);
+  --brand-border-strong: rgba(255, 255, 255, 0.18);
+  --brand-primary: #fff200;
+  --brand-primary-hover: #e6da00;
+  --brand-primary-muted: rgba(255, 242, 0, 0.14);
+  --brand-primary-border: rgba(255, 242, 0, 0.35);
+  --brand-text: #ffffff;
+  --brand-text-muted: rgba(255, 255, 255, 0.68);
+  --brand-text-soft: rgba(255, 255, 255, 0.45);
+  --brand-on-primary: #050505;
+  --brand-label: rgba(255, 242, 0, 0.78);
+  --brand-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+  --brand-shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.18);
+  --brand-focus-ring: rgba(255, 242, 0, 0.36);
+  --state-success: #45d6b0;
+  --state-success-bg: rgba(69, 214, 176, 0.12);
+  --state-success-border: rgba(69, 214, 176, 0.35);
+  --state-warning: var(--brand-primary);
+  --state-warning-bg: rgba(255, 242, 0, 0.12);
+  --state-warning-border: rgba(255, 242, 0, 0.35);
+  --state-danger: #ff7a7a;
+  --state-danger-bg: rgba(255, 122, 122, 0.12);
+  --state-danger-border: rgba(255, 122, 122, 0.28);
+  --state-disabled: rgba(255, 255, 255, 0.28);
+  --cta-from: var(--brand-primary);
+  --cta-to: var(--brand-primary-hover);
+  --line: var(--brand-border);
+  --foreground: var(--brand-text);
+  --muted: var(--brand-text-muted);
+
   display: grid;
   gap: 1.5rem;
 }
@@ -15,10 +48,10 @@
   gap: 0.45rem;
   padding: 0.72rem 0.9rem 0.6rem;
   border-radius: 1.4rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(7, 11, 20, 0.9);
+  border: 1px solid var(--brand-border);
+  background: color-mix(in srgb, var(--brand-bg) 92%, transparent);
   backdrop-filter: blur(22px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(126, 245, 222, 0.07);
+  box-shadow: var(--brand-shadow), 0 0 0 1px var(--brand-primary-muted);
   animation: headerSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -66,7 +99,7 @@
 }
 
 .headerBrand span {
-  color: rgba(245, 248, 255, 0.62);
+  color: var(--brand-text-muted);
   font-size: 0.78rem;
 }
 
@@ -81,8 +114,8 @@
 .headerAction {
   border-radius: 999px;
   padding: 0.65rem 0.95rem;
-  color: rgba(245, 248, 255, 0.82);
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--brand-text);
+  background: var(--brand-surface-2);
   border: 1px solid var(--line);
 }
 
@@ -131,7 +164,7 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #7ef5de;
+  color: var(--brand-label);
 }
 
 .heroTitle {
@@ -143,7 +176,7 @@
 
 .heroCopy {
   max-width: 62ch;
-  color: rgba(245, 248, 255, 0.76);
+  color: var(--brand-text-muted);
   font-size: 1rem;
   line-height: 1.6;
 }
@@ -159,7 +192,7 @@
   gap: 0.1rem;
   padding: 1rem;
   border-radius: 1.2rem;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--brand-surface);
   border: 1px solid var(--line);
 }
 
@@ -169,7 +202,7 @@
 
 .statCard span {
   font-size: 0.85rem;
-  color: rgba(245, 248, 255, 0.68);
+  color: var(--brand-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -199,15 +232,16 @@
 }
 
 .primaryAction {
-  background: linear-gradient(135deg, var(--cta-from), var(--cta-to));
-  color: #0a1020;
+  background: var(--brand-primary);
+  color: var(--brand-on-primary);
   border: none;
+  box-shadow: 0 12px 28px var(--brand-primary-muted);
 }
 
 .secondaryAction {
-  background: rgba(255, 255, 255, 0.04);
-  color: inherit;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: var(--brand-text-muted);
+  border: 1px solid var(--brand-border);
 }
 
 .primaryAction:hover,
@@ -234,8 +268,8 @@
 .statusPill {
   border-radius: 999px;
   padding: 0.5rem 0.9rem;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(245, 248, 255, 0.78);
+  background: var(--brand-surface);
+  color: var(--brand-text-muted);
   font-size: 0.85rem;
 }
 
@@ -251,17 +285,17 @@
   padding: 1.1rem;
   border-radius: 1.4rem;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--brand-surface);
 }
 
 .heroPanelMuted {
   background:
-    radial-gradient(circle at top left, rgba(126, 245, 222, 0.16), transparent 42%),
-    rgba(255, 255, 255, 0.04);
+    radial-gradient(circle at top left, var(--brand-primary-muted), transparent 42%),
+    var(--brand-surface);
 }
 
 .heroPanelEyebrow {
-  color: #7ef5de;
+  color: var(--brand-label);
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -272,7 +306,7 @@
   display: grid;
   gap: 0.7rem;
   padding-left: 1.1rem;
-  color: rgba(245, 248, 255, 0.82);
+  color: var(--brand-text);
 }
 
 .heroPanelMuted strong {
@@ -280,7 +314,7 @@
 }
 
 .heroPanelMuted span {
-  color: rgba(245, 248, 255, 0.66);
+  color: var(--brand-text-muted);
   line-height: 1.5;
 }
 
@@ -289,9 +323,9 @@
   gap: 0.8rem;
   padding: 1rem 1.2rem;
   border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--brand-surface);
   border: 1px solid var(--line);
-  color: rgba(245, 248, 255, 0.78);
+  color: var(--brand-text);
 }
 
 .previewSection,
@@ -337,9 +371,9 @@
   gap: 1rem;
   padding: 1.4rem;
   border-radius: 1.8rem;
-  background: rgba(8, 12, 23, 0.88);
+  background: var(--brand-surface);
   border: 1px solid var(--line);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--brand-border) 65%, transparent);
 }
 
 .sectionHeader {
@@ -353,7 +387,7 @@
 }
 
 .sectionHint {
-  color: rgba(245, 248, 255, 0.68);
+  color: var(--brand-text-muted);
   line-height: 1.55;
 }
 
@@ -368,9 +402,9 @@
   padding: 1rem;
   border-radius: 1.45rem;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
-    linear-gradient(135deg, color-mix(in srgb, var(--group-color) 12%, transparent), transparent);
-  border: 1px solid color-mix(in srgb, var(--group-color) 25%, rgba(255, 255, 255, 0.08));
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-surface-2) 92%, transparent), transparent),
+    linear-gradient(135deg, color-mix(in srgb, var(--group-color) 8%, var(--brand-surface)), var(--brand-surface));
+  border: 1px solid color-mix(in srgb, var(--group-color) 24%, var(--brand-border));
 }
 
 .groupHeader {
@@ -381,12 +415,12 @@
 }
 
 .groupHeader strong {
-  color: rgba(245, 248, 255, 0.72);
+  color: var(--brand-text);
   font-size: 0.88rem;
 }
 
 .groupLabel {
-  color: var(--group-accent);
+  color: color-mix(in srgb, var(--group-color) 70%, var(--brand-primary));
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-size: 0.78rem;
@@ -396,9 +430,9 @@
 .groupTag {
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  background: rgba(126, 245, 222, 0.1);
+  background: var(--state-success-bg);
   font-size: 0.75rem;
-  color: rgba(126, 245, 222, 0.96);
+  color: var(--state-success);
 }
 
 .groupTeams {
@@ -412,7 +446,7 @@
   gap: 0.35rem;
   padding: 0.24rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.045);
+  background: var(--brand-surface-2);
   border: 1px solid var(--line);
 }
 
@@ -421,16 +455,15 @@
   border-radius: 999px;
   padding: 0.62rem 0.8rem;
   background: transparent;
-  color: rgba(245, 248, 255, 0.62);
+  color: var(--brand-text-muted);
   font-weight: 800;
   font-size: 0.78rem;
 }
 
 .groupModeButtonActive {
-  border-color: color-mix(in srgb, var(--group-color) 42%, rgba(255, 255, 255, 0.12));
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--group-color) 22%, rgba(255, 255, 255, 0.06)), rgba(255, 255, 255, 0.055));
-  color: var(--foreground);
+  border-color: var(--brand-primary-border);
+  background: var(--brand-primary-muted);
+  color: var(--brand-primary);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
 }
 
@@ -439,10 +472,10 @@
   gap: 0.8rem;
   padding: 0.85rem;
   border-radius: 1.1rem;
-  border: 1px solid color-mix(in srgb, var(--group-color) 24%, rgba(255, 255, 255, 0.08));
+  border: 1px solid color-mix(in srgb, var(--group-color) 18%, var(--brand-border));
   background:
-    radial-gradient(circle at top left, color-mix(in srgb, var(--group-color) 13%, transparent), transparent 38%),
-    rgba(255, 255, 255, 0.035);
+    radial-gradient(circle at top left, color-mix(in srgb, var(--group-color) 12%, transparent), transparent 38%),
+    var(--brand-surface-2);
 }
 
 .groupMatchHeader {
@@ -466,13 +499,13 @@
 .groupMatchHeader p,
 .groupMatchReadOnly {
   margin: 0;
-  color: rgba(245, 248, 255, 0.62);
+  color: var(--brand-text-muted);
   font-size: 0.78rem;
 }
 
 .groupMatchHeader p {
   max-width: 16rem;
-  color: #f4bb54;
+  color: var(--state-warning);
 }
 
 .groupTieNotice {
@@ -480,13 +513,13 @@
   gap: 0.12rem;
   padding: 0.42rem 0.6rem;
   border-radius: 0.85rem;
-  border: 1px solid rgba(244, 187, 84, 0.36);
-  background: rgba(244, 187, 84, 0.1);
-  color: #f4bb54;
+  border: 1px solid var(--state-warning-border);
+  background: var(--state-warning-bg);
+  color: var(--state-warning);
 }
 
 .groupTieNotice span {
-  color: #f4bb54;
+  color: var(--state-warning);
   font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -494,7 +527,7 @@
 }
 
 .groupTieNotice small {
-  color: rgba(245, 248, 255, 0.68);
+  color: var(--brand-text-muted);
   font-size: 0.72rem;
 }
 
@@ -508,8 +541,8 @@
   gap: 0.55rem;
   padding: 0.6rem;
   border-radius: 0.95rem;
-  background: rgba(7, 11, 20, 0.42);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-border);
 }
 
 .groupMatchTeams,
@@ -525,7 +558,7 @@
 }
 
 .groupMatchTeams > span {
-  color: rgba(245, 248, 255, 0.46);
+  color: var(--brand-text-soft);
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -541,8 +574,8 @@
   border-radius: 999px;
   padding: 0.5rem 0.65rem;
   min-height: 2.75rem;
-  background: rgba(255, 255, 255, 0.055);
-  color: rgba(245, 248, 255, 0.72);
+  background: var(--brand-surface-2);
+  color: var(--brand-text);
   font-weight: 800;
   font-size: 0.74rem;
   transition:
@@ -553,14 +586,12 @@
 }
 
 .groupMatchButtons .groupMatchButtonActive {
-  border-color: color-mix(in srgb, var(--group-color) 78%, rgba(255, 255, 255, 0.16));
-  background:
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.18), transparent 34%),
-    color-mix(in srgb, var(--group-color) 34%, rgba(255, 255, 255, 0.04));
-  color: var(--foreground);
+  border-color: var(--brand-primary-border);
+  background: var(--brand-primary);
+  color: var(--brand-on-primary);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--group-color) 28%, transparent),
-    0 8px 18px color-mix(in srgb, var(--group-color) 14%, transparent);
+    0 0 0 1px var(--brand-primary-border),
+    0 8px 18px var(--brand-primary-muted);
 }
 
 .groupTableMini {
@@ -577,7 +608,7 @@
 }
 
 .groupTableHead {
-  color: rgba(245, 248, 255, 0.46);
+  color: var(--brand-text-soft);
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -587,8 +618,8 @@
 .groupTableRow {
   padding: 0.42rem 0.5rem;
   border-radius: 0.8rem;
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(245, 248, 255, 0.72);
+  background: var(--brand-surface);
+  color: var(--brand-text);
   font-size: 0.78rem;
 }
 
@@ -603,8 +634,8 @@
   gap: 0.55rem;
   padding: 0.72rem;
   border-radius: 1rem;
-  border: 1px dashed rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.025);
+  border: 1px dashed var(--brand-border);
+  background: color-mix(in srgb, var(--brand-surface-2) 88%, transparent);
 }
 
 .groupResultHeader {
@@ -624,7 +655,7 @@
 }
 
 .groupResultHeader span {
-  color: rgba(245, 248, 255, 0.58);
+  color: var(--brand-text-muted);
   font-size: 0.76rem;
 }
 
@@ -635,7 +666,7 @@
 
 .groupResultRow {
   padding: 0.55rem 0.6rem;
-  background: rgba(255, 255, 255, 0.028);
+  background: var(--brand-surface);
 }
 
 .groupTeamRow {
@@ -645,7 +676,7 @@
   gap: 0.8rem;
   padding: 0.75rem;
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--brand-surface);
 }
 
 .groupTeamInfo,
@@ -671,7 +702,7 @@
   inline-size: 2rem;
   block-size: 2rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--group-color, #7ef5de) 60%, #0a1020);
+  background: color-mix(in srgb, var(--group-color, var(--brand-primary)) 60%, var(--brand-bg));
   font-weight: 800;
   color: var(--foreground);
 }
@@ -692,7 +723,7 @@
 .groupTeamText span,
 .thirdTeamInfo span,
 .matchTeamText span {
-  color: rgba(245, 248, 255, 0.58);
+  color: var(--brand-text-muted);
   font-size: 0.82rem;
 }
 
@@ -711,8 +742,8 @@
   border: none;
   border-radius: 999px;
   padding: 0.55rem 0.9rem;
-  background: rgba(255, 255, 255, 0.09);
-  color: inherit;
+  background: var(--brand-surface-2);
+  color: var(--brand-text);
   font-weight: 700;
   transition: opacity 0.18s ease, transform 0.15s ease, background 0.15s ease;
 }
@@ -732,7 +763,7 @@
   gap: 0.45rem;
   padding: 0.38rem 0.55rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--brand-surface-2);
   border: 1px solid var(--line);
 }
 
@@ -754,8 +785,8 @@
   overflow: hidden;
   flex: 0 0 auto;
   border-radius: 0.22rem;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px var(--brand-border);
+  background: var(--brand-surface-2);
 }
 
 .teamFlagImageSmall {
@@ -784,7 +815,7 @@
   gap: 0.85rem;
   padding: 1rem;
   border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--brand-surface);
 }
 
 .columnHeader {
@@ -799,7 +830,7 @@
 }
 
 .columnHeader span {
-  color: rgba(245, 248, 255, 0.58);
+  color: var(--brand-text-muted);
   font-size: 0.85rem;
 }
 
@@ -816,7 +847,7 @@
   gap: 0.75rem;
   padding: 0.8rem;
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--brand-surface-2);
 }
 
 .assignmentToolbar {
@@ -833,7 +864,7 @@
   gap: 1rem;
   padding: 1rem;
   border-radius: 1.15rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--brand-surface);
 }
 
 .assignmentSummaryRow {
@@ -851,7 +882,7 @@
 }
 
 .assignmentSummaryEyebrow {
-  color: #7ef5de;
+  color: var(--brand-label);
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -864,7 +895,7 @@
 
 .assignmentSummaryCopy p,
 .assignmentSummaryStatus span {
-  color: rgba(245, 248, 255, 0.66);
+  color: var(--brand-text-muted);
   line-height: 1.5;
 }
 
@@ -893,7 +924,7 @@
 }
 
 .assignmentLegend span {
-  color: rgba(245, 248, 255, 0.58);
+  color: var(--brand-text-muted);
 }
 
 .assignmentGrid {
@@ -906,7 +937,7 @@
   gap: 0.7rem;
   padding: 0.95rem;
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.045);
+  background: var(--brand-surface);
 }
 
 .assignmentHeader {
@@ -916,7 +947,7 @@
 }
 
 .assignmentHeader p {
-  color: #7ef5de;
+  color: var(--brand-label);
   font-size: 0.78rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -924,7 +955,7 @@
 
 .assignmentDate,
 .assignmentMeta {
-  color: rgba(245, 248, 255, 0.58);
+  color: var(--brand-text-muted);
   font-size: 0.85rem;
 }
 
@@ -932,14 +963,14 @@
   display: grid;
   gap: 0.45rem;
   font-size: 0.88rem;
-  color: rgba(245, 248, 255, 0.82);
+  color: var(--brand-text);
 }
 
 .assignmentSelectLabel select {
   padding: 0.8rem 0.9rem;
   border-radius: 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(5, 8, 18, 0.92);
+  border: 1px solid var(--brand-border);
+  background: var(--brand-surface-2);
   color: inherit;
   font-size: 1rem;
 }
@@ -947,9 +978,9 @@
 .emptyState {
   padding: 2rem 1.5rem;
   border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.1);
-  color: rgba(245, 248, 255, 0.52);
+  background: color-mix(in srgb, var(--brand-surface) 92%, transparent);
+  border: 1px dashed var(--brand-border);
+  color: var(--brand-text-soft);
   text-align: center;
   line-height: 1.6;
 }
@@ -962,8 +993,8 @@
   padding: 1rem 1.1rem;
   border-radius: 1.25rem;
   background:
-    radial-gradient(circle at left center, rgba(126, 245, 222, 0.18), transparent 32%),
-    rgba(255, 255, 255, 0.05);
+    radial-gradient(circle at left center, var(--brand-primary-muted), transparent 32%),
+    var(--brand-surface-2);
 }
 
 .championBand h3 {
@@ -971,7 +1002,7 @@
 }
 
 .championBand p {
-  color: rgba(245, 248, 255, 0.66);
+  color: var(--brand-text-muted);
 }
 
 .exportPanel {
@@ -983,8 +1014,8 @@
   border-radius: 1.2rem;
   border: 1px solid var(--line);
   background:
-    radial-gradient(circle at top left, rgba(255, 196, 80, 0.12), transparent 32%),
-    rgba(255, 255, 255, 0.04);
+    radial-gradient(circle at top left, var(--brand-primary-muted), transparent 32%),
+    var(--brand-surface);
 }
 
 .exportCopy {
@@ -999,7 +1030,7 @@
 }
 
 .exportCopy p:last-child {
-  color: rgba(245, 248, 255, 0.66);
+  color: var(--brand-text-muted);
 }
 
 .exportActions {
@@ -1010,7 +1041,7 @@
 
 .exportFeedback {
   margin: 0;
-  color: rgba(245, 248, 255, 0.7);
+  color: var(--brand-text-muted);
   font-size: 0.85rem;
 }
 
@@ -1044,7 +1075,7 @@
   z-index: 1;
   padding: 0.85rem 1rem;
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--brand-surface-2);
   backdrop-filter: blur(14px);
 }
 
@@ -1058,7 +1089,7 @@
   gap: 0.75rem;
   padding: 0.95rem;
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.045);
+  background: var(--brand-surface);
 }
 
 .matchCardHeader {
@@ -1069,7 +1100,7 @@
 }
 
 .matchCardHeader p {
-  color: #7ef5de;
+  color: var(--brand-label);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -1082,7 +1113,7 @@
 
 .matchCardHeader span,
 .matchMeta {
-  color: rgba(245, 248, 255, 0.58);
+  color: var(--brand-text-muted);
   font-size: 0.84rem;
 }
 
@@ -1099,7 +1130,7 @@
   padding: 0.7rem 0.8rem;
   border-radius: 0.9rem;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--brand-surface-2);
   color: inherit;
   text-align: left;
   transition:
@@ -1114,18 +1145,18 @@
 }
 
 .matchTeamSelected {
-  background: rgba(126, 245, 222, 0.14);
-  border-color: rgba(126, 245, 222, 0.48);
-  box-shadow: 0 0 0 3px rgba(126, 245, 222, 0.08);
+  background: var(--state-success-bg);
+  border-color: var(--state-success-border);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--state-success) 14%, transparent);
 }
 
 .matchTeamPlaceholder {
   justify-content: start;
-  color: rgba(245, 248, 255, 0.54);
+  color: var(--brand-text-soft);
 }
 
 .placeholderMarker {
-  color: #7ef5de;
+  color: var(--state-success);
 }
 
 .matchTeamLeft {
@@ -1138,7 +1169,7 @@
 .matchTeamPick {
   font-size: 0.78rem;
   font-weight: 700;
-  color: rgba(245, 248, 255, 0.7);
+  color: var(--brand-text-muted);
 }
 
 @media (max-width: 759px) {
@@ -1401,9 +1432,9 @@
 .groupFilterBtn {
   padding: 0.4rem 0.85rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.045);
-  color: rgba(245, 248, 255, 0.72);
+  border: 1px solid var(--brand-border);
+  background: var(--brand-surface);
+  color: var(--brand-text-muted);
   font-size: 0.82rem;
   font-weight: 800;
   cursor: pointer;
@@ -1411,9 +1442,9 @@
 }
 
 .groupFilterBtnActive {
-  border-color: rgba(126, 245, 222, 0.45);
-  background: rgba(126, 245, 222, 0.12);
-  color: #7ef5de;
+  border-color: var(--brand-primary-border);
+  background: var(--brand-primary);
+  color: var(--brand-on-primary);
 }
 
 /* Card: default, hover, expanded */
@@ -1422,21 +1453,21 @@
 }
 
 .groupCard:has(.groupToggleRow:hover) {
-  border-color: color-mix(in srgb, var(--group-color) 42%, rgba(255, 255, 255, 0.14));
+  border-color: color-mix(in srgb, var(--group-color) 24%, var(--brand-primary-border));
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.024)),
-    linear-gradient(135deg, color-mix(in srgb, var(--group-color) 16%, transparent), transparent);
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-surface-2) 94%, transparent), transparent),
+    linear-gradient(135deg, color-mix(in srgb, var(--group-color) 12%, var(--brand-surface)), var(--brand-surface));
 }
 
 .groupCardExpanded {
   grid-column: 1 / -1;
-  border-color: color-mix(in srgb, var(--group-color) 52%, rgba(255, 255, 255, 0.16)) !important;
+  border-color: color-mix(in srgb, var(--group-color) 26%, var(--brand-primary-border)) !important;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.068), rgba(255, 255, 255, 0.028)),
-    linear-gradient(135deg, color-mix(in srgb, var(--group-color) 22%, transparent), transparent) !important;
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-surface-2) 96%, transparent), transparent),
+    linear-gradient(135deg, color-mix(in srgb, var(--group-color) 14%, var(--brand-surface)), var(--brand-surface)) !important;
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--group-color) 22%, transparent),
-    0 8px 28px rgba(0, 0, 0, 0.18) !important;
+    var(--brand-shadow-soft) !important;
 }
 
 /* Toggle button */
@@ -1455,7 +1486,7 @@
 }
 
 .groupToggleRow:hover .groupLabel {
-  color: var(--group-accent, #7ef5de);
+  color: color-mix(in srgb, var(--group-color, var(--brand-primary)) 72%, var(--brand-primary));
 }
 
 /* Compact meta area */
@@ -1481,17 +1512,17 @@
 /* Chevron arrow — rotates when open */
 .groupChevron {
   font-size: 0.65rem;
-  color: rgba(245, 248, 255, 0.4);
+  color: var(--brand-text-soft);
   flex-shrink: 0;
   transition: color 0.2s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .groupToggleRow:hover .groupChevron {
-  color: rgba(245, 248, 255, 0.82);
+  color: var(--brand-text);
 }
 
 .groupToggleRow[aria-expanded="true"] .groupChevron {
-  color: rgba(245, 248, 255, 0.82);
+  color: var(--brand-text);
   transform: rotate(-180deg);
 }
 
@@ -1509,15 +1540,15 @@
 }
 
 .groupStateEdited {
-  border: 1px solid rgba(126, 245, 222, 0.36);
-  background: rgba(126, 245, 222, 0.1);
-  color: #7ef5de;
+  border: 1px solid var(--state-success-border);
+  background: var(--state-success-bg);
+  color: var(--state-success);
 }
 
 .groupStatePending {
-  border: 1px solid rgba(244, 187, 84, 0.42);
-  background: rgba(244, 187, 84, 0.12);
-  color: #f4bb54;
+  border: 1px solid var(--state-warning-border);
+  background: var(--state-warning-bg);
+  color: var(--state-warning);
 }
 
 /* Accordion grid-trick animation */
@@ -1700,7 +1731,7 @@
   gap: 0.35rem;
   padding: 1rem;
   border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.055);
+  background: var(--brand-surface);
   border: 1px solid var(--line);
 }
 
@@ -1710,8 +1741,8 @@
   width: 2rem;
   height: 2rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--cta-from), var(--cta-to));
-  color: #08101d;
+  background: var(--brand-primary);
+  color: var(--brand-on-primary);
   font-weight: 900;
 }
 
@@ -1722,7 +1753,7 @@
 .landingSteps p,
 .fixtureIntro p {
   margin: 0;
-  color: rgba(245, 248, 255, 0.72);
+  color: var(--brand-text-muted);
   line-height: 1.55;
 }
 
@@ -1773,7 +1804,7 @@
 .fixtureIntro p:last-child {
   margin: 0;
   max-width: 42rem;
-  color: rgba(245, 248, 255, 0.62);
+  color: var(--brand-text-muted);
   font-size: 0.88rem;
 }
 
@@ -1799,7 +1830,7 @@
 
 .progressPercent {
   flex-shrink: 0;
-  color: #7ef5de;
+  color: var(--brand-primary);
   font-family: var(--font-heading);
   letter-spacing: 0.06em;
   font-size: 0.88rem;
@@ -1809,7 +1840,7 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  color: rgba(245, 248, 255, 0.72);
+  color: var(--brand-text-muted);
   font-size: 0.73rem;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -1820,14 +1851,14 @@
   height: 0.2rem;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.075);
+  background: var(--brand-surface-2);
 }
 
 .progressTrack span {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--cta-from), var(--cta-to));
+  background: var(--brand-primary);
   transition: inline-size 0.25s ease;
 }
 
@@ -1844,9 +1875,9 @@
 }
 
 .progressSteps .stepDone {
-  color: #7ef5de;
-  border-color: rgba(126, 245, 222, 0.35);
-  background: rgba(126, 245, 222, 0.1);
+  color: var(--state-success);
+  border-color: var(--state-success-border);
+  background: var(--state-success-bg);
 }
 
 .thirdsPickerHeader {
@@ -1874,7 +1905,7 @@
   padding: 0.8rem;
   border-radius: 1rem;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.045);
+  background: var(--brand-surface);
   color: inherit;
   text-align: left;
   transition:
@@ -1893,12 +1924,12 @@
 }
 
 .thirdSelectableCardSelected {
-  border-color: rgba(126, 245, 222, 0.46);
-  background: rgba(126, 245, 222, 0.12);
+  border-color: var(--state-success-border);
+  background: var(--state-success-bg);
 }
 
 .thirdSelectableCard small {
-  color: rgba(245, 248, 255, 0.58);
+  color: var(--brand-text-muted);
 }
 
 .thirdCheck {
@@ -1907,8 +1938,8 @@
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #7ef5de;
+  background: var(--brand-surface-2);
+  color: var(--state-success);
   font-weight: 900;
 }
 
@@ -1917,8 +1948,8 @@
   gap: 0.7rem;
   padding: 0.7rem 0.9rem;
   border-radius: 1.1rem;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  background: rgba(255, 255, 255, 0.022);
+  border: 1px solid var(--brand-border);
+  background: var(--brand-surface);
 }
 
 .assignmentDisclosure summary {
@@ -1935,7 +1966,7 @@
 }
 
 .assignmentDisclosure summary span {
-  color: rgba(245, 248, 255, 0.58);
+  color: var(--brand-text-muted);
   font-weight: 700;
   font-size: 0.82rem;
   letter-spacing: 0;
@@ -1944,7 +1975,7 @@
 
 .assignmentDisclosure summary strong,
 .assignmentDisclosure p {
-  color: rgba(245, 248, 255, 0.52);
+  color: var(--brand-text-soft);
   font-size: 0.82rem;
 }
 
@@ -1989,58 +2020,56 @@
 
 /* ── Campeón (oro) ── */
 .summaryCardGold {
-  border-top: 3px solid #f0b429;
-  border-right: 1px solid rgba(240, 180, 41, 0.3);
-  border-bottom: 1px solid rgba(240, 180, 41, 0.3);
-  border-left: 1px solid rgba(240, 180, 41, 0.3);
+  border-top: 3px solid var(--brand-primary);
+  border-right: 1px solid var(--brand-primary-border);
+  border-bottom: 1px solid var(--brand-primary-border);
+  border-left: 1px solid var(--brand-primary-border);
   background:
-    radial-gradient(ellipse at top center, rgba(240, 180, 41, 0.13) 0%, transparent 62%),
-    rgba(255, 255, 255, 0.04);
-  box-shadow:
-    0 0 30px rgba(240, 180, 41, 0.12),
-    0 8px 24px rgba(0, 0, 0, 0.2);
+    radial-gradient(ellipse at top center, var(--brand-primary-muted) 0%, transparent 62%),
+    var(--brand-surface);
+  box-shadow: 0 0 30px var(--brand-primary-muted), 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .summaryCardGold .summaryLabel,
 .summaryCardGold .summaryRank {
-  color: #f0b429;
+  color: var(--brand-primary);
 }
 
 /* ── Subcampeón (plata) ── */
 .summaryCardSilver {
-  border-top: 3px solid #b8c2cc;
-  border-right: 1px solid rgba(184, 194, 204, 0.24);
-  border-bottom: 1px solid rgba(184, 194, 204, 0.24);
-  border-left: 1px solid rgba(184, 194, 204, 0.24);
+  border-top: 3px solid var(--brand-border-strong);
+  border-right: 1px solid var(--brand-border);
+  border-bottom: 1px solid var(--brand-border);
+  border-left: 1px solid var(--brand-border);
   background:
-    radial-gradient(ellipse at top center, rgba(184, 194, 204, 0.09) 0%, transparent 60%),
-    rgba(255, 255, 255, 0.04);
+    radial-gradient(ellipse at top center, color-mix(in srgb, var(--brand-text-muted) 15%, transparent) 0%, transparent 60%),
+    var(--brand-surface);
 }
 
 .summaryCardSilver .summaryLabel,
 .summaryCardSilver .summaryRank {
-  color: #b8c2cc;
+  color: var(--brand-text-muted);
 }
 
 /* ── Tercer puesto (bronce) ── */
 .summaryCardBronze {
-  border-top: 3px solid #c4853a;
-  border-right: 1px solid rgba(196, 133, 58, 0.28);
-  border-bottom: 1px solid rgba(196, 133, 58, 0.28);
-  border-left: 1px solid rgba(196, 133, 58, 0.28);
+  border-top: 3px solid var(--brand-text-soft);
+  border-right: 1px solid var(--brand-border);
+  border-bottom: 1px solid var(--brand-border);
+  border-left: 1px solid var(--brand-border);
   background:
-    radial-gradient(ellipse at top center, rgba(196, 133, 58, 0.11) 0%, transparent 60%),
-    rgba(255, 255, 255, 0.04);
+    radial-gradient(ellipse at top center, color-mix(in srgb, var(--brand-text-soft) 15%, transparent) 0%, transparent 60%),
+    var(--brand-surface);
 }
 
 .summaryCardBronze .summaryLabel,
 .summaryCardBronze .summaryRank {
-  color: #c4853a;
+  color: var(--brand-text-soft);
 }
 
 /* Nombre del pais siempre blanco */
 .summaryGridCards strong {
-  color: #f7f8ff;
+  color: var(--brand-text);
   font-size: 1.25rem;
   line-height: 1.1;
 }
@@ -2073,7 +2102,7 @@
 .thirdSelectableCard:focus-visible,
 .matchTeamRow:focus-visible,
 .groupLinkRow input:focus-visible {
-  outline: 3px solid rgba(126, 245, 222, 0.5);
+  outline: 3px solid var(--brand-focus-ring);
   outline-offset: 3px;
 }
 
@@ -2090,8 +2119,8 @@
   padding: 0.46rem 0.62rem;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.045);
-  color: rgba(245, 248, 255, 0.74);
+  background: var(--brand-surface);
+  color: var(--brand-text-muted);
   text-align: left;
   cursor: pointer;
   transition:
@@ -2118,8 +2147,8 @@
   width: 1.65rem;
   height: 1.65rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(245, 248, 255, 0.76);
+  background: var(--brand-surface-2);
+  color: var(--brand-text);
   font-size: 0.76rem;
   font-weight: 900;
   transition: background 0.22s ease, color 0.22s ease;
@@ -2140,7 +2169,7 @@
   grid-area: meta;
   min-width: 0;
   overflow: hidden;
-  color: rgba(245, 248, 255, 0.52);
+  color: var(--brand-text-soft);
   font-size: 0.64rem;
   font-weight: 800;
   line-height: 1.05;
@@ -2149,28 +2178,28 @@
 }
 
 .stepActive {
-  border-color: transparent !important;
-  background: linear-gradient(135deg, var(--cta-from), var(--cta-to)) !important;
-  color: #08101d !important;
-  box-shadow: 0 4px 18px rgba(109, 240, 219, 0.22);
+  border-color: var(--brand-primary) !important;
+  background: var(--brand-primary) !important;
+  color: var(--brand-bg) !important;
+  box-shadow: 0 4px 18px var(--brand-primary-muted);
 }
 
 .stepDone .stepCheck {
-  background: linear-gradient(135deg, var(--cta-from), var(--cta-to));
-  color: #071016;
+  background: var(--state-success);
+  color: var(--brand-bg);
 }
 
 .stepActive .stepCheck {
-  background: rgba(8, 16, 29, 0.2) !important;
-  color: #08101d !important;
+  background: color-mix(in srgb, var(--brand-bg) 18%, transparent) !important;
+  color: var(--brand-bg) !important;
 }
 
 .stepActive .stepLabel {
-  color: #08101d !important;
+  color: var(--brand-bg) !important;
 }
 
 .stepActive small {
-  color: rgba(8, 16, 29, 0.6) !important;
+  color: color-mix(in srgb, var(--brand-bg) 62%, transparent) !important;
 }
 
 /* Reset action — muted, low visual weight */
@@ -2181,9 +2210,9 @@
   border-radius: 999px;
   padding: 0.65rem 1rem;
   min-height: 2.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--brand-border);
   background: transparent;
-  color: rgba(245, 248, 255, 0.38);
+  color: var(--brand-text-soft);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
@@ -2191,8 +2220,8 @@
 }
 
 .resetAction:hover {
-  color: rgba(245, 248, 255, 0.62);
-  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--brand-text-muted);
+  border-color: var(--brand-border-strong);
 }
 
 /* Destructive confirm button */
@@ -2204,9 +2233,9 @@
   padding: 0.85rem 1.25rem;
   min-height: 2.75rem;
   font-weight: 700;
-  background: rgba(239, 68, 68, 0.1);
-  color: rgba(245, 100, 100, 0.92);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--state-danger-bg);
+  color: var(--state-danger);
+  border: 1px solid var(--state-danger-border);
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
@@ -2228,12 +2257,12 @@
   justify-content: center;
   padding: 1rem 0 0.25rem;
   margin-top: 1rem;
-  border-top: 1px dashed rgba(255, 255, 255, 0.06);
+  border-top: 1px dashed var(--brand-border);
 }
 
 .fullResetHint {
   font-size: 0.8rem;
-  color: rgba(245, 248, 255, 0.6);
+  color: var(--brand-text-muted);
   margin-right: 0.25rem;
   flex-basis: 100%;
   text-align: center;
@@ -2250,7 +2279,7 @@
 .headerAutoSave {
   font-size: 0.78rem;
   font-weight: 600;
-  color: rgba(126, 245, 222, 0.82);
+  color: var(--state-success);
   white-space: nowrap;
 }
 

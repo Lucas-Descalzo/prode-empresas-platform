@@ -55,14 +55,18 @@ export function CorporateHeader({ client, participantName }: CorporateHeaderProp
             <span className={styles.brandTextLogo}>{logoText}</span>
           )}
 
-          <span className={styles.brandDivider} aria-hidden="true" />
-          <span className={styles.brandTitle}>
+          <span className={styles.brandCopy}>
             <span className={styles.brandTitleStrong}>Mundial 2026</span>
-            <span className={styles.brandTitleSmall}>
-              {participantName ? `Hola, ${participantName}` : "Activacion interna"}
+            <strong className={styles.brandClientName}>{client.displayName}</strong>
+            <span className={styles.brandTagline}>
+              {client.tagline || `Prode interno ${client.shortName}`}
             </span>
           </span>
         </Link>
+
+        {participantName ? (
+          <span className={styles.participantBadge}>Hola, {participantName}</span>
+        ) : null}
       </div>
 
       <nav className={styles.progressSteps} aria-label="Navegacion">

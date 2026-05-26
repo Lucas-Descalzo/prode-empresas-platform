@@ -59,42 +59,84 @@
 .headerTopRow {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1rem;
   min-width: 0;
+  flex-wrap: wrap;
 }
 
 .brandWrap {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 1rem;
   min-width: 0;
+  flex: 1 1 24rem;
+  text-decoration: none;
 }
 
 .brandLogoImage {
-  width: 3rem;
-  height: 3rem;
+  width: clamp(3.75rem, 8vw, 4.75rem);
+  height: clamp(3.75rem, 8vw, 4.75rem);
   object-fit: contain;
-  border-radius: 0.9rem;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.08);
+  background: transparent;
 }
 
 .brandTextLogo {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 3rem;
-  min-height: 3rem;
-  padding: 0.55rem 0.8rem;
-  border-radius: 0.95rem;
-  background: var(--client-card-soft);
-  color: var(--client-fg);
+  min-width: clamp(3.75rem, 8vw, 4.75rem);
+  min-height: clamp(3.75rem, 8vw, 4.75rem);
+  padding: 0.75rem 0.9rem;
+  border-radius: 1.2rem;
+  border: 1px solid var(--brand-primary-border);
+  background: var(--brand-surface);
+  color: var(--brand-primary);
   font-family: var(--font-heading), sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   flex-shrink: 0;
+}
+
+.brandCopy {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.brandClientName {
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--brand-text);
+}
+
+.brandTagline {
+  font-size: 0.82rem;
+  color: var(--brand-text-muted);
+  line-height: 1.4;
+}
+
+.participantBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--brand-primary-border);
+  background: var(--brand-primary-muted);
+  color: var(--brand-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .cocaLogo {
@@ -128,38 +170,14 @@
   transform: rotate(-2deg);
 }
 
-.brandDivider {
-  width: 1px;
-  height: 1.8rem;
-  background: var(--client-line-strong);
-  flex-shrink: 0;
-}
-
-.brandTitle {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
 .brandTitleStrong {
   font-family: var(--font-heading), sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.74rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  line-height: 1.05;
-  color: var(--client-fg);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.brandTitleSmall {
-  font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--client-eyebrow);
-  font-weight: 700;
+  line-height: 1.1;
+  color: var(--brand-label);
 }
 
 /* ── Tabs (Inicio / Partidos / Liga) ─────────────────────────── */
@@ -171,7 +189,13 @@
   background: var(--client-header-soft);
   border-radius: 999px;
   border: 1px solid var(--client-line);
-  width: fit-content;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.progressSteps::-webkit-scrollbar {
+  display: none;
 }
 
 .progressStep {
@@ -185,13 +209,14 @@
   font-size: 0.8rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--client-muted-strong);
+  color: var(--brand-text-muted);
   cursor: pointer;
   transition: background 0.15s, color 0.15s, box-shadow 0.15s;
   min-height: 2.4rem;
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
   text-decoration: none;
+  flex: 1 0 max-content;
 }
 
 .progressStep:hover {
@@ -200,9 +225,10 @@
 }
 
 .stepActive {
-  background: var(--client-primary) !important;
-  color: var(--client-on-primary) !important;
-  box-shadow: 0 4px 12px rgba(244, 0, 9, 0.2);
+  background: var(--brand-primary) !important;
+  color: var(--brand-bg) !important;
+  border-color: var(--brand-primary) !important;
+  box-shadow: 0 8px 24px var(--brand-primary-muted);
 }
 
 .stepActive:hover {
@@ -213,6 +239,11 @@
   .progressStep {
     padding: 0.45rem 0.85rem;
     font-size: 0.75rem;
+  }
+
+  .participantBadge {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 
