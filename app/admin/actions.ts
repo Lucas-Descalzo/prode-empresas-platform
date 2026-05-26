@@ -6,6 +6,7 @@ import {
   createCompany,
   importCompanyUsers,
   resetCompanyUserPassword,
+  updateCompanySettings,
 } from "@/lib/corporate/db";
 import type { CompanyAccessMode, CompanyGameMode } from "@/lib/corporate/types";
 
@@ -29,6 +30,11 @@ export interface ResetUserPasswordState {
   error?: string;
   success?: string;
   temporaryPassword?: string;
+}
+
+export interface UpdateCompanyActionState {
+  error?: string;
+  success?: string;
 }
 
 function normalizeSlug(value: string) {
@@ -58,6 +64,15 @@ function shadeHex(hex: string, amount: number) {
   return `#${channels.join("")}`;
 }
 
+function isDarkHex(hex: string) {
+  const safe = normalizeHexColor(hex, "#0f4c81").slice(1);
+  const red = Number.parseInt(safe.slice(0, 2), 16);
+  const green = Number.parseInt(safe.slice(2, 4), 16);
+  const blue = Number.parseInt(safe.slice(4, 6), 16);
+  const luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255;
+  return luminance < 0.45;
+}
+
 function parseImportedUsers(raw: string) {
   const lines = raw
     .split(/\r?\n/)
@@ -76,6 +91,33 @@ function parseImportedUsers(raw: string) {
       area: parts[2] ?? null,
     };
   });
+}
+
+function buildBranding({
+  primaryColor,
+  backgroundColor,
+  logoText,
+  logoUrl,
+}: {
+  primaryColor: string;
+  backgroundColor: string;
+  logoText: string | null;
+  logoUrl: string | null;
+}) {
+  const darkBackground = isDarkHex(backgroundColor);
+
+  return {
+    primary: primaryColor,
+    primaryDark: shadeHex(primaryColor, -0.18),
+    primaryHover: shadeHex(primaryColor, -0.08),
+    background: backgroundColor,
+    foreground: darkBackground ? "#f5f7fb" : "#1b1d24",
+    muted: darkBackground ? "rgba(245,247,251,0.72)" : "#5d6470",
+    line: darkBackground ? "rgba(255,255,255,0.14)" : "rgba(27,29,36,0.14)",
+    contrastOnPrimary: darkBackground ? "#111317" : "#ffffff",
+    logoText,
+    logoUrl,
+  };
 }
 
 export async function createCompanyAction(
@@ -119,18 +161,12 @@ export async function createCompanyAction(
       allowedEmailDomain,
       collectsArea,
       areaLabel,
-      branding: {
-        primary: primaryColor,
-        primaryDark: shadeHex(primaryColor, -0.18),
-        primaryHover: shadeHex(primaryColor, -0.08),
-        background: backgroundColor,
-        foreground: "#1b1d24",
-        muted: "#5d6470",
-        line: "rgba(27, 29, 36, 0.14)",
-        contrastOnPrimary: "#ffffff",
+      branding: buildBranding({
+        primaryColor,
+        backgroundColor,
         logoText,
         logoUrl: null,
-      },
+      }),
     });
 
     revalidatePath("/admin");
@@ -142,6 +178,56 @@ export async function createCompanyAction(
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "No pude crear la empresa.";
+    return { error: message };
+  }
+}
+
+export async function updateCompanyAction(
+  prevState: UpdateCompanyActionState,
+  formData: FormData,
+): Promise<UpdateCompanyActionState> {
+  try {
+    const companyId = String(formData.get("companyId") ?? "").trim();
+    const displayName = String(formData.get("displayName") ?? "").trim();
+    const shortName = String(formData.get("shortName") ?? "").trim();
+    const tagline = String(formData.get("tagline") ?? "").trim();
+    const areaLabel = String(formData.get("areaLabel") ?? "").trim() || "Área";
+    const collectsArea = String(formData.get("collectsArea") ?? "false") === "true";
+    const primaryColor = normalizeHexColor(
+      String(formData.get("primaryColor") ?? ""),
+      "#0f4c81",
+    );
+    const backgroundColor = normalizeHexColor(
+      String(formData.get("backgroundColor") ?? ""),
+      "#111317",
+    );
+    const logoText = String(formData.get("logoText") ?? "").trim() || shortName;
+    const logoUrl = String(formData.get("logoUrl") ?? "").trim() || null;
+
+    if (!companyId || !displayName || !shortName || !tagline) {
+      return { error: "Completá los datos principales de la empresa." };
+    }
+
+    await updateCompanySettings({
+      companyId,
+      displayName,
+      shortName,
+      tagline,
+      collectsArea,
+      areaLabel,
+      branding: buildBranding({
+        primaryColor,
+        backgroundColor,
+        logoText,
+        logoUrl,
+      }),
+    });
+
+    revalidatePath("/admin");
+    return { success: "Empresa actualizada." };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "No pude actualizar la empresa.";
     return { error: message };
   }
 }

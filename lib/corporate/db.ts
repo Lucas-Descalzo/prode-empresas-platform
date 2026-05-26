@@ -344,6 +344,48 @@ export async function createCompany(input: {
   return hydrateCompany(sql, company);
 }
 
+export async function updateCompanySettings(input: {
+  companyId: string;
+  displayName: string;
+  shortName: string;
+  tagline: string;
+  collectsArea: boolean;
+  areaLabel: string;
+  branding: CompanyRecord["branding"];
+}) {
+  await ensureDatabaseSchema();
+  const sql = getSql();
+
+  await sql`
+    UPDATE companies
+    SET
+      display_name = ${input.displayName.trim()},
+      short_name = ${input.shortName.trim()},
+      tagline = ${input.tagline.trim()},
+      collects_area = ${input.collectsArea},
+      area_label = ${input.areaLabel.trim()},
+      updated_at = NOW()
+    WHERE id = ${input.companyId}
+  `;
+
+  await sql`
+    UPDATE company_branding
+    SET
+      primary_color = ${input.branding.primary},
+      primary_dark_color = ${input.branding.primaryDark},
+      primary_hover_color = ${input.branding.primaryHover},
+      background_color = ${input.branding.background},
+      foreground_color = ${input.branding.foreground},
+      muted_color = ${input.branding.muted},
+      line_color = ${input.branding.line},
+      contrast_on_primary = ${input.branding.contrastOnPrimary},
+      logo_text = ${input.branding.logoText ?? null},
+      logo_url = ${input.branding.logoUrl ?? null},
+      updated_at = NOW()
+    WHERE company_id = ${input.companyId}
+  `;
+}
+
 export async function listUsersForCompany(companyId: string): Promise<CompanyUserRecord[]> {
   await ensureDatabaseSchema();
   const sql = getSql();

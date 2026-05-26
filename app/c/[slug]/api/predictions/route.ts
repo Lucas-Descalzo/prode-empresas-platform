@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 
 import { getCorporateClient } from "@/lib/corporate/clients";
-import { upsertInteractivePrediction } from "@/lib/corporate/db";
+import {
+  upsertFixturePrediction,
+  upsertInteractivePrediction,
+} from "@/lib/corporate/db";
 import { getCurrentParticipant } from "@/lib/corporate/session";
 import type { Prediction } from "@/lib/corporate/types";
 import { getMatchById } from "@/lib/corporate/match-registry";
+import { normalizeFixtureState } from "@/lib/world-cup-fixture";
+import type { FixtureState } from "@/lib/world-cup-types";
 
 function isValidPrediction(value: unknown): value is Prediction {
   if (!value || typeof value !== "object") return false;
@@ -30,6 +35,23 @@ function isValidPrediction(value: unknown): value is Prediction {
   return false;
 }
 
+function isValidFixtureState(value: unknown): value is FixtureState {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Partial<FixtureState>;
+  return (
+    typeof candidate.version === "number" &&
+    typeof candidate.groupOrders === "object" &&
+    typeof candidate.groupMatchPredictions === "object" &&
+    typeof candidate.groupPredictionModes === "object" &&
+    Array.isArray(candidate.qualifiedThirdPlaces) &&
+    typeof candidate.thirdPlaceAssignments === "object" &&
+    typeof candidate.knockoutWinners === "object"
+  );
+}
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ slug: string }> },
@@ -38,10 +60,6 @@ export async function POST(
   const client = await getCorporateClient(slug);
   if (!client) {
     return NextResponse.json({ error: "company_not_found" }, { status: 404 });
-  }
-
-  if (client.gameMode !== "interactive") {
-    return NextResponse.json({ error: "unsupported_game_mode" }, { status: 409 });
   }
 
   const participant = await getCurrentParticipant(client.id);
@@ -61,6 +79,23 @@ export async function POST(
   }
 
   const body = payload as { matchId?: unknown; prediction?: unknown };
+
+  if (client.gameMode === "simple") {
+    const simpleBody = payload as { fixtureState?: unknown };
+
+    if (!isValidFixtureState(simpleBody.fixtureState)) {
+      return NextResponse.json({ error: "invalid_fixture_state" }, { status: 400 });
+    }
+
+    await upsertFixturePrediction({
+      companyId: client.id,
+      userId: participant.id,
+      fixtureState: normalizeFixtureState(simpleBody.fixtureState),
+    });
+
+    return NextResponse.json({ ok: true });
+  }
+
   if (typeof body.matchId !== "string") {
     return NextResponse.json({ error: "invalid_match_id" }, { status: 400 });
   }

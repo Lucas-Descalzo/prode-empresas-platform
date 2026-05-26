@@ -89,13 +89,6 @@ body > [data-corporate-shell="true"] {
   margin: 0;
 }
 
-/* When a corporate shell is mounted, replace the dark site background with cream */
-html:has([data-corporate-shell="true"]),
-body:has([data-corporate-shell="true"]) {
-  background: #fdf3e2 !important;
-  color: #1a1410;
-}
-
 :focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;

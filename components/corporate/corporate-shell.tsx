@@ -10,11 +10,25 @@ interface CorporateShellProps {
   participantName?: string;
 }
 
+function isDarkHex(hex: string) {
+  const safe = hex.trim().replace("#", "");
+  if (!/^[0-9a-fA-F]{6}$/.test(safe)) {
+    return false;
+  }
+
+  const red = Number.parseInt(safe.slice(0, 2), 16);
+  const green = Number.parseInt(safe.slice(2, 4), 16);
+  const blue = Number.parseInt(safe.slice(4, 6), 16);
+  const luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255;
+  return luminance < 0.45;
+}
+
 export function CorporateShell({
   client,
   children,
   participantName,
 }: CorporateShellProps) {
+  const darkBackground = isDarkHex(client.branding.background);
   const cssVars = {
     "--client-primary": client.branding.primary,
     "--client-primary-hover": client.branding.primaryHover,
@@ -29,6 +43,14 @@ export function CorporateShell({
     "--client-muted-strong": client.branding.muted,
     "--client-line": client.branding.line,
     "--client-line-strong": client.branding.line,
+    "--client-card-bg": darkBackground ? "rgba(255,255,255,0.035)" : "#ffffff",
+    "--client-card-soft": darkBackground ? "rgba(255,255,255,0.05)" : "#fff8ec",
+    "--client-card-shadow": darkBackground
+      ? "0 10px 30px rgba(0, 0, 0, 0.26)"
+      : "0 6px 18px rgba(244, 0, 9, 0.06)",
+    "--client-card-shadow-strong": darkBackground
+      ? "0 14px 36px rgba(0, 0, 0, 0.34)"
+      : "0 12px 32px rgba(244, 0, 9, 0.1)",
   } as React.CSSProperties;
 
   return (

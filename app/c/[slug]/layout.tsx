@@ -47,9 +47,18 @@ export default async function CorporateLayout({
   }
 
   const participant = await getCurrentParticipant(client.id);
+  const wrapperStyle = {
+    minHeight: "100vh",
+    background: client.branding.background,
+    color: client.branding.foreground,
+  };
 
   return (
-    <div className={scriptFont.variable} data-corporate-shell="true">
+    <div
+      className={scriptFont.variable}
+      data-corporate-shell="true"
+      style={wrapperStyle}
+    >
       <CorporateShell
         client={client}
         participantName={participant?.firstName}

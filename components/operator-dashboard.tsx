@@ -7,9 +7,11 @@ import {
   createCompanyAction,
   importUsersAction,
   resetUserPasswordAction,
+  updateCompanyAction,
   type CreateCompanyActionState,
   type ImportUsersActionState,
   type ResetUserPasswordState,
+  type UpdateCompanyActionState,
 } from "@/app/admin/actions";
 import type { CompanyRecord, CompanyUserRecord } from "@/lib/corporate/types";
 import { AdminLogoutButton } from "./admin-logout-button";
@@ -20,6 +22,7 @@ type CompanyWithUsers = CompanyRecord & { users: CompanyUserRecord[] };
 const CREATE_INITIAL_STATE: CreateCompanyActionState = {};
 const IMPORT_INITIAL_STATE: ImportUsersActionState = {};
 const RESET_INITIAL_STATE: ResetUserPasswordState = {};
+const UPDATE_INITIAL_STATE: UpdateCompanyActionState = {};
 
 export function AdminDashboard({ companies }: { companies: CompanyWithUsers[] }) {
   const totalUsers = companies.reduce((sum, company) => sum + company.users.length, 0);
@@ -221,6 +224,8 @@ function CompanyCard({ company }: { company: CompanyWithUsers }) {
         <span>{invitedUsers} pendientes</span>
       </div>
 
+      <UpdateCompanyForm company={company} />
+
       <ImportUsersForm company={company} />
 
       <div className={styles.userList}>
@@ -231,6 +236,92 @@ function CompanyCard({ company }: { company: CompanyWithUsers }) {
         )}
       </div>
     </article>
+  );
+}
+
+function UpdateCompanyForm({ company }: { company: CompanyWithUsers }) {
+  const router = useRouter();
+  const [state, formAction, isPending] = useActionState(
+    updateCompanyAction,
+    UPDATE_INITIAL_STATE,
+  );
+
+  useEffect(() => {
+    if (!state.success) return;
+    router.refresh();
+  }, [router, state.success]);
+
+  return (
+    <form action={formAction} className={styles.subForm}>
+      <input type="hidden" name="companyId" value={company.id} />
+
+      <div className={styles.formGrid}>
+        <label className={styles.field}>
+          <span>Nombre visible</span>
+          <input name="displayName" defaultValue={company.displayName} required />
+        </label>
+
+        <label className={styles.field}>
+          <span>Nombre corto</span>
+          <input name="shortName" defaultValue={company.shortName} required />
+        </label>
+
+        <label className={styles.field}>
+          <span>Tagline</span>
+          <input name="tagline" defaultValue={company.tagline} required />
+        </label>
+
+        <label className={styles.field}>
+          <span>Etiqueta de área</span>
+          <input name="areaLabel" defaultValue={company.areaLabel} />
+        </label>
+
+        <label className={styles.field}>
+          <span>Color principal</span>
+          <input name="primaryColor" type="color" defaultValue={company.branding.primary} />
+        </label>
+
+        <label className={styles.field}>
+          <span>Color de fondo</span>
+          <input
+            name="backgroundColor"
+            type="color"
+            defaultValue={company.branding.background}
+          />
+        </label>
+
+        <label className={styles.field}>
+          <span>Texto del logo</span>
+          <input name="logoText" defaultValue={company.branding.logoText ?? ""} />
+        </label>
+
+        <label className={styles.field}>
+          <span>URL del logo</span>
+          <input
+            name="logoUrl"
+            defaultValue={company.branding.logoUrl ?? ""}
+            placeholder="https://..."
+          />
+        </label>
+
+        <label className={styles.checkboxField}>
+          <input
+            type="checkbox"
+            name="collectsArea"
+            value="true"
+            defaultChecked={company.collectsArea}
+          />
+          <span>Guardar área o sector del participante</span>
+        </label>
+      </div>
+
+      <button type="submit" className={styles.secondaryButton} disabled={isPending}>
+        {isPending ? "Actualizando..." : "Actualizar empresa"}
+      </button>
+
+      {state.error ? <p className={styles.error}>{state.error}</p> : null}
+      {state.success ? <p className={styles.success}>{state.success}</p> : null}
+    </form>
   );
 }
 
