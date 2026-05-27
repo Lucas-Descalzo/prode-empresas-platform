@@ -107,6 +107,8 @@ interface FixtureBuilderProps {
   onStepChange?: (step: number) => void;
   onResetAll?: () => void;
   onFeedback?: (message: string) => void;
+  posterBrandLogoUrl?: string | null;
+  posterBrandName?: string | null;
 }
 
 export function FixtureBuilder({
@@ -120,6 +122,8 @@ export function FixtureBuilder({
   onStepChange,
   onResetAll,
   onFeedback,
+  posterBrandLogoUrl,
+  posterBrandName,
 }: FixtureBuilderProps) {
   const [confirmingStepReset, setConfirmingStepReset] = useState<number | null>(null);
   const [confirmingFullReset, setConfirmingFullReset] = useState(false);
@@ -1171,6 +1175,8 @@ export function FixtureBuilder({
               championName={champion?.shortName ?? "Sin campeón definido"}
               generatedAtLabel={generatedAtLabel}
               title={readOnly ? "Fixture guardado Mundial 2026" : "Tu fixture Mundial 2026"}
+              companyLogoUrl={posterBrandLogoUrl}
+              companyLabel={posterBrandName ?? undefined}
             />
           </div>
         ) : null}

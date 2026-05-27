@@ -5,7 +5,11 @@
   --connector-gap: clamp(0.72rem, 1vw, 1.02rem);
   --branch-gap: clamp(0.72rem, 1vw, 1rem);
   --canvas-gap: clamp(1.15rem, 2vw, 1.95rem);
-  --connector-color: rgba(126, 245, 222, 0.68);
+  --connector-color: var(--brand-primary-border, rgba(255, 242, 0, 0.68));
+  --accent-color: var(--brand-primary, #fff200);
+  --accent-soft: var(--brand-primary-muted, rgba(255, 242, 0, 0.14));
+  --accent-border: var(--brand-primary-border, rgba(255, 242, 0, 0.45));
+  --text-muted: var(--brand-text-muted, rgba(245, 248, 255, 0.7));
   --card-surface:
     linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025)),
     rgba(8, 12, 23, 0.92);
@@ -37,9 +41,9 @@
 .stagePill {
   padding: 0.38rem 0.68rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.045);
-  color: rgba(245, 248, 255, 0.7);
+  color: var(--text-muted);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -51,9 +55,9 @@
 }
 
 .stagePillActive {
-  border-color: rgba(126, 245, 222, 0.5);
-  background: rgba(126, 245, 222, 0.14);
-  color: #7ef5de;
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+  color: var(--accent-color);
 }
 
 .bracketViewport {
@@ -262,9 +266,9 @@
   inline-size: var(--featured-card-width);
   background:
     radial-gradient(circle at top center, rgba(255, 179, 71, 0.24), transparent 42%),
-    radial-gradient(circle at bottom left, rgba(126, 245, 222, 0.18), transparent 38%),
+    radial-gradient(circle at bottom left, var(--accent-soft), transparent 38%),
     rgba(8, 12, 23, 0.96);
-  border-color: rgba(255, 179, 71, 0.25);
+  border-color: var(--accent-border);
   overflow: visible;
 }
 
@@ -336,7 +340,7 @@
 }
 
 .matchIdentity p {
-  color: #7ef5de;
+  color: var(--accent-color);
   font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -373,9 +377,9 @@
 }
 
 .matchInfoButtonExpanded {
-  border-color: rgba(126, 245, 222, 0.45);
-  background: rgba(126, 245, 222, 0.14);
-  color: #7ef5de;
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+  color: var(--accent-color);
 }
 
 .matchDetails {
@@ -449,9 +453,9 @@ button.countryNode:disabled {
 }
 
 .countryNodeSelected {
-  background: rgba(126, 245, 222, 0.14);
-  border-color: rgba(126, 245, 222, 0.42);
-  box-shadow: 0 0 0 2px rgba(126, 245, 222, 0.1), inset 0 1px 0 rgba(126, 245, 222, 0.12);
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 2px var(--accent-soft), inset 0 1px 0 var(--accent-soft);
 }
 
 .countryNodePending {
@@ -515,19 +519,19 @@ button.countryNode:disabled {
 }
 
 @keyframes winnerGlow {
-  0%, 100% { box-shadow: 0 0 0 0.25rem rgba(126, 245, 222, 0.14); }
-  50% { box-shadow: 0 0 0 0.45rem rgba(126, 245, 222, 0.26); }
+  0%, 100% { box-shadow: 0 0 0 0.25rem var(--accent-soft); }
+  50% { box-shadow: 0 0 0 0.45rem color-mix(in srgb, var(--accent-color) 26%, transparent); }
 }
 
 .statusWinner {
-  background: #7ef5de;
-  border-color: #7ef5de;
+  background: var(--accent-color);
+  border-color: var(--accent-color);
   animation: winnerGlow 2.4s ease-in-out infinite;
 }
 
 .statusReady {
-  background: rgba(255, 179, 71, 0.18);
-  border-color: rgba(255, 179, 71, 0.8);
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
 }
 
 .statusPending {

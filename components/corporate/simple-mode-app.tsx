@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { FixtureBuilder } from "@/components/fixture-builder";
 import type { CompanyRecord } from "@/lib/corporate/types";
 import { getRemainingKnockoutMatchesCount } from "@/lib/group-utils";
-import { createInitialFixtureState } from "@/lib/world-cup-fixture";
+import { createInitialFixtureState, normalizeFixtureState } from "@/lib/world-cup-fixture";
 import type { FixtureState } from "@/lib/world-cup-types";
 import styles from "./corporate-shell.module.css";
 
@@ -39,7 +39,9 @@ export function SimpleModeApp({
   client,
   initialFixtureState,
 }: SimpleModeAppProps) {
-  const initialState = initialFixtureState ?? createInitialFixtureState();
+  const initialState = normalizeFixtureState(
+    initialFixtureState ?? createInitialFixtureState(),
+  );
   const [fixtureState, setFixtureState] = useState<FixtureState>(initialState);
   const [currentStep, setCurrentStep] = useState<Step>(getAutoStep(initialState));
   const [saveState, setSaveState] = useState<SaveState>("idle");
@@ -47,7 +49,9 @@ export function SimpleModeApp({
   const [lastSavedAt, setLastSavedAt] = useState("");
 
   useEffect(() => {
-    const nextState = initialFixtureState ?? createInitialFixtureState();
+    const nextState = normalizeFixtureState(
+      initialFixtureState ?? createInitialFixtureState(),
+    );
     setFixtureState(nextState);
     setCurrentStep(getAutoStep(nextState));
     setSaveState("idle");
@@ -168,27 +172,14 @@ export function SimpleModeApp({
 
   return (
     <>
-      <section className={styles.sectionBlock}>
-        <div className={styles.sectionHeader}>
-          <div>
-            <span className={styles.sectionEyebrow}>Modo simple</span>
-            <h2 className={styles.sectionTitle}>Prediccion completa pre-Mundial</h2>
-          </div>
-          <p className={styles.sectionHint}>
-            Completa todo tu fixture una sola vez antes del arranque del torneo.
-            {" "}
-            Cuando se cargan resultados oficiales, la plataforma actualiza el
-            ranking interno de {client.shortName}.
-          </p>
-        </div>
-      </section>
-
       <FixtureBuilder
         fixtureState={fixtureState}
         onFixtureStateChange={handleFixtureStateChange}
         currentStep={currentStep}
         onStepChange={handleStepChange}
         onFeedback={setFeedback}
+        posterBrandLogoUrl={client.branding.logoUrl}
+        posterBrandName={client.shortName}
         beforeBuilder={
           <section className={styles.sectionBlock}>
             <div className={styles.simpleModeBar}>

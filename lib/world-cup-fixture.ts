@@ -363,7 +363,9 @@ export function deriveMatches(
     const sideB = resolveRef(slot.sideB);
 
     let winnerId = state.knockoutWinners[matchId];
-    if (winnerId && winnerId !== sideA?.id && winnerId !== sideB?.id) {
+    if (!sideA || !sideB) {
+      winnerId = undefined;
+    } else if (winnerId && winnerId !== sideA.id && winnerId !== sideB.id) {
       winnerId = undefined;
     }
 

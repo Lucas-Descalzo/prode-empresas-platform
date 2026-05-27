@@ -27,8 +27,8 @@ export function getLandingHeroCopy(
 ) {
   if (client.gameMode === "simple") {
     return usesCommunityVoice(client)
-      ? "Completa tu prediccion una sola vez antes del Mundial y compite en el ranking interno de la comunidad."
-      : `Completa tu prediccion una sola vez antes del Mundial y compite en el ranking interno de ${client.shortName}.`;
+      ? `Un prode privado para la comunidad de ${client.shortName}. Arma tu prediccion antes del Mundial y segui tu posicion en el ranking interno durante todo el torneo.`
+      : `Un prode privado para ${client.shortName}. Arma tu prediccion antes del Mundial y segui tu posicion en el ranking interno durante todo el torneo.`;
   }
 
   return usesCommunityVoice(client)
@@ -48,7 +48,7 @@ export function getAccessCopy(
       : "Cada persona activa su cuenta privada con su mail corporativo.";
   }
 
-  return `Solo participan personas invitadas por ${client.shortName}.`;
+  return `Solo participan personas invitadas por ${client.shortName}. Cada usuario recibe su acceso para cargar la prediccion.`;
 }
 
 export function getGameModeCopy(
@@ -58,7 +58,7 @@ export function getGameModeCopy(
   >,
 ) {
   if (client.gameMode === "simple") {
-    return "Completas tu prediccion una vez antes del Mundial: grupos, mejores terceros y cuadro final.";
+    return "Completas tu prediccion una sola vez antes del Mundial: grupos, mejores terceros y cuadro final.";
   }
 
   return "La eliminacion directa se define partido a partido durante todo el torneo.";
@@ -70,9 +70,7 @@ export function getRankingCopy(
     "displayName" | "shortName" | "tagline" | "collectsArea"
   >,
 ) {
-  return usesCommunityVoice(client)
-    ? `Durante el torneo, seguis tu posicion en el ranking interno de ${client.shortName}.`
-    : `Durante el torneo, cada participante sigue su posicion en el ranking interno de ${client.shortName}.`;
+  return `Cada participante compite en el ranking interno de ${client.shortName}, con su nombre y puntaje actualizado durante el torneo.`;
 }
 
 export function getFooterAttribution(client: Pick<CompanyRecord, "displayName">) {

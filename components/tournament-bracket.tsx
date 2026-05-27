@@ -421,7 +421,6 @@ export function TournamentBracket({
   readOnly = false,
 }: TournamentBracketProps) {
   const [expandedMatchInfoId, setExpandedMatchInfoId] = useState<MatchId | null>(null);
-  const [visibleFromStage, setVisibleFromStage] = useState<StageId>("roundOf32");
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState({
@@ -429,17 +428,10 @@ export function TournamentBracket({
     width: 0,
     height: 0,
   });
-  const isStageFocused = visibleFromStage !== "roundOf32";
-  const minVisibleStageIndex = getStageIndex(visibleFromStage);
-  const visibleStages = focusableStages.slice(minVisibleStageIndex);
-  const sideGuideStages = visibleStages.filter((stage) => stage !== "final");
-  const showBranchColumns = visibleFromStage !== "final";
+  const minVisibleStageIndex = getStageIndex("roundOf32");
+  const sideGuideStages = focusableStages.filter((stage) => stage !== "final");
+  const showBranchColumns = true;
   const stageGuideColumns = sideGuideStages.length * 2 + 1;
-  const toggleStageVisibility = (stage: StageId) => {
-    setVisibleFromStage((current) =>
-      current === stage && stage !== "roundOf32" ? "roundOf32" : stage,
-    );
-  };
   const stageGuideStyle = {
     "--stage-guide-columns": String(stageGuideColumns),
   } as CSSProperties;
@@ -499,7 +491,7 @@ export function TournamentBracket({
     <div
       className={cn(
         styles.bracketShell,
-        isStageFocused && styles.bracketShellFocused,
+        styles.bracketShellFocused,
       )}
     >
       <div className={styles.bracketViewport} ref={viewportRef}>
@@ -507,52 +499,34 @@ export function TournamentBracket({
           <div className={styles.bracketContent} ref={contentRef} style={contentStyle}>
           <div className={styles.stageGuide} style={stageGuideStyle}>
             {sideGuideStages.map((stage, index) => (
-              <button
+              <div
                 key={`left-${stage}`}
-                type="button"
-                className={cn(
-                  styles.stagePill,
-                  styles.stagePillInteractive,
-                  visibleFromStage === stage && styles.stagePillActive,
-                )}
+                className={cn(styles.stagePill, styles.stagePillActive)}
                 style={{ gridColumn: index + 1 } as CSSProperties}
-                onClick={() => toggleStageVisibility(stage)}
               >
                 {stageLabels[stage]}
-              </button>
+              </div>
             ))}
 
-            <button
-              type="button"
-              className={cn(
-                styles.stagePill,
-                styles.stagePillInteractive,
-                visibleFromStage === "final" && styles.stagePillActive,
-              )}
+            <div
+              className={cn(styles.stagePill, styles.stagePillActive)}
               style={{ gridColumn: sideGuideStages.length + 1 } as CSSProperties}
-              onClick={() => toggleStageVisibility("final")}
             >
               {stageLabels.final}
-            </button>
+            </div>
 
             {[...sideGuideStages].reverse().map((stage, index) => (
-              <button
+              <div
                 key={`right-${stage}`}
-                type="button"
-                className={cn(
-                  styles.stagePill,
-                  styles.stagePillInteractive,
-                  visibleFromStage === stage && styles.stagePillActive,
-                )}
+                className={cn(styles.stagePill, styles.stagePillActive)}
                 style={
                   {
                     gridColumn: sideGuideStages.length + 2 + index,
                   } as CSSProperties
                 }
-                onClick={() => toggleStageVisibility(stage)}
               >
                 {stageLabels[stage]}
-              </button>
+              </div>
             ))}
           </div>
 

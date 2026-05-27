@@ -188,6 +188,7 @@
 .posterFinalStack {
   display: grid;
   justify-items: center;
+  align-content: center;
 }
 
 .posterTrophyWrap {
@@ -201,6 +202,27 @@
   display: block;
   inline-size: 100%;
   block-size: 100%;
+  object-fit: contain;
+}
+
+.posterCompanyMark {
+  inline-size: 132px;
+  min-block-size: 72px;
+  margin-block-end: 8px;
+  padding: 10px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 196, 80, 0.36);
+  background:
+    radial-gradient(circle at center, rgba(255, 196, 80, 0.18), transparent 70%),
+    rgba(12, 17, 30, 0.92);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
+}
+
+.posterCompanyLogo {
+  max-inline-size: 100%;
+  max-block-size: 54px;
   object-fit: contain;
 }
 

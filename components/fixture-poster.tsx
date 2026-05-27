@@ -15,6 +15,8 @@ interface FixturePosterProps {
   championName: string;
   generatedAtLabel: string;
   title?: string;
+  companyLogoUrl?: string | null;
+  companyLabel?: string;
 }
 
 interface PosterMatchCardProps {
@@ -228,7 +230,14 @@ function PosterMatchTree({ matchId, side, matchesById }: PosterMatchTreeProps) {
 }
 
 export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(function FixturePoster(
-  { matchesById, championName, generatedAtLabel, title = "Tu fixture Mundial 2026" },
+  {
+    matchesById,
+    championName,
+    generatedAtLabel,
+    title = "Tu fixture Mundial 2026",
+    companyLogoUrl,
+    companyLabel,
+  },
   ref,
 ) {
   return (
@@ -299,6 +308,16 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
           <div className={styles.finalRow}>
             <span className={styles.finalConnector} aria-hidden />
             <div className={styles.posterFinalStack}>
+              {companyLogoUrl ? (
+                <div className={styles.posterCompanyMark} aria-hidden>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={companyLogoUrl}
+                    alt={companyLabel ?? "Logo empresa"}
+                    className={styles.posterCompanyLogo}
+                  />
+                </div>
+              ) : null}
               {matchesById.M104.winnerId ? (
                 <div className={styles.posterTrophyWrap} aria-hidden>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
