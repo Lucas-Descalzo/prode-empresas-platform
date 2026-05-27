@@ -216,6 +216,33 @@ export function SimpleModeApp({
         posterBrandName={client.shortName}
         beforeBuilder={
           <section className={styles.sectionBlock}>
+            <div className={styles.simpleModeIntro}>
+              <div className={styles.simpleModeStatus}>
+                <span className={styles.sectionEyebrow}>Tu prediccion</span>
+                <p className={styles.simpleModeSummary}>
+                  Completa grupos, mejores terceros y cuadro final. La ultima version
+                  guardada antes del arranque es la que entra en competencia.
+                </p>
+                <p className={styles.simpleModeDeadline}>
+                  Cierre: {formatSimpleModeCutoffLabel()} · {getSimpleModeCountdownLabel(now)}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className={styles.simpleModeSaveButton}
+                onClick={() => void saveFixtureState()}
+                disabled={
+                  locked ||
+                  saveState === "saving" ||
+                  saveState === "idle" ||
+                  saveState === "saved"
+                }
+              >
+                {saveLabel}
+              </button>
+            </div>
+
             <div className={styles.simpleModeMetricGrid}>
               <article className={styles.simpleModeMetricCard}>
                 <strong>{SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS} pts</strong>
@@ -233,7 +260,7 @@ export function SimpleModeApp({
 
             <div className={styles.simpleModeBar}>
               <div className={styles.simpleModeStatus}>
-                <span className={styles.sectionEyebrow}>Estado del fixture</span>
+                <span className={styles.sectionEyebrow}>Estado actual</span>
                 <p className={styles.predictionStatus}>{statusLabel}</p>
                 <p className={styles.simpleModeDeadline}>
                   Cierre: {formatSimpleModeCutoffLabel()} · {getSimpleModeCountdownLabel(now)}

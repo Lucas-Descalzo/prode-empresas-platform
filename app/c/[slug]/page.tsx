@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -30,6 +31,10 @@ export default async function CorporateLandingPage({
   const heroTitle = getLandingHeroTitle(client);
   const heroCopy = getLandingHeroCopy(client);
   const heroBadge = client.gameMode === "simple" ? "Modo simple" : "Modo interactivo";
+  const heroSupport =
+    client.gameMode === "simple"
+      ? "Acceso privado, una sola carga antes del Mundial y ranking interno para la comunidad."
+      : "Acceso privado, seguimiento partido a partido y ranking interno durante todo el torneo.";
 
   return (
     <>
@@ -59,6 +64,8 @@ export default async function CorporateLandingPage({
                 Ver ranking
               </Link>
             </div>
+
+            <p className={styles.landingSupportCopy}>{heroSupport}</p>
           </div>
 
           <div className={styles.landingHeroArt} aria-hidden="true">
@@ -77,13 +84,11 @@ export default async function CorporateLandingPage({
             )}
 
             <div className={styles.landingHeroStat}>
-              <strong>
-                {client.gameMode === "simple" ? "Una sola carga" : "Seguimiento live"}
-              </strong>
+              <strong>{client.shortName}</strong>
               <span>
                 {client.gameMode === "simple"
-                  ? "Antes del Mundial"
-                  : "Durante todo el torneo"}
+                  ? "Prode privado para alumnos, staff y comunidad."
+                  : "Seguimiento privado para la comunidad durante todo el torneo."}
               </span>
             </div>
           </div>

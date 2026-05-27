@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
@@ -43,14 +44,18 @@ export function CorporateHeader({ client, participantName }: CorporateHeaderProp
           aria-label={client.displayName}
         >
           {canShowLogo ? (
-            <img
-              src={logoUrl!}
-              alt={client.displayName}
-              className={styles.brandLogoImage}
-              onError={() => setFailedLogoUrl(logoUrl)}
-            />
+            <span className={styles.brandLogoFrame}>
+              <img
+                src={logoUrl!}
+                alt={client.displayName}
+                className={styles.brandLogoImage}
+                onError={() => setFailedLogoUrl(logoUrl)}
+              />
+            </span>
           ) : (
-            <span className={styles.brandTextLogo}>{logoText}</span>
+            <span className={`${styles.brandLogoFrame} ${styles.brandTextLogo}`}>
+              {logoText}
+            </span>
           )}
 
           <span className={styles.brandCopy}>

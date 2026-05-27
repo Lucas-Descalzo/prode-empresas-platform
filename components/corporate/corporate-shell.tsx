@@ -61,6 +61,7 @@ export function CorporateShell({
   const brandSurface2 = darkBackground ? "#18191C" : "#f3ede0";
   const brandSurface3 = darkBackground ? "#141619" : "#f7f3eb";
   const stateSuccess = darkBackground ? "#45D6B0" : "#1A8359";
+  const stateWarning = darkBackground ? "#F2B646" : "#9A6700";
   const stateDanger = darkBackground ? "#FF7A7A" : "#B42318";
 
   const cssVars = {
@@ -83,29 +84,31 @@ export function CorporateShell({
       ? "rgba(255,255,255,0.45)"
       : "rgba(26, 20, 16, 0.45)",
     "--brand-on-primary": client.branding.contrastOnPrimary,
-    "--brand-label": withAlpha(brandPrimary, darkBackground ? 0.82 : 0.74),
+    "--brand-label": darkBackground
+      ? "rgba(255, 255, 255, 0.78)"
+      : withAlpha(brandPrimary, 0.68),
     "--brand-shadow": darkBackground
-      ? "0 14px 40px rgba(0, 0, 0, 0.34)"
+      ? "0 12px 32px rgba(0, 0, 0, 0.28)"
       : "0 10px 28px rgba(0, 0, 0, 0.12)",
     "--brand-shadow-soft": darkBackground
-      ? "0 10px 28px rgba(0, 0, 0, 0.22)"
+      ? "0 8px 22px rgba(0, 0, 0, 0.18)"
       : "0 6px 18px rgba(0, 0, 0, 0.08)",
     "--brand-focus-ring": withAlpha(brandPrimary, 0.26),
     "--brand-focus-surface": darkBackground ? "#111317" : "#ffffff",
     "--brand-hero-panel": darkBackground
-      ? "linear-gradient(145deg, rgba(16,17,19,0.98), rgba(10,10,10,0.96))"
+      ? "linear-gradient(145deg, rgba(16,17,19,0.98), rgba(7,7,7,0.98))"
       : "linear-gradient(145deg, rgba(255,255,255,0.98), rgba(247,243,235,0.96))",
-    "--brand-hero-sheen": withAlpha(brandPrimary, darkBackground ? 0.14 : 0.07),
-    "--brand-hero-sheen-soft": withAlpha(brandPrimary, darkBackground ? 0.08 : 0.04),
+    "--brand-hero-sheen": withAlpha(brandPrimary, darkBackground ? 0.08 : 0.07),
+    "--brand-hero-sheen-soft": withAlpha(brandPrimary, darkBackground ? 0.04 : 0.04),
     "--brand-watermark": darkBackground
       ? "rgba(255,255,255,0.045)"
       : withAlpha(brandPrimary, 0.06),
     "--state-success": stateSuccess,
     "--state-success-bg": withAlpha(stateSuccess, 0.12),
     "--state-success-border": withAlpha(stateSuccess, 0.35),
-    "--state-warning": brandPrimary,
-    "--state-warning-bg": withAlpha(brandPrimary, 0.12),
-    "--state-warning-border": withAlpha(brandPrimary, 0.35),
+    "--state-warning": stateWarning,
+    "--state-warning-bg": withAlpha(stateWarning, 0.12),
+    "--state-warning-border": withAlpha(stateWarning, 0.32),
     "--state-danger": stateDanger,
     "--state-danger-bg": withAlpha(stateDanger, 0.12),
     "--state-danger-border": withAlpha(stateDanger, 0.28),
@@ -120,7 +123,7 @@ export function CorporateShell({
     "--client-primary": brandPrimary,
     "--client-primary-hover": brandPrimaryHover,
     "--client-on-primary": client.branding.contrastOnPrimary,
-    "--client-glow": withAlpha(brandPrimary, 0.24),
+    "--client-glow": withAlpha(brandPrimary, 0.16),
     "--client-eyebrow": brandPrimary,
     "--client-bg": brandBackground,
     "--client-bg-strong": brandBackground,
@@ -135,13 +138,13 @@ export function CorporateShell({
     "--client-card-bg": brandSurface,
     "--client-card-soft": brandSurface2,
     "--client-card-shadow": darkBackground
-      ? "0 10px 30px rgba(0, 0, 0, 0.26)"
+      ? "0 8px 20px rgba(0, 0, 0, 0.18)"
       : "0 6px 18px rgba(0, 0, 0, 0.08)",
     "--client-card-shadow-strong": darkBackground
-      ? "0 14px 36px rgba(0, 0, 0, 0.34)"
+      ? "0 12px 28px rgba(0, 0, 0, 0.24)"
       : "0 12px 32px rgba(0, 0, 0, 0.14)",
     "--client-header-bg": darkBackground
-      ? "rgba(5, 5, 5, 0.94)"
+      ? "rgba(5, 5, 5, 0.96)"
       : "rgba(255, 250, 240, 0.92)",
     "--client-header-soft": darkBackground ? brandSurface2 : "rgba(255,255,255,0.78)",
     "--client-hover-soft": darkBackground

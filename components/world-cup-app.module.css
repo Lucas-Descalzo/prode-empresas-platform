@@ -19,9 +19,9 @@
   --state-success: #45d6b0;
   --state-success-bg: rgba(69, 214, 176, 0.12);
   --state-success-border: rgba(69, 214, 176, 0.35);
-  --state-warning: var(--brand-primary);
-  --state-warning-bg: rgba(255, 242, 0, 0.12);
-  --state-warning-border: rgba(255, 242, 0, 0.35);
+  --state-warning: #f2b646;
+  --state-warning-bg: rgba(242, 182, 70, 0.12);
+  --state-warning-border: rgba(242, 182, 70, 0.32);
   --state-danger: #ff7a7a;
   --state-danger-bg: rgba(255, 122, 122, 0.12);
   --state-danger-border: rgba(255, 122, 122, 0.28);
@@ -51,7 +51,7 @@
   border: 1px solid var(--brand-border);
   background: color-mix(in srgb, var(--brand-bg) 92%, transparent);
   backdrop-filter: blur(22px);
-  box-shadow: var(--brand-shadow), 0 0 0 1px var(--brand-primary-muted);
+  box-shadow: var(--brand-shadow);
   animation: headerSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -130,10 +130,10 @@
   border: 1px solid var(--line);
   border-radius: 2rem;
   background:
-    radial-gradient(circle at top left, rgba(29, 240, 164, 0.18), transparent 30%),
-    radial-gradient(circle at 80% 15%, rgba(255, 95, 37, 0.18), transparent 26%),
+    radial-gradient(circle at top left, var(--brand-primary-muted), transparent 34%),
+    radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.03), transparent 28%),
     linear-gradient(135deg, rgba(10, 15, 27, 0.96), rgba(7, 10, 19, 0.9));
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
 }
 
 .heroContent {
@@ -235,13 +235,13 @@
   background: var(--brand-primary);
   color: var(--brand-on-primary);
   border: none;
-  box-shadow: 0 12px 28px var(--brand-primary-muted);
+  box-shadow: 0 10px 22px var(--brand-primary-muted);
 }
 
 .secondaryAction {
   background: transparent;
   color: var(--brand-text-muted);
-  border: 1px solid var(--brand-border);
+  border: 1px solid var(--brand-border-strong);
 }
 
 .primaryAction:hover,
@@ -420,7 +420,7 @@
 }
 
 .groupLabel {
-  color: color-mix(in srgb, var(--group-color) 70%, var(--brand-primary));
+  color: color-mix(in srgb, var(--group-color) 46%, var(--brand-text));
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-size: 0.78rem;
@@ -463,8 +463,8 @@
 .groupModeButtonActive {
   border-color: var(--brand-primary-border);
   background: var(--brand-primary-muted);
-  color: var(--brand-primary);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+  color: var(--brand-text);
+  box-shadow: inset 0 0 0 1px var(--brand-primary-border);
 }
 
 .groupMatchPanel {
@@ -587,11 +587,9 @@
 
 .groupMatchButtons .groupMatchButtonActive {
   border-color: var(--brand-primary-border);
-  background: var(--brand-primary);
-  color: var(--brand-on-primary);
-  box-shadow:
-    0 0 0 1px var(--brand-primary-border),
-    0 8px 18px var(--brand-primary-muted);
+  background: var(--brand-primary-muted);
+  color: var(--brand-text);
+  box-shadow: inset 0 0 0 1px var(--brand-primary-border);
 }
 
 .groupTableMini {
@@ -702,7 +700,8 @@
   inline-size: 2rem;
   block-size: 2rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--group-color, var(--brand-primary)) 60%, var(--brand-bg));
+  background: color-mix(in srgb, var(--group-color, var(--brand-primary)) 20%, var(--brand-surface-2));
+  border: 1px solid color-mix(in srgb, var(--group-color, var(--brand-primary)) 30%, var(--brand-border));
   font-weight: 800;
   color: var(--foreground);
 }
@@ -1485,8 +1484,8 @@
 
 .groupFilterBtnActive {
   border-color: var(--brand-primary-border);
-  background: var(--brand-primary);
-  color: var(--brand-on-primary);
+  background: var(--brand-primary-muted);
+  color: var(--brand-text);
 }
 
 /* Card: default, hover, expanded */
@@ -1633,9 +1632,11 @@
   gap: 0.9rem;
   padding: 1.4rem;
   border-radius: 1.6rem;
-  border: 1px solid rgba(137, 151, 190, 0.18);
-  background: rgba(16, 22, 36, 0.92);
-  box-shadow: 0 20px 60px rgba(2, 8, 20, 0.26);
+  border: 1px solid var(--brand-border);
+  background:
+    radial-gradient(circle at top right, var(--brand-primary-muted), transparent 40%),
+    rgba(16, 22, 36, 0.92);
+  box-shadow: 0 14px 34px rgba(2, 8, 20, 0.22);
 }
 
 .groupLaunchCard h2 {
@@ -1648,7 +1649,7 @@
 
 .groupLaunchCard p {
   margin: 0;
-  color: rgba(224, 231, 255, 0.76);
+  color: var(--brand-text-muted);
 }
 
 .groupLinkRow {
@@ -1663,7 +1664,7 @@
   min-block-size: 3rem;
   padding-inline: 1rem;
   border-radius: 999px;
-  border: 1px solid rgba(137, 151, 190, 0.22);
+  border: 1px solid var(--brand-border);
   background: rgba(7, 12, 23, 0.84);
   color: inherit;
   font-size: 1rem;
@@ -1671,7 +1672,7 @@
 
 .groupLinkFeedback {
   margin: 0;
-  color: #ffd68d;
+  color: var(--state-warning);
 }
 
 .primaryLinkButton {
@@ -1681,16 +1682,17 @@
   min-block-size: 3rem;
   padding-inline: 1.2rem;
   border-radius: 999px;
-  background: linear-gradient(120deg, var(--cta-from), var(--cta-to));
-  color: #071016;
+  background: var(--brand-primary);
+  color: var(--brand-on-primary);
   text-decoration: none;
   font-weight: 700;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .primaryLinkButton:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(109, 240, 219, 0.2);
+  background: var(--brand-primary-hover);
+  box-shadow: 0 8px 20px var(--brand-primary-muted);
 }
 
 .primaryLinkButton:active {
@@ -1699,9 +1701,9 @@
 
 .landingHeader,
 .fixtureIntro {
-  border: 1px solid rgba(137, 151, 190, 0.16);
-  background: rgba(8, 12, 23, 0.76);
-  box-shadow: 0 20px 60px rgba(2, 8, 20, 0.24);
+  border: 1px solid var(--brand-border);
+  background: rgba(8, 12, 23, 0.82);
+  box-shadow: 0 14px 34px rgba(2, 8, 20, 0.22);
 }
 
 .landingHeader {
@@ -1720,8 +1722,8 @@
   padding: clamp(1.35rem, 4vw, 2.2rem);
   border-radius: 2rem;
   background:
-    radial-gradient(circle at top left, rgba(29, 240, 164, 0.18), transparent 30%),
-    radial-gradient(circle at 82% 18%, rgba(255, 179, 71, 0.2), transparent 30%),
+    radial-gradient(circle at top left, var(--brand-primary-muted), transparent 34%),
+    radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.03), transparent 28%),
     linear-gradient(135deg, rgba(10, 15, 27, 0.96), rgba(7, 10, 19, 0.9));
 }
 
@@ -1749,7 +1751,7 @@
   min-width: min(100%, 18rem);
   justify-content: center;
   font-size: 1rem;
-  box-shadow: 0 18px 40px rgba(109, 240, 219, 0.16);
+  box-shadow: 0 12px 28px var(--brand-primary-muted);
 }
 
 .landingHeroCopy,
@@ -1783,8 +1785,9 @@
   width: 2rem;
   height: 2rem;
   border-radius: 999px;
-  background: var(--brand-primary);
-  color: var(--brand-on-primary);
+  background: var(--brand-primary-muted);
+  border: 1px solid var(--brand-primary-border);
+  color: var(--brand-primary);
   font-weight: 900;
 }
 
@@ -2062,14 +2065,11 @@
 
 /* ── Campeón (oro) ── */
 .summaryCardGold {
-  border-top: 3px solid var(--brand-primary);
-  border-right: 1px solid var(--brand-primary-border);
-  border-bottom: 1px solid var(--brand-primary-border);
-  border-left: 1px solid var(--brand-primary-border);
+  border: 1px solid var(--brand-primary-border);
   background:
-    radial-gradient(ellipse at top center, var(--brand-primary-muted) 0%, transparent 62%),
+    radial-gradient(ellipse at top center, var(--brand-primary-muted) 0%, transparent 58%),
     var(--brand-surface);
-  box-shadow: 0 0 30px var(--brand-primary-muted), 0 8px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .summaryCardGold .summaryLabel,
@@ -2079,10 +2079,7 @@
 
 /* ── Subcampeón (plata) ── */
 .summaryCardSilver {
-  border-top: 3px solid var(--brand-border-strong);
-  border-right: 1px solid var(--brand-border);
-  border-bottom: 1px solid var(--brand-border);
-  border-left: 1px solid var(--brand-border);
+  border: 1px solid var(--brand-border);
   background:
     radial-gradient(ellipse at top center, color-mix(in srgb, var(--brand-text-muted) 15%, transparent) 0%, transparent 60%),
     var(--brand-surface);
@@ -2095,10 +2092,7 @@
 
 /* ── Tercer puesto (bronce) ── */
 .summaryCardBronze {
-  border-top: 3px solid var(--brand-text-soft);
-  border-right: 1px solid var(--brand-border);
-  border-bottom: 1px solid var(--brand-border);
-  border-left: 1px solid var(--brand-border);
+  border: 1px solid var(--brand-border);
   background:
     radial-gradient(ellipse at top center, color-mix(in srgb, var(--brand-text-soft) 15%, transparent) 0%, transparent 60%),
     var(--brand-surface);

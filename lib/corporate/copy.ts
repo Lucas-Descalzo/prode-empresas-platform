@@ -16,7 +16,7 @@ export function usesCommunityVoice(
 export function getLandingHeroTitle(
   client: Pick<CompanyRecord, "displayName" | "shortName">,
 ) {
-  return `Prode Mundial 2026 ${client.shortName}`;
+  return `${client.shortName} Mundial 2026`;
 }
 
 export function getLandingHeroCopy(

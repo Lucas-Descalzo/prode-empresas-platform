@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { createInitialFixtureState } from "@/lib/world-cup-fixture";
 import type { GroupPageData } from "@/lib/group-types";
@@ -35,12 +35,52 @@ function getPredictionTarget(pathname: string | null, fallback: string) {
   return `/mi-prediccion?returnTo=${encodeURIComponent(returnTo)}`;
 }
 
+function readStoredPrediction(isClosed: boolean, legacyDraftKey: string) {
+  if (isClosed || typeof window === "undefined") {
+    return {
+      fixtureState: createInitialFixtureState(),
+      hasStoredPrediction: false,
+    };
+  }
+
+  const mainDraft = window.localStorage.getItem(FIXTURE_STORAGE_KEY);
+  const mainPrediction = decodeFixtureState(mainDraft);
+  if (mainPrediction) {
+    return {
+      fixtureState: mainPrediction,
+      hasStoredPrediction: true,
+    };
+  }
+
+  const legacyDraft = window.localStorage.getItem(legacyDraftKey);
+  const legacyPrediction = decodeFixtureState(legacyDraft);
+  if (legacyPrediction) {
+    window.localStorage.setItem(FIXTURE_STORAGE_KEY, encodeFixtureState(legacyPrediction));
+    return {
+      fixtureState: legacyPrediction,
+      hasStoredPrediction: true,
+    };
+  }
+
+  return {
+    fixtureState: createInitialFixtureState(),
+    hasStoredPrediction: false,
+  };
+}
+
 export function GroupPageClient({ data }: GroupPageClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const shouldReduceMotion = useReducedMotion();
-  const [fixtureState, setFixtureState] = useState<FixtureState>(createInitialFixtureState());
-  const [hasStoredPrediction, setHasStoredPrediction] = useState(false);
+  const isPublicPool = data.group.isPublicPool;
+  const fallbackPath = isPublicPool ? "/ligas/general" : `/ligas/${data.group.slug}`;
+  const predictionTarget = getPredictionTarget(pathname, fallbackPath);
+  const legacyDraftKey = getLegacyDraftKey(data.group.slug, isPublicPool);
+  const initialPredictionState = readStoredPrediction(data.isClosed, legacyDraftKey);
+  const [fixtureState, setFixtureState] = useState<FixtureState>(initialPredictionState.fixtureState);
+  const [hasStoredPrediction, setHasStoredPrediction] = useState(
+    initialPredictionState.hasStoredPrediction,
+  );
   const [loadedFromResume, setLoadedFromResume] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -52,41 +92,11 @@ export function GroupPageClient({ data }: GroupPageClientProps) {
   const [selectedParticipantId, setSelectedParticipantId] = useState(
     data.participants[0]?.id ?? "",
   );
-
-  const isPublicPool = data.group.isPublicPool;
-  const fallbackPath = isPublicPool ? "/ligas/general" : `/ligas/${data.group.slug}`;
-  const predictionTarget = getPredictionTarget(pathname, fallbackPath);
-  const legacyDraftKey = useMemo(
-    () => getLegacyDraftKey(data.group.slug, isPublicPool),
-    [data.group.slug, isPublicPool],
-  );
   const remainingMatches = getRemainingKnockoutMatchesCount(fixtureState);
   const isPredictionComplete = hasStoredPrediction && remainingMatches === 0;
   const selectedParticipant = data.participants.find(
     (participant) => participant.id === selectedParticipantId,
   );
-
-  useEffect(() => {
-    if (data.isClosed) {
-      return;
-    }
-
-    const mainDraft = window.localStorage.getItem(FIXTURE_STORAGE_KEY);
-    const mainPrediction = decodeFixtureState(mainDraft);
-    if (mainPrediction) {
-      setFixtureState(mainPrediction);
-      setHasStoredPrediction(true);
-      return;
-    }
-
-    const legacyDraft = window.localStorage.getItem(legacyDraftKey);
-    const legacyPrediction = decodeFixtureState(legacyDraft);
-    if (legacyPrediction) {
-      setFixtureState(legacyPrediction);
-      setHasStoredPrediction(true);
-      window.localStorage.setItem(FIXTURE_STORAGE_KEY, encodeFixtureState(legacyPrediction));
-    }
-  }, [data.isClosed, legacyDraftKey]);
 
   useEffect(() => {
     if (!feedback) {

@@ -14,8 +14,8 @@ export function SimpleModeGuide({ client }: { client: CompanyRecord }) {
     <section className={styles.sectionBlock}>
       <div className={styles.sectionHeader}>
         <div>
-          <span className={styles.sectionEyebrow}>Modo simple</span>
-          <h2 className={styles.sectionTitle}>Sistema de puntos y FAQs</h2>
+          <span className={styles.sectionEyebrow}>Como se juega</span>
+          <h2 className={styles.sectionTitle}>Sistema de puntos y reglas claras</h2>
         </div>
         <p className={styles.sectionHint}>
           Cierre de carga: {formatSimpleModeCutoffLabel()}. La ultima version completa
@@ -64,7 +64,7 @@ export function SimpleModeGuide({ client }: { client: CompanyRecord }) {
       </div>
 
       <div className={styles.simpleModeRuleCallout}>
-        <strong>Como se puntua la eliminatoria</strong>
+        <strong>Dos reglas que vale la pena tener presentes</strong>
         <p>
           Importa hasta que ronda bancaste a cada equipo, no por que lado del cuadro
           llego. Si lo pusiste en semifinales y termina en semifinales, cobras esos
