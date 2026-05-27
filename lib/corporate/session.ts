@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 
 import { getCompanyUserById } from "./db";
@@ -31,13 +32,13 @@ export async function readParticipantSession() {
   return decodeParticipantSession(jar.get(COOKIE_NAME)?.value);
 }
 
-export async function getCurrentParticipant(
+export const getCurrentParticipant = cache(async (
   companyId: string,
-): Promise<CompanyUserRecord | null> {
+): Promise<CompanyUserRecord | null> => {
   const session = await readParticipantSession();
   if (!session || session.companyId !== companyId) {
     return null;
   }
 
   return getCompanyUserById(companyId, session.userId);
-}
+});

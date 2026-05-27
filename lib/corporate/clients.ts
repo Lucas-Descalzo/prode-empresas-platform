@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import { getCompanyBySlug, listCompanies } from "./db";
 
 export const DEFAULT_ROOT_DOMAIN = "prode-empresas.com";
@@ -10,9 +12,9 @@ export function getRootDomain() {
   ).toLowerCase();
 }
 
-export async function getCorporateClient(slug: string) {
+export const getCorporateClient = cache(async (slug: string) => {
   return getCompanyBySlug(slug);
-}
+});
 
 export async function listCorporateClients() {
   return listCompanies();

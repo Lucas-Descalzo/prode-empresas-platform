@@ -467,23 +467,49 @@ export function TournamentBracket({
           ? Math.max(0.72, Math.min(1, (viewportWidth - 12) / naturalWidth))
           : 1;
 
-      setFit({
-        scale: nextScale,
-        width: naturalWidth,
-        height: naturalHeight,
+      setFit((current) => {
+        const unchanged =
+          Math.abs(current.scale - nextScale) < 0.0001 &&
+          current.width === naturalWidth &&
+          current.height === naturalHeight;
+
+        if (unchanged) {
+          return current;
+        }
+
+        return {
+          scale: nextScale,
+          width: naturalWidth,
+          height: naturalHeight,
+        };
+      });
+    };
+
+    let rafId = 0;
+    const scheduleUpdate = () => {
+      if (rafId !== 0) {
+        return;
+      }
+
+      rafId = window.requestAnimationFrame(() => {
+        rafId = 0;
+        updateFit();
       });
     };
 
     updateFit();
 
-    const resizeObserver = new ResizeObserver(updateFit);
+    const resizeObserver = new ResizeObserver(scheduleUpdate);
     resizeObserver.observe(viewportElement);
     resizeObserver.observe(contentElement);
-    window.addEventListener("resize", updateFit);
+    window.addEventListener("resize", scheduleUpdate);
 
     return () => {
       resizeObserver.disconnect();
-      window.removeEventListener("resize", updateFit);
+      window.removeEventListener("resize", scheduleUpdate);
+      if (rafId !== 0) {
+        window.cancelAnimationFrame(rafId);
+      }
     };
   }, [minVisibleStageIndex, showBranchColumns]);
 

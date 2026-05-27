@@ -3,7 +3,9 @@
 import Image from "next/image";
 import {
   startTransition,
+  useDeferredValue,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -129,6 +131,7 @@ export function FixtureBuilder({
   const [confirmingFullReset, setConfirmingFullReset] = useState(false);
   const [isExportingImage, setIsExportingImage] = useState(false);
   const [exportFeedback, setExportFeedback] = useState("");
+  const [isPosterMounted, setIsPosterMounted] = useState(false);
   const exportPosterRef = useRef<HTMLDivElement | null>(null);
   const [expandedGroup, setExpandedGroup] = useState<GroupId | null>(null);
   const [groupFilter, setGroupFilter] = useState<"all" | "A-D" | "E-H" | "I-L">("all");
@@ -140,23 +143,37 @@ export function FixtureBuilder({
     });
   };
 
-  const matches = deriveMatches(fixtureState).matchesById;
-  const emptyMatches = createEmptyKnockoutMatches(matches);
-  const champion = getChampion(matches);
+  const matches = useMemo(
+    () => deriveMatches(fixtureState).matchesById,
+    [fixtureState],
+  );
+  const deferredMatches = useDeferredValue(matches);
+  const emptyMatches = useMemo(
+    () => createEmptyKnockoutMatches(deferredMatches),
+    [deferredMatches],
+  );
+  const champion = useMemo(() => getChampion(matches), [matches]);
   const runnerUp = matches.M104.loserId ? teamMap[matches.M104.loserId] : null;
   const thirdPlaceWinner = matches.M103.winnerId ? teamMap[matches.M103.winnerId] : null;
-  const thirdCandidates = getThirdPlaceCandidates(fixtureState.groupOrders);
+  const thirdCandidates = useMemo(
+    () => getThirdPlaceCandidates(fixtureState.groupOrders),
+    [fixtureState.groupOrders],
+  );
   const thirdAssignmentCount = Object.keys(fixtureState.thirdPlaceAssignments).length;
   const hasEightThirdsSelected = fixtureState.qualifiedThirdPlaces.length === 8;
   const allThirdSlotsReady =
     hasEightThirdsSelected && thirdAssignmentCount === 8;
   const isKnockoutReady = allThirdSlotsReady;
-  const isComplete = isFixtureComplete(fixtureState);
-  const generatedAtLabel = new Intl.DateTimeFormat("es-AR", {
-    dateStyle: "full",
-    timeStyle: "short",
-    timeZone: "America/Argentina/Buenos_Aires",
-  }).format(new Date());
+  const isComplete = useMemo(() => isFixtureComplete(fixtureState), [fixtureState]);
+  const generatedAtLabel = useMemo(
+    () =>
+      new Intl.DateTimeFormat("es-AR", {
+        dateStyle: "full",
+        timeStyle: "short",
+        timeZone: "America/Argentina/Buenos_Aires",
+      }).format(new Date()),
+    [],
+  );
 
   useEffect(() => {
     if (!exportFeedback) {
@@ -341,16 +358,22 @@ export function FixtureBuilder({
   };
 
   const exportFixtureImage = async () => {
-    const posterElement = exportPosterRef.current;
-
-    if (!isComplete || !posterElement) {
+    if (!isComplete) {
       return;
     }
 
     setIsExportingImage(true);
     setExportFeedback("");
+    setIsPosterMounted(true);
 
     try {
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+      const posterElement = exportPosterRef.current;
+      if (!posterElement) {
+        throw new Error("poster-not-mounted");
+      }
+
       const { toBlob } = await import("html-to-image");
 
       const blob = await toBlob(posterElement, {
@@ -379,6 +402,7 @@ export function FixtureBuilder({
       console.error(error);
       setExportFeedback("No pude generar la imagen. Probá hacer una captura de pantalla.");
     } finally {
+      setIsPosterMounted(false);
       setIsExportingImage(false);
     }
   };
@@ -476,23 +500,27 @@ export function FixtureBuilder({
         <div className={styles.groupGrid} ref={groupGridRef}>
           {filteredGroups.map((group) => {
             const isExpanded = !useAccordion || expandedGroup === group.id;
+            const shouldComputeGroupStats = !useAccordion || isExpanded;
             const edited = isGroupEdited(group.id);
             const isMatchMode = fixtureState.groupPredictionModes[group.id] === "matches";
-            const groupMatches = getGroupMatchDefinitions(group.id);
-            const groupTableRows = getGroupTableRows(
-              group.id,
-              fixtureState.groupMatchPredictions,
-            );
+            const groupMatches = shouldComputeGroupStats
+              ? getGroupMatchDefinitions(group.id)
+              : [];
+            const groupTableRows = shouldComputeGroupStats
+              ? getGroupTableRows(group.id, fixtureState.groupMatchPredictions)
+              : [];
             const groupPointsByTeam = Object.fromEntries(
               groupTableRows.map((row) => [row.teamId, row.points]),
             ) as Record<TeamId, number>;
             const pendingGroupMatches = groupMatches.filter(
               (match) => !fixtureState.groupMatchPredictions[match.id],
             ).length;
-            const hasPointTie = groupTableRows.some(
-              (row, index) =>
-                groupTableRows.findIndex((other) => other.points === row.points) !== index,
-            );
+            const hasPointTie = shouldComputeGroupStats
+              ? groupTableRows.some(
+                  (row, index) =>
+                    groupTableRows.findIndex((other) => other.points === row.points) !== index,
+                )
+              : false;
             const hasPendingTieAdjustment = isMatchMode && hasPointTie;
 
             return (
@@ -554,18 +582,18 @@ export function FixtureBuilder({
                   </header>
                 )}
 
-                {/* Accordion: always in DOM, animated via grid-template-rows */}
                 <div
                   className={`${styles.groupExpandedWrapper} ${
                     isExpanded ? styles.groupExpandedOpen : ""
                   }`}
                 >
-                  <div className={styles.groupExpandedInner}>
-                    <div
-                      className={
-                        useAccordion ? styles.groupExpandedContent : styles.groupTeams
-                      }
-                    >
+                  {isExpanded || !useAccordion ? (
+                    <div className={styles.groupExpandedInner}>
+                      <div
+                        className={
+                          useAccordion ? styles.groupExpandedContent : styles.groupTeams
+                        }
+                      >
                       {!readOnly ? (
                         <div className={styles.groupModeBar}>
                           <button
@@ -814,8 +842,9 @@ export function FixtureBuilder({
                         );
                       })
                       )}
+                      </div>
                     </div>
-                  </div>
+                  ) : null}
                 </div>
               </article>
             );
@@ -1047,7 +1076,7 @@ export function FixtureBuilder({
         {afterChampion}
 
         <TournamentBracket
-          matchesById={isKnockoutReady ? matches : emptyMatches}
+          matchesById={isKnockoutReady ? deferredMatches : emptyMatches}
           onPickWinner={isKnockoutReady && !readOnly ? pickMatchWinner : undefined}
           readOnly={readOnly || !isKnockoutReady}
         />
@@ -1167,11 +1196,11 @@ export function FixtureBuilder({
 
         {summaryActions}
 
-        {isKnockoutReady ? (
+        {isKnockoutReady && isPosterMounted ? (
           <div className={styles.posterCaptureRoot} aria-hidden>
             <FixturePoster
               ref={exportPosterRef}
-              matchesById={matches}
+              matchesById={deferredMatches}
               championName={champion?.shortName ?? "Sin campeón definido"}
               generatedAtLabel={generatedAtLabel}
               title={readOnly ? "Fixture guardado Mundial 2026" : "Tu fixture Mundial 2026"}
