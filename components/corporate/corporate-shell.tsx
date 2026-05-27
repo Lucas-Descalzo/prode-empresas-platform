@@ -1,5 +1,6 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
+import { getFooterAttribution } from "@/lib/corporate/copy";
 import type { CorporateClient } from "@/lib/corporate/types";
 import { CorporateHeader } from "./corporate-header";
 import styles from "./corporate-shell.module.css";
@@ -58,6 +59,7 @@ export function CorporateShell({
     : client.branding.line;
   const brandSurface = darkBackground ? "#101113" : "#ffffff";
   const brandSurface2 = darkBackground ? "#18191C" : "#f3ede0";
+  const brandSurface3 = darkBackground ? "#141619" : "#f7f3eb";
   const stateSuccess = darkBackground ? "#45D6B0" : "#1A8359";
   const stateDanger = darkBackground ? "#FF7A7A" : "#B42318";
 
@@ -65,6 +67,7 @@ export function CorporateShell({
     "--brand-bg": brandBackground,
     "--brand-surface": brandSurface,
     "--brand-surface-2": brandSurface2,
+    "--brand-surface-3": brandSurface3,
     "--brand-border": brandBorder,
     "--brand-border-strong": darkBackground
       ? "rgba(255,255,255,0.18)"
@@ -73,6 +76,7 @@ export function CorporateShell({
     "--brand-primary-hover": brandPrimaryHover,
     "--brand-primary-muted": withAlpha(brandPrimary, 0.14),
     "--brand-primary-border": withAlpha(brandPrimary, 0.35),
+    "--brand-primary-shadow": withAlpha(brandPrimary, darkBackground ? 0.3 : 0.22),
     "--brand-text": brandText,
     "--brand-text-muted": brandTextMuted,
     "--brand-text-soft": darkBackground
@@ -86,7 +90,16 @@ export function CorporateShell({
     "--brand-shadow-soft": darkBackground
       ? "0 10px 28px rgba(0, 0, 0, 0.22)"
       : "0 6px 18px rgba(0, 0, 0, 0.08)",
-    "--brand-focus-ring": withAlpha(brandPrimary, 0.36),
+    "--brand-focus-ring": withAlpha(brandPrimary, 0.26),
+    "--brand-focus-surface": darkBackground ? "#111317" : "#ffffff",
+    "--brand-hero-panel": darkBackground
+      ? "linear-gradient(145deg, rgba(16,17,19,0.98), rgba(10,10,10,0.96))"
+      : "linear-gradient(145deg, rgba(255,255,255,0.98), rgba(247,243,235,0.96))",
+    "--brand-hero-sheen": withAlpha(brandPrimary, darkBackground ? 0.14 : 0.07),
+    "--brand-hero-sheen-soft": withAlpha(brandPrimary, darkBackground ? 0.08 : 0.04),
+    "--brand-watermark": darkBackground
+      ? "rgba(255,255,255,0.045)"
+      : withAlpha(brandPrimary, 0.06),
     "--state-success": stateSuccess,
     "--state-success-bg": withAlpha(stateSuccess, 0.12),
     "--state-success-border": withAlpha(stateSuccess, 0.35),
@@ -133,16 +146,15 @@ export function CorporateShell({
     "--client-header-soft": darkBackground ? brandSurface2 : "rgba(255,255,255,0.78)",
     "--client-hover-soft": darkBackground
       ? "rgba(255,255,255,0.06)"
-      : "rgba(244, 0, 9, 0.06)",
-  } as React.CSSProperties;
+      : withAlpha(brandPrimary, 0.06),
+  } as CSSProperties;
 
   return (
     <div className={styles.shell} style={cssVars}>
       <CorporateHeader client={client} participantName={participantName} />
       <main className={styles.main}>{children}</main>
       <footer className={styles.footer}>
-        <span>{client.displayName} · Predicciones internas</span>
-        <span>Uso interno · plataforma operada por PRODE Empresas</span>
+        <span>{getFooterAttribution(client)}</span>
       </footer>
     </div>
   );

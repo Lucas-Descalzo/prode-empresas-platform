@@ -8,6 +8,7 @@ import {
   type ChangePasswordState,
   type LoginActionState,
 } from "@/app/c/[slug]/partidos/actions";
+import { getLoginCopy, getLoginEmailPlaceholder } from "@/lib/corporate/copy";
 import type { CompanyRecord, CompanyUserRecord } from "@/lib/corporate/types";
 import styles from "./corporate-shell.module.css";
 
@@ -23,29 +24,26 @@ export function LoginForm({ client }: { client: CompanyRecord }) {
 
       <div className={styles.formTitleBlock}>
         <span className={styles.formEyebrow}>Ingreso privado</span>
-        <h2 className={styles.formTitle}>Entrá con tu acceso temporal</h2>
+        <h2 className={styles.formTitle}>Entra con tu acceso temporal</h2>
       </div>
 
-      <p className={styles.formHint}>
-        Tu empresa te comparte un email y una contraseña inicial. Al ingresar por
-        primera vez vas a poder definir la tuya.
-      </p>
+      <p className={styles.formHint}>{getLoginCopy(client)}</p>
 
       <div className={styles.formGrid}>
         <div className={styles.formField}>
-          <label htmlFor="login-email">Email corporativo</label>
+          <label htmlFor="login-email">Email</label>
           <input
             id="login-email"
             name="email"
             type="email"
-            placeholder="nombre@empresa.com"
+            placeholder={getLoginEmailPlaceholder(client)}
             autoComplete="email"
             required
           />
         </div>
 
         <div className={styles.formField}>
-          <label htmlFor="login-password">Contraseña temporal</label>
+          <label htmlFor="login-password">Contrasena temporal</label>
           <input
             id="login-password"
             name="password"
@@ -85,17 +83,17 @@ export function ChangePasswordForm({
 
       <div className={styles.formTitleBlock}>
         <span className={styles.formEyebrow}>Primer ingreso</span>
-        <h2 className={styles.formTitle}>Elegí tu contraseña definitiva</h2>
+        <h2 className={styles.formTitle}>Elige tu contrasena definitiva</h2>
       </div>
 
       <p className={styles.formHint}>
-        Hola, {participant.firstName}. Antes de seguir, cambiá la contraseña
-        temporal por una propia.
+        Hola, {participant.firstName}. Antes de seguir, cambia la contrasena temporal
+        por una propia.
       </p>
 
       <div className={styles.formGrid}>
         <div className={styles.formField}>
-          <label htmlFor="new-password">Nueva contraseña</label>
+          <label htmlFor="new-password">Nueva contrasena</label>
           <input
             id="new-password"
             name="password"
@@ -107,7 +105,7 @@ export function ChangePasswordForm({
         </div>
 
         <div className={styles.formField}>
-          <label htmlFor="confirm-password">Repetir contraseña</label>
+          <label htmlFor="confirm-password">Repetir contrasena</label>
           <input
             id="confirm-password"
             name="confirmPassword"
@@ -122,7 +120,7 @@ export function ChangePasswordForm({
       {state.error ? <p className={styles.formError}>{state.error}</p> : null}
 
       <button type="submit" className={styles.formSubmit} disabled={isPending}>
-        {isPending ? "Guardando..." : "Guardar contraseña"}
+        {isPending ? "Guardando..." : "Guardar contrasena"}
       </button>
     </form>
   );

@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 
+import styles from "@/components/corporate/corporate-shell.module.css";
 import { getCorporateClient } from "@/lib/corporate/clients";
 import {
   getLeaderboardForCompany,
   getOfficialResultsForCompany,
 } from "@/lib/corporate/db";
 import { getCurrentParticipant } from "@/lib/corporate/session";
-import styles from "@/components/corporate/corporate-shell.module.css";
 
 export const dynamic = "force-dynamic";
 
@@ -37,14 +37,13 @@ export default async function LigaPage({
       <section className={styles.sectionBlock}>
         <div className={styles.sectionHeader}>
           <div>
-            <span className={styles.sectionEyebrow}>Liga interna</span>
+            <span className={styles.sectionEyebrow}>Ranking interno</span>
             <h2 className={styles.sectionTitle}>{client.shortName} · Mundial 2026</h2>
           </div>
           <p className={styles.sectionHint}>
             {rows.length} {rows.length === 1 ? "participante" : "participantes"} ·{" "}
             {participantsWithPredictions} con predicciones cargadas · {totalResults}{" "}
-            {totalResults === 1 ? "resultado oficial" : "resultados oficiales"}{" "}
-            cargados.
+            {totalResults === 1 ? "resultado oficial" : "resultados oficiales"} cargados.
           </p>
         </div>
       </section>
@@ -52,7 +51,7 @@ export default async function LigaPage({
       <div className={styles.leaderboardCard}>
         {rows.length === 0 ? (
           <p className={styles.leaderboardEmpty}>
-            Todavía no hay participantes dados de alta.
+            Todavia no hay participantes dados de alta.
           </p>
         ) : (
           <table className={styles.leaderboardTable}>

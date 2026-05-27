@@ -175,9 +175,10 @@ export function SimpleModeApp({
             <h2 className={styles.sectionTitle}>Prediccion completa pre-Mundial</h2>
           </div>
           <p className={styles.sectionHint}>
-            Cada participante completa su fixture una sola vez antes del arranque del
-            torneo. Despues, la liga muestra el ranking interno cuando cargues
-            resultados oficiales.
+            Completa todo tu fixture una sola vez antes del arranque del torneo.
+            {" "}
+            Cuando se cargan resultados oficiales, la plataforma actualiza el
+            ranking interno de {client.shortName}.
           </p>
         </div>
       </section>

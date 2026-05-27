@@ -73,6 +73,10 @@ function isDarkHex(hex: string) {
   return luminance < 0.45;
 }
 
+function getContrastTextColor(hex: string) {
+  return isDarkHex(hex) ? "#ffffff" : "#050505";
+}
+
 function parseImportedUsers(raw: string) {
   const lines = raw
     .split(/\r?\n/)
@@ -114,7 +118,7 @@ function buildBranding({
     foreground: darkBackground ? "#f5f7fb" : "#1b1d24",
     muted: darkBackground ? "rgba(245,247,251,0.72)" : "#5d6470",
     line: darkBackground ? "rgba(255,255,255,0.14)" : "rgba(27,29,36,0.14)",
-    contrastOnPrimary: darkBackground ? "#111317" : "#ffffff",
+    contrastOnPrimary: getContrastTextColor(primaryColor),
     logoText,
     logoUrl,
   };

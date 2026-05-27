@@ -1,8 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getCorporateClient } from "@/lib/corporate/clients";
 import styles from "@/components/corporate/corporate-shell.module.css";
+import { getCorporateClient } from "@/lib/corporate/clients";
+import {
+  getAccessCopy,
+  getGameModeCopy,
+  getLandingHeroCopy,
+  getLandingHeroTitle,
+  getRankingCopy,
+} from "@/lib/corporate/copy";
 
 export default async function CorporateLandingPage({
   params,
@@ -16,27 +23,79 @@ export default async function CorporateLandingPage({
     notFound();
   }
 
-  const accessCopy =
-    client.accessMode === "corporate_domain_signup"
-      ? "Cada empleado entra con su mail corporativo y activa su cuenta."
-      : "Ustedes reciben las altas y nosotros enviamos accesos temporales al equipo.";
-
-  const modeCopy =
-    client.gameMode === "interactive"
-      ? "La eliminación directa se sigue partido a partido durante todo el torneo."
-      : "Cada persona completa su predicción una sola vez antes del Mundial.";
+  const accessCopy = getAccessCopy(client);
+  const modeCopy = getGameModeCopy(client);
+  const rankingCopy = getRankingCopy(client);
+  const heroTitle = getLandingHeroTitle(client);
+  const heroCopy = getLandingHeroCopy(client);
+  const heroBadge = client.gameMode === "simple" ? "Modo simple" : "Modo interactivo";
 
   return (
     <>
       <section className={styles.landingHero}>
-        <span className={styles.landingEyebrow}>{client.tagline}</span>
-        <h1 className={styles.landingTitle}>{client.displayName}</h1>
-        <p className={styles.landingCopy}>
-          Prode privado para {client.shortName}. {modeCopy}
-        </p>
-        <Link href={`/c/${client.slug}/partidos`} className={styles.landingCta}>
-          Entrar a la plataforma →
-        </Link>
+        <div className={styles.landingHeroInner}>
+          <div className={styles.landingHeroContent}>
+            <div className={styles.landingMetaRow}>
+              <span className={styles.landingEyebrow}>{client.tagline}</span>
+              <span className={styles.landingMetaBadge}>{heroBadge}</span>
+            </div>
+
+            <h1 className={styles.landingTitle}>{heroTitle}</h1>
+            <p className={styles.landingCopy}>{heroCopy}</p>
+
+            <div className={styles.landingCtaRow}>
+              <Link href={`/c/${client.slug}/partidos`} className={styles.landingCta}>
+                Entrar a la plataforma
+              </Link>
+              <Link
+                href={`/c/${client.slug}/liga`}
+                className={styles.landingSecondaryCta}
+              >
+                Ver ranking
+              </Link>
+            </div>
+          </div>
+
+          <div className={styles.landingHeroArt} aria-hidden="true">
+            {client.branding.logoUrl ? (
+              <div className={styles.landingHeroLogoFrame}>
+                <img
+                  src={client.branding.logoUrl}
+                  alt=""
+                  className={styles.landingHeroLogo}
+                />
+              </div>
+            ) : (
+              <div className={styles.landingHeroTextMark}>
+                {client.branding.logoText?.trim() || client.shortName}
+              </div>
+            )}
+
+            <div className={styles.landingHeroStat}>
+              <strong>
+                {client.gameMode === "simple" ? "Una sola carga" : "Seguimiento live"}
+              </strong>
+              <span>
+                {client.gameMode === "simple"
+                  ? "Antes del Mundial"
+                  : "Durante todo el torneo"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {client.branding.logoUrl ? (
+          <img
+            src={client.branding.logoUrl}
+            alt=""
+            className={styles.landingWatermarkImage}
+            aria-hidden="true"
+          />
+        ) : (
+          <span className={styles.landingWatermarkText} aria-hidden="true">
+            {client.branding.logoText?.trim() || client.shortName}
+          </span>
+        )}
       </section>
 
       <section className={styles.featureGrid}>
@@ -48,20 +107,16 @@ export default async function CorporateLandingPage({
 
         <article className={styles.featureCard}>
           <span className={styles.featureNumber}>2</span>
-          <h2 className={styles.featureTitle}>Modo contratado</h2>
-          <p className={styles.featureCopy}>
-            {client.gameMode === "interactive" ? "Interactivo" : "Simple"} ·{" "}
-            {modeCopy}
-          </p>
+          <h2 className={styles.featureTitle}>
+            {client.gameMode === "simple" ? "Modo simple" : "Modo interactivo"}
+          </h2>
+          <p className={styles.featureCopy}>{modeCopy}</p>
         </article>
 
         <article className={styles.featureCard}>
           <span className={styles.featureNumber}>3</span>
           <h2 className={styles.featureTitle}>Ranking interno</h2>
-          <p className={styles.featureCopy}>
-            Cada participante compite en una tabla propia de la empresa, con su
-            nombre y su área.
-          </p>
+          <p className={styles.featureCopy}>{rankingCopy}</p>
         </article>
       </section>
     </>
