@@ -180,7 +180,9 @@ export function SimpleModeApp({
         currentStep={currentStep}
         onStepChange={handleStepChange}
         onFeedback={setFeedback}
-        posterBrandLogoUrl={client.branding.logoUrl}
+        posterBrandLogoUrl={
+          client.branding.logoUrl ? `/c/${client.slug}/assets/logo` : null
+        }
         posterBrandName={client.shortName}
         beforeBuilder={
           <section className={styles.sectionBlock}>

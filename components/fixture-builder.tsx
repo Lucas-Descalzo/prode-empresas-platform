@@ -79,6 +79,32 @@ function createEmptyKnockoutMatches(matches: Record<MatchId, DerivedMatch>) {
   ) as Record<MatchId, DerivedMatch>;
 }
 
+async function waitForPosterImages(element: HTMLElement) {
+  const images = Array.from(element.querySelectorAll("img"));
+
+  await Promise.all(
+    images.map(async (image) => {
+      if (!image.complete) {
+        await Promise.race([
+          new Promise<void>((resolve) => {
+            image.addEventListener("load", () => resolve(), { once: true });
+            image.addEventListener("error", () => resolve(), { once: true });
+          }),
+          new Promise<void>((resolve) => window.setTimeout(resolve, 3000)),
+        ]);
+      }
+
+      if (image.complete && image.naturalWidth > 0) {
+        try {
+          await image.decode();
+        } catch {
+          // The capture may still work if a browser cannot explicitly decode an image.
+        }
+      }
+    }),
+  );
+}
+
 export function TeamBadge({
   teamId,
   small = false,
@@ -380,6 +406,7 @@ export function FixtureBuilder({
         throw new Error("poster-not-mounted");
       }
 
+      await waitForPosterImages(posterElement);
       const { toBlob } = await import("html-to-image");
 
       const blob = await toBlob(posterElement, {
@@ -508,25 +535,40 @@ export function FixtureBuilder({
             const shouldComputeGroupStats = !useAccordion || isExpanded;
             const edited = isGroupEdited(group.id);
             const isMatchMode = fixtureState.groupPredictionModes[group.id] === "matches";
-            const groupMatches = shouldComputeGroupStats
+            const shouldComputeGroupMatches = shouldComputeGroupStats || isMatchMode;
+            const groupMatches = shouldComputeGroupMatches
               ? getGroupMatchDefinitions(group.id)
               : [];
-            const groupTableRows = shouldComputeGroupStats
+            const pendingGroupMatches = isMatchMode
+              ? groupMatches.filter(
+                  (match) => !fixtureState.groupMatchPredictions[match.id],
+                ).length
+              : 0;
+            const shouldComputeTable =
+              shouldComputeGroupStats || (isMatchMode && pendingGroupMatches === 0);
+            const groupTableRows = shouldComputeTable
               ? getGroupTableRows(group.id, fixtureState.groupMatchPredictions)
               : [];
             const groupPointsByTeam = Object.fromEntries(
               groupTableRows.map((row) => [row.teamId, row.points]),
             ) as Record<TeamId, number>;
-            const pendingGroupMatches = groupMatches.filter(
-              (match) => !fixtureState.groupMatchPredictions[match.id],
-            ).length;
-            const hasPointTie = shouldComputeGroupStats
+            const hasPointTie = isMatchMode && pendingGroupMatches === 0
               ? groupTableRows.some(
                   (row, index) =>
                     groupTableRows.findIndex((other) => other.points === row.points) !== index,
                 )
               : false;
-            const hasPendingTieAdjustment = isMatchMode && hasPointTie;
+            const groupStateLabel = isMatchMode
+              ? pendingGroupMatches > 0
+                ? "Partidos pendientes"
+                : hasPointTie
+                  ? "Desempate pendiente"
+                  : "Completo"
+              : edited
+                ? "Editado"
+                : null;
+            const isGroupStatePending =
+              isMatchMode && (pendingGroupMatches > 0 || hasPointTie);
 
             return (
               <article
@@ -552,15 +594,15 @@ export function FixtureBuilder({
                     <div className={styles.groupCompactMeta}>
                       <div className={styles.groupCompactTopRow}>
                         <p className={styles.groupLabel}>{group.label}</p>
-                        {edited ? (
+                        {groupStateLabel ? (
                           <span
                             className={`${styles.groupStateBadge} ${
-                              hasPendingTieAdjustment
+                              isGroupStatePending
                                 ? styles.groupStatePending
                                 : styles.groupStateEdited
                             }`}
                           >
-                            {hasPendingTieAdjustment ? "Ajuste pendiente" : "Editado"}
+                            {groupStateLabel}
                           </span>
                         ) : null}
                       </div>
