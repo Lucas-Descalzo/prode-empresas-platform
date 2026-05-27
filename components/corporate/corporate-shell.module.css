@@ -553,6 +553,8 @@
 @media (max-width: 640px) {
   .landingHero {
     padding: 1.5rem 1.2rem;
+    animation: none;
+    box-shadow: none;
   }
 
   .landingCtaRow {
@@ -573,6 +575,12 @@
   .landingHeroTextMark,
   .landingHeroStat {
     inline-size: 100%;
+    box-shadow: none;
+  }
+
+  .landingWatermarkImage,
+  .landingWatermarkText {
+    display: none;
   }
 }
 
@@ -1261,6 +1269,22 @@
   box-shadow: var(--client-card-shadow);
 }
 
+.routeLoading {
+  align-content: center;
+  min-height: 12rem;
+}
+
+.routeLoadingBar {
+  display: block;
+  height: 0.7rem;
+  border-radius: 999px;
+  background: var(--brand-surface-2);
+}
+
+.routeLoadingBarShort {
+  width: min(48%, 12rem);
+}
+
 .sectionHeader {
   display: flex;
   align-items: flex-start;
@@ -1392,6 +1416,37 @@
 }
 
 @media (max-width: 600px) {
+  .shell {
+    gap: 1rem;
+    padding-inline: 0.75rem;
+  }
+
+  .unifiedHeader {
+    top: 0.4rem;
+    backdrop-filter: none;
+    animation: none;
+    box-shadow: none;
+  }
+
+  .sectionBlock {
+    padding: 1rem;
+    box-shadow: none;
+  }
+
+  .simpleModeStep,
+  .simpleModeSaveButton {
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+    touch-action: manipulation;
+  }
+
+  .simpleModeStepActive {
+    box-shadow: none;
+  }
+
+  .featureCard {
+    box-shadow: none;
+  }
+
   .sectionHint {
     text-align: left;
   }

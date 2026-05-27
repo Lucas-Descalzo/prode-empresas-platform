@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import {
   startTransition,
@@ -37,9 +38,19 @@ import type {
 } from "@/lib/world-cup-types";
 import { THIRD_PLACE_MATCH_IDS } from "@/lib/world-cup-types";
 
-import { TournamentBracket } from "./tournament-bracket";
 import { FixturePoster } from "./fixture-poster";
 import styles from "./world-cup-app.module.css";
+
+const TournamentBracket = dynamic(
+  () => import("./tournament-bracket").then((module) => module.TournamentBracket),
+  {
+    loading: () => (
+      <div className={styles.bracketLoading} role="status">
+        Preparando cuadro...
+      </div>
+    ),
+  },
+);
 
 function formatMatchDate(date: string) {
   return new Intl.DateTimeFormat("es-AR", {
@@ -186,11 +197,6 @@ export function FixtureBuilder({
 
     return () => window.clearTimeout(timeoutId);
   }, [exportFeedback]);
-
-  useEffect(() => {
-    setConfirmingStepReset(null);
-    setConfirmingFullReset(false);
-  }, [currentStep]);
 
   const moveTeamInGroup = (groupId: GroupId, index: number, direction: -1 | 1) => {
     if (readOnly) {
@@ -410,13 +416,6 @@ export function FixtureBuilder({
   const showAll = !currentStep;
   const useAccordion = !!currentStep;
 
-  useEffect(() => {
-    if (!useAccordion) return;
-    if (typeof window !== "undefined" && window.innerWidth < 760) {
-      setGroupFilter("A-D");
-    }
-  }, [useAccordion]);
-
   const GROUP_FILTER_RANGES: Record<string, string[]> = {
     "A-D": ["A", "B", "C", "D"],
     "E-H": ["E", "F", "G", "H"],
@@ -443,6 +442,12 @@ export function FixtureBuilder({
 
   useEffect(() => {
     if (!useAccordion || currentStep !== 1) return;
+    if (
+      window.matchMedia("(max-width: 759px), (prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
     const grid = groupGridRef.current;
     if (!grid) return;
 

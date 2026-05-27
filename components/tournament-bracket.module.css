@@ -747,3 +747,99 @@ button.countryNode:disabled {
     block-size: 0.5rem;
   }
 }
+
+.bracketLoading {
+  display: grid;
+  place-items: center;
+  min-block-size: 10rem;
+  border: 1px solid var(--brand-border);
+  border-radius: 1rem;
+  background: var(--brand-surface);
+  color: var(--brand-text-muted);
+  font-size: 0.86rem;
+}
+
+.compactBracket {
+  --card-width: 100%;
+  --featured-card-width: min(100%, 13rem);
+  --compact-card-width: min(100%, 13rem);
+  --accent-color: var(--brand-primary, #fff200);
+  --accent-soft: var(--brand-primary-muted, rgba(255, 242, 0, 0.14));
+  --accent-border: var(--brand-primary-border, rgba(255, 242, 0, 0.45));
+
+  display: grid;
+  gap: 1.25rem;
+}
+
+.compactBracketHint {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--brand-primary-border);
+  background: var(--brand-primary-muted);
+  color: var(--brand-text-muted);
+  font-size: 0.77rem;
+}
+
+.compactBracketHint strong {
+  color: var(--brand-primary);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+}
+
+.compactStage {
+  content-visibility: auto;
+  contain-intrinsic-size: 18rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.compactStageTitle {
+  margin: 0;
+  color: var(--brand-primary);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.compactMatchGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.compactMatchGridSingle {
+  grid-template-columns: minmax(0, 13rem);
+  justify-content: center;
+}
+
+.compactBracket .matchCard {
+  inline-size: 100%;
+  box-shadow: none;
+}
+
+.compactBracket .countryNode,
+.compactBracket .matchInfoButton {
+  touch-action: manipulation;
+}
+
+.compactBracket .championTrophyWrap {
+  display: none;
+}
+
+.compactBracket .statusWinner {
+  animation: none;
+}
+
+@media (max-width: 380px) {
+  .compactMatchGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .compactMatchGridSingle {
+    justify-content: stretch;
+  }
+}

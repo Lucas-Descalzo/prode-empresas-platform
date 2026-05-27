@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { FixtureBuilder } from "@/components/fixture-builder";
 import type { CompanyRecord } from "@/lib/corporate/types";
@@ -39,24 +39,15 @@ export function SimpleModeApp({
   client,
   initialFixtureState,
 }: SimpleModeAppProps) {
-  const initialState = normalizeFixtureState(
-    initialFixtureState ?? createInitialFixtureState(),
+  const [fixtureState, setFixtureState] = useState<FixtureState>(() =>
+    normalizeFixtureState(initialFixtureState ?? createInitialFixtureState()),
   );
-  const [fixtureState, setFixtureState] = useState<FixtureState>(initialState);
-  const [currentStep, setCurrentStep] = useState<Step>(getAutoStep(initialState));
+  const [currentStep, setCurrentStep] = useState<Step>(() => getAutoStep(fixtureState));
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [feedback, setFeedback] = useState("");
   const [lastSavedAt, setLastSavedAt] = useState("");
-
-  useEffect(() => {
-    const nextState = normalizeFixtureState(
-      initialFixtureState ?? createInitialFixtureState(),
-    );
-    setFixtureState(nextState);
-    setCurrentStep(getAutoStep(nextState));
-    setSaveState("idle");
-    setLastSavedAt("");
-  }, [initialFixtureState]);
+  const stateVersionRef = useRef(0);
+  const saveRequestRef = useRef(0);
 
   const remainingKnockout = useMemo(
     () => getRemainingKnockoutMatchesCount(fixtureState),
@@ -102,6 +93,9 @@ export function SimpleModeApp({
   );
 
   async function saveFixtureState(nextFixtureState = fixtureState) {
+    const savedVersion = stateVersionRef.current;
+    const requestId = saveRequestRef.current + 1;
+    saveRequestRef.current = requestId;
     setSaveState("saving");
 
     try {
@@ -117,35 +111,43 @@ export function SimpleModeApp({
         throw new Error(await response.text());
       }
 
-      setSaveState("saved");
-      setLastSavedAt(
-        new Intl.DateTimeFormat("es-AR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }).format(new Date()),
-      );
+      if (requestId !== saveRequestRef.current) {
+        return true;
+      }
+
+      if (stateVersionRef.current === savedVersion) {
+        setSaveState("saved");
+        setLastSavedAt(
+          new Intl.DateTimeFormat("es-AR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }).format(new Date()),
+        );
+      } else {
+        setSaveState("dirty");
+      }
 
       return true;
     } catch {
-      setSaveState("error");
+      if (requestId === saveRequestRef.current) {
+        setSaveState("error");
+      }
       return false;
     }
   }
 
-  async function handleStepChange(step: number) {
-    if (saveState === "dirty") {
-      const saved = await saveFixtureState();
-
-      if (!saved) {
-        return;
-      }
-    }
-
+  function handleStepChange(step: number) {
     setCurrentStep(step as Step);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const prefersInstantScroll = window.matchMedia("(max-width: 759px)").matches;
+    window.scrollTo({ top: 0, behavior: prefersInstantScroll ? "auto" : "smooth" });
+
+    if (saveState === "dirty") {
+      void saveFixtureState();
+    }
   }
 
   function handleFixtureStateChange(nextState: FixtureState) {
+    stateVersionRef.current += 1;
     setFixtureState(nextState);
     setSaveState("dirty");
   }
@@ -208,7 +210,7 @@ export function SimpleModeApp({
                   }`}
                   disabled={step.disabled}
                   aria-current={currentStep === step.id ? "step" : undefined}
-                  onClick={() => void handleStepChange(step.id)}
+                  onClick={() => handleStepChange(step.id)}
                 >
                   <strong>
                     Paso {step.id}: {step.label}

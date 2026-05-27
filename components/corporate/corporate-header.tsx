@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -30,11 +30,9 @@ export function CorporateHeader({ client, participantName }: CorporateHeaderProp
   const pathname = usePathname() ?? "";
   const activeTab = activeTabFromPath(pathname, client.slug);
   const logoText = client.branding.logoText?.trim() || client.shortName;
-  const [logoFailed, setLogoFailed] = useState(false);
-
-  useEffect(() => {
-    setLogoFailed(false);
-  }, [client.branding.logoUrl]);
+  const logoUrl = client.branding.logoUrl ?? null;
+  const [failedLogoUrl, setFailedLogoUrl] = useState<string | null>(null);
+  const canShowLogo = Boolean(logoUrl) && failedLogoUrl !== logoUrl;
 
   return (
     <header className={styles.unifiedHeader}>
@@ -44,12 +42,12 @@ export function CorporateHeader({ client, participantName }: CorporateHeaderProp
           className={styles.brandWrap}
           aria-label={client.displayName}
         >
-          {client.branding.logoUrl && !logoFailed ? (
+          {canShowLogo ? (
             <img
-              src={client.branding.logoUrl}
+              src={logoUrl!}
               alt={client.displayName}
               className={styles.brandLogoImage}
-              onError={() => setLogoFailed(true)}
+              onError={() => setFailedLogoUrl(logoUrl)}
             />
           ) : (
             <span className={styles.brandTextLogo}>{logoText}</span>

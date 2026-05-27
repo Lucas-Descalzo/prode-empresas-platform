@@ -415,7 +415,7 @@ function BracketMatchTree({
   );
 }
 
-export function TournamentBracket({
+function DesktopTournamentBracket({
   matchesById,
   onPickWinner,
   readOnly = false,
@@ -631,5 +631,93 @@ export function TournamentBracket({
         </div>
       </div>
     </div>
+  );
+}
+
+const compactStages: StageId[] = [
+  "roundOf32",
+  "roundOf16",
+  "quarterFinal",
+  "semiFinal",
+  "final",
+  "bronzeFinal",
+];
+
+function CompactTournamentBracket({
+  matchesById,
+  onPickWinner,
+  readOnly = false,
+}: TournamentBracketProps) {
+  const [expandedMatchInfoId, setExpandedMatchInfoId] = useState<MatchId | null>(null);
+
+  return (
+    <div className={styles.compactBracket}>
+      <div className={styles.compactBracketHint}>
+        <strong>Cuadro final</strong>
+        <span>Selecciona ganadores ronda por ronda.</span>
+      </div>
+
+      {compactStages.map((stage) => {
+        const stageMatches = knockoutSlots.filter((slot) => slot.stage === stage);
+
+        return (
+          <section className={styles.compactStage} key={stage}>
+            <h3 className={styles.compactStageTitle}>{stageLabels[stage]}</h3>
+            <div
+              className={cn(
+                styles.compactMatchGrid,
+                stageMatches.length === 1 && styles.compactMatchGridSingle,
+              )}
+            >
+              {stageMatches.map((slot) => (
+                <BracketMatchCard
+                  key={slot.matchId}
+                  match={matchesById[slot.matchId]}
+                  side="center"
+                  onPickWinner={onPickWinner}
+                  expandedMatchInfoId={expandedMatchInfoId}
+                  onToggleInfo={(matchId) =>
+                    setExpandedMatchInfoId((current) =>
+                      current === matchId ? null : matchId,
+                    )
+                  }
+                  featured={slot.matchId === "M104"}
+                  compact={slot.matchId === "M103"}
+                  readOnly={readOnly}
+                />
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
+export function TournamentBracket(props: TournamentBracketProps) {
+  const [isCompactViewport, setIsCompactViewport] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 720px)");
+    const updateViewport = () => setIsCompactViewport(mediaQuery.matches);
+
+    updateViewport();
+    mediaQuery.addEventListener("change", updateViewport);
+
+    return () => mediaQuery.removeEventListener("change", updateViewport);
+  }, []);
+
+  if (isCompactViewport === null) {
+    return (
+      <div className={styles.bracketLoading} role="status">
+        Preparando cuadro...
+      </div>
+    );
+  }
+
+  return isCompactViewport ? (
+    <CompactTournamentBracket {...props} />
+  ) : (
+    <DesktopTournamentBracket {...props} />
   );
 }

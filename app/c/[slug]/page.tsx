@@ -44,7 +44,11 @@ export default async function CorporateLandingPage({
             <p className={styles.landingCopy}>{heroCopy}</p>
 
             <div className={styles.landingCtaRow}>
-              <Link href={`/c/${client.slug}/partidos`} className={styles.landingCta}>
+              <Link
+                href={`/c/${client.slug}/partidos`}
+                prefetch={true}
+                className={styles.landingCta}
+              >
                 Entrar a la plataforma
               </Link>
               <Link

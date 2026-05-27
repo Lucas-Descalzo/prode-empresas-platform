@@ -1052,6 +1052,17 @@
   pointer-events: none;
 }
 
+.bracketLoading {
+  display: grid;
+  place-items: center;
+  min-block-size: 10rem;
+  border: 1px solid var(--brand-border);
+  border-radius: 1rem;
+  background: var(--brand-surface);
+  color: var(--brand-text-muted);
+  font-size: 0.86rem;
+}
+
 .bracketScroller {
   overflow-x: auto;
   padding-bottom: 0.5rem;
@@ -1173,6 +1184,37 @@
 }
 
 @media (max-width: 759px) {
+  .sectionBlock {
+    box-shadow: none;
+    contain: layout style;
+  }
+
+  .groupCardExpanded {
+    box-shadow: none !important;
+  }
+
+  .groupExpandedWrapper,
+  .groupChevron {
+    transition-duration: 0.12s;
+  }
+
+  .groupFilterBtn,
+  .groupToggleRow,
+  .groupMoveControls button,
+  .thirdSelectableCard,
+  .primaryAction,
+  .secondaryAction,
+  .resetAction {
+    touch-action: manipulation;
+  }
+
+  .thirdSelectableCard,
+  .assignmentCard,
+  .summaryGridCards article {
+    content-visibility: auto;
+    contain-intrinsic-size: 5rem;
+  }
+
   .landingHeader {
     display: grid;
     gap: 0.8rem;
