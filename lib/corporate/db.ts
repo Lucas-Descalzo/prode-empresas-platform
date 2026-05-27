@@ -1,4 +1,5 @@
 import { computeScore } from "./scoring";
+import { buildSimpleModeOfficialFixtureState } from "./simple-mode-official";
 import {
   generateTemporaryPassword,
   hashPassword,
@@ -20,6 +21,8 @@ import {
   parseJsonColumn,
   type SqlClient,
 } from "@/lib/db";
+import { scoreFixture } from "@/lib/scoring";
+import { isSimpleModePredictionComplete } from "@/lib/simple-mode-rules";
 import type { FixtureState, TeamId } from "@/lib/world-cup-types";
 
 type CompanyRow = {
@@ -79,22 +82,12 @@ type CompanyCredentialRow = {
   password_salt: string;
 };
 
-type PredictionRow = {
-  id: string;
-  company_id: string;
-  user_id: string;
-  game_mode: CompanyGameMode;
-  scope_key: string;
-  prediction_json: unknown;
-  points: number;
-  updated_at: string | Date;
-};
-
 type OfficialResultRowRaw = {
   company_id: string;
   match_id: string;
   home_score: number;
   away_score: number;
+  advancing_team_id: TeamId | null;
   saved_at: string | Date;
 };
 
@@ -852,6 +845,7 @@ export interface OfficialResultRow {
   matchId: string;
   homeScore: number;
   awayScore: number;
+  advancingTeamId: TeamId | null;
   savedAt: string;
 }
 
@@ -861,7 +855,7 @@ export async function getOfficialResultsForCompany(
   await ensureDatabaseSchema();
   const sql = getSql();
   const rows = (await sql`
-    SELECT company_id, match_id, home_score, away_score, saved_at
+    SELECT company_id, match_id, home_score, away_score, advancing_team_id, saved_at
     FROM company_official_results
     WHERE company_id = ${companyId}
   `) as OfficialResultRowRaw[];
@@ -874,6 +868,7 @@ export async function getOfficialResultsForCompany(
         matchId: row.match_id,
         homeScore: row.home_score,
         awayScore: row.away_score,
+        advancingTeamId: row.advancing_team_id,
         savedAt: new Date(row.saved_at).toISOString(),
       },
     ]),
@@ -915,6 +910,7 @@ export async function saveOfficialResult(input: {
   matchId: string;
   home: number;
   away: number;
+  advancingTeamId?: TeamId | null;
 }) {
   await ensureDatabaseSchema();
   const sql = getSql();
@@ -924,18 +920,21 @@ export async function saveOfficialResult(input: {
       company_id,
       match_id,
       home_score,
-      away_score
+      away_score,
+      advancing_team_id
     )
     VALUES (
       ${input.companyId},
       ${input.matchId},
       ${input.home},
-      ${input.away}
+      ${input.away},
+      ${input.advancingTeamId ?? null}
     )
     ON CONFLICT (company_id, match_id)
     DO UPDATE SET
       home_score = EXCLUDED.home_score,
       away_score = EXCLUDED.away_score,
+      advancing_team_id = EXCLUDED.advancing_team_id,
       saved_at = NOW()
   `;
 
@@ -975,14 +974,13 @@ export interface LeaderboardRow {
   fullName: string;
   area: string | null;
   totalPoints: number;
+  preWorldCupPoints: number;
+  knockoutPoints: number;
   predictionCount: number;
   mustChangePassword: boolean;
 }
 
-export async function getLeaderboardForCompany(
-  companyId: string,
-): Promise<LeaderboardRow[]> {
-  await ensureDatabaseSchema();
+async function getInteractiveLeaderboardForCompany(companyId: string) {
   const sql = getSql();
   const rows = (await sql`
     SELECT
@@ -1015,7 +1013,89 @@ export async function getLeaderboardForCompany(
     fullName: row.full_name,
     area: row.area,
     totalPoints: row.total_points,
+    preWorldCupPoints: 0,
+    knockoutPoints: row.total_points,
     predictionCount: row.prediction_count,
     mustChangePassword: row.must_change_password,
   }));
+}
+
+async function getSimpleLeaderboardForCompany(companyId: string) {
+  const sql = getSql();
+  const [users, predictions, officialResults] = await Promise.all([
+    sql`
+      SELECT id, full_name, area, must_change_password
+      FROM company_users
+      WHERE company_id = ${companyId}
+        AND role = 'participant'
+        AND status <> 'disabled'
+      ORDER BY full_name ASC
+    ` as Promise<
+      Array<{
+        id: string;
+        full_name: string;
+        area: string | null;
+        must_change_password: boolean;
+      }>
+    >,
+    sql`
+      SELECT user_id, prediction_json
+      FROM company_predictions
+      WHERE company_id = ${companyId}
+        AND game_mode = 'simple'
+        AND scope_key = 'full-fixture'
+    ` as Promise<Array<{ user_id: string; prediction_json: unknown }>>,
+    getOfficialResultsForCompany(companyId),
+  ]);
+
+  const officialState = buildSimpleModeOfficialFixtureState(officialResults);
+  const predictionsByUserId = new Map(
+    predictions.map((row) => [
+      row.user_id,
+      parseJsonColumn<FixtureState>(row.prediction_json),
+    ]),
+  );
+
+  return users
+    .map((user) => {
+      const fixtureState = predictionsByUserId.get(user.id);
+      const isComplete = fixtureState ? isSimpleModePredictionComplete(fixtureState) : false;
+      const score =
+        fixtureState && isComplete ? scoreFixture(fixtureState, officialState) : null;
+
+      return {
+        id: user.id,
+        fullName: user.full_name,
+        area: user.area,
+        totalPoints: score?.total ?? 0,
+        preWorldCupPoints: score?.preWorldCupPoints ?? 0,
+        knockoutPoints: score?.knockoutPoints ?? 0,
+        predictionCount: isComplete ? 1 : 0,
+        mustChangePassword: user.must_change_password,
+      };
+    })
+    .sort((left, right) => {
+      if (right.totalPoints !== left.totalPoints) {
+        return right.totalPoints - left.totalPoints;
+      }
+
+      if (right.preWorldCupPoints !== left.preWorldCupPoints) {
+        return right.preWorldCupPoints - left.preWorldCupPoints;
+      }
+
+      return left.fullName.localeCompare(right.fullName, "es-AR");
+    });
+}
+
+export async function getLeaderboardForCompany(
+  companyId: string,
+  gameMode: CompanyGameMode,
+): Promise<LeaderboardRow[]> {
+  await ensureDatabaseSchema();
+
+  if (gameMode === "simple") {
+    return getSimpleLeaderboardForCompany(companyId);
+  }
+
+  return getInteractiveLeaderboardForCompany(companyId);
 }

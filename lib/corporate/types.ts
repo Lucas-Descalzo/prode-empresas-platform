@@ -64,3 +64,12 @@ export interface CompanyFixturePrediction {
   fixtureState: FixtureState;
   updatedAt: string;
 }
+
+export interface CompanyOfficialResult {
+  companyId: string;
+  matchId: string;
+  homeScore: number;
+  awayScore: number;
+  advancingTeamId: TeamId | null;
+  savedAt: string;
+}

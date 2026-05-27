@@ -7,6 +7,10 @@ import {
   getOfficialResultsForCompany,
 } from "@/lib/corporate/db";
 import { getCurrentParticipant } from "@/lib/corporate/session";
+import {
+  SIMPLE_MODE_KNOCKOUT_MAX_POINTS,
+  SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS,
+} from "@/lib/simple-mode-rules";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +27,7 @@ export default async function LigaPage({
 
   const [currentParticipant, rows, officialResults] = await Promise.all([
     getCurrentParticipant(client.id),
-    getLeaderboardForCompany(client.id),
+    getLeaderboardForCompany(client.id, client.gameMode),
     getOfficialResultsForCompany(client.id),
   ]);
 
@@ -42,13 +46,20 @@ export default async function LigaPage({
           </div>
           <p className={styles.sectionHint}>
             {rows.length} {rows.length === 1 ? "participante" : "participantes"} ·{" "}
-            {participantsWithPredictions} con predicciones cargadas · {totalResults}{" "}
+            {participantsWithPredictions} con prode completo · {totalResults}{" "}
             {totalResults === 1 ? "resultado oficial" : "resultados oficiales"} cargados.
           </p>
         </div>
       </section>
 
       <div className={styles.leaderboardCard}>
+        {client.gameMode === "simple" ? (
+          <p className={styles.leaderboardInfo}>
+            {SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS} pts pre-Mundial +{" "}
+            {SIMPLE_MODE_KNOCKOUT_MAX_POINTS} pts eliminatoria. Si empatan en el total,
+            desempata quien tenga mas puntos del pre-Mundial.
+          </p>
+        ) : null}
         {rows.length === 0 ? (
           <p className={styles.leaderboardEmpty}>
             Todavia no hay participantes dados de alta.
@@ -73,6 +84,11 @@ export default async function LigaPage({
                     <td>
                       {row.fullName}
                       {isSelf ? " (vos)" : ""}
+                      {client.gameMode === "simple" ? (
+                        <div className={styles.leaderboardSubline}>
+                          {row.preWorldCupPoints} pre-Mundial · {row.knockoutPoints} eliminatoria
+                        </div>
+                      ) : null}
                     </td>
                     {client.collectsArea ? <td>{row.area ?? "—"}</td> : null}
                     <td>{row.predictionCount}</td>

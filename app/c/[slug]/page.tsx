@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import styles from "@/components/corporate/corporate-shell.module.css";
+import { SimpleModeGuide } from "@/components/corporate/simple-mode-guide";
 import { getCorporateClient } from "@/lib/corporate/clients";
 import {
   getAccessCopy,
@@ -123,6 +124,8 @@ export default async function CorporateLandingPage({
           <p className={styles.featureCopy}>{rankingCopy}</p>
         </article>
       </section>
+
+      {client.gameMode === "simple" ? <SimpleModeGuide client={client} /> : null}
     </>
   );
 }

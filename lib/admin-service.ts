@@ -195,6 +195,10 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData | null
             return right.score.total - left.score.total;
           }
 
+          if (right.score.preWorldCupPoints !== left.score.preWorldCupPoints) {
+            return right.score.preWorldCupPoints - left.score.preWorldCupPoints;
+          }
+
           return left.displayName.localeCompare(right.displayName, "es-AR");
         }),
     }));
@@ -210,6 +214,10 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData | null
       .sort((left, right) => {
         if (right.score.total !== left.score.total) {
           return right.score.total - left.score.total;
+        }
+
+        if (right.score.preWorldCupPoints !== left.score.preWorldCupPoints) {
+          return right.score.preWorldCupPoints - left.score.preWorldCupPoints;
         }
 
         return left.displayName.localeCompare(right.displayName, "es-AR");

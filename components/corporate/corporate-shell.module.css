@@ -639,6 +639,168 @@
   color: var(--client-muted-strong);
 }
 
+.simpleModeGuideGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.85rem;
+}
+
+.simpleModeGuideCard {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.1rem 1.15rem;
+  border-radius: 1.2rem;
+  border: 1px solid var(--client-line);
+  background: var(--client-card-soft);
+}
+
+.simpleModeGuideHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.simpleModeGuideHead strong {
+  font-family: var(--font-heading), sans-serif;
+  color: var(--client-fg);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.simpleModeGuideKicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--client-eyebrow);
+}
+
+.simpleModeGuideRows {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.simpleModeGuideRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--client-line);
+}
+
+.simpleModeGuideRow:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.simpleModeGuideRow p {
+  color: var(--client-fg);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.simpleModeGuideRow b {
+  font-family: var(--font-heading), sans-serif;
+  color: var(--client-primary);
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.simpleModeGuideNote {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.76rem;
+  color: var(--client-muted);
+  line-height: 1.45;
+}
+
+.simpleModeRuleCallout {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1.2rem;
+  border: 1px solid var(--brand-primary-border);
+  background: var(--brand-primary-muted);
+}
+
+.simpleModeRuleCallout strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--client-fg);
+}
+
+.simpleModeRuleCallout p {
+  color: var(--client-muted-strong);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.simpleModeFaqGrid {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.simpleModeFaqItem {
+  border-radius: 1.1rem;
+  border: 1px solid var(--client-line);
+  background: var(--client-card-soft);
+  overflow: hidden;
+}
+
+.simpleModeFaqItem summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.95rem 1rem;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  color: var(--client-fg);
+}
+
+.simpleModeFaqItem summary::-webkit-details-marker {
+  display: none;
+}
+
+.simpleModeFaqItem summary::after {
+  content: "+";
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--brand-primary-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--client-primary);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.simpleModeFaqItem[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.simpleModeFaqBody {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0 1rem 1rem;
+}
+
+.simpleModeFaqBody p {
+  color: var(--client-muted-strong);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
 /* ── Login form ─────────────────────────────────────────────── */
 
 .formCard {
@@ -1061,6 +1223,17 @@
   box-shadow: var(--client-card-shadow);
 }
 
+.leaderboardInfo {
+  margin-bottom: 0.85rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--brand-primary-border);
+  background: var(--brand-primary-muted);
+  color: var(--client-muted-strong);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
 .leaderboardTable {
   width: 100%;
   border-collapse: collapse;
@@ -1112,6 +1285,12 @@
   font-family: var(--font-heading), sans-serif;
   font-weight: 700;
   color: var(--client-fg);
+}
+
+.leaderboardSubline {
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--client-muted);
 }
 
 /* ── Admin (capa 2) ──────────────────────────────────────────── */
@@ -1205,6 +1384,7 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  flex-wrap: wrap;
 }
 
 .adminScoreInputs input {
@@ -1247,6 +1427,23 @@
 .adminSaveBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.adminAdvanceSelect {
+  min-height: 2.5rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--client-line-strong);
+  background: var(--client-card-bg);
+  color: var(--client-fg);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.adminAdvanceSelect:focus {
+  outline: none;
+  border-color: var(--client-primary);
+  box-shadow: 0 0 0 3px var(--brand-focus-ring);
 }
 
 .adminSavedFlag {
@@ -1327,9 +1524,45 @@
   flex-wrap: wrap;
 }
 
+.simpleModeMetricGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.7rem;
+}
+
+.simpleModeMetricCard {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line);
+  background: var(--client-card-soft);
+}
+
+.simpleModeMetricCard strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.2rem;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--client-fg);
+}
+
+.simpleModeMetricCard span {
+  font-size: 0.78rem;
+  color: var(--client-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .simpleModeStatus {
   display: grid;
   gap: 0.25rem;
+}
+
+.simpleModeDeadline {
+  font-size: 0.8rem;
+  color: var(--client-muted);
+  line-height: 1.45;
 }
 
 .simpleModeSaveButton {

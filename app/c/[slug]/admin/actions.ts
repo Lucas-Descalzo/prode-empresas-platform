@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { getCorporateClient } from "@/lib/corporate/clients";
 import { deleteOfficialResult, saveOfficialResult } from "@/lib/corporate/db";
 import { getMatchById } from "@/lib/corporate/match-registry";
+import { inferAdvancingTeamFromResult } from "@/lib/corporate/simple-mode-official";
 import {
   ADMIN_SESSION_COOKIE,
   ADMIN_SESSION_MAX_AGE_SECONDS,
@@ -78,6 +79,7 @@ export async function saveResultAction(
   const matchId = String(formData.get("matchId") ?? "").trim();
   const homeStr = String(formData.get("home") ?? "");
   const awayStr = String(formData.get("away") ?? "");
+  const advancingTeamIdValue = String(formData.get("advancingTeamId") ?? "").trim();
 
   const client = await getCorporateClient(slug);
   if (!client) {
@@ -106,16 +108,35 @@ export async function saveResultAction(
     return { matchId, error: "Resultado inválido." };
   }
 
+  const inferredAdvancingTeamId = inferAdvancingTeamFromResult(
+    match.homeTeamId,
+    match.awayTeamId,
+    {
+      homeScore: home,
+      awayScore: away,
+      advancingTeamId: advancingTeamIdValue || null,
+    },
+  );
+
+  if (
+    match.stage !== "groups" &&
+    home === away &&
+    !inferredAdvancingTeamId
+  ) {
+    return { matchId, error: "Elegí quién avanza en el empate." };
+  }
+
   await saveOfficialResult({
     companyId: client.id,
     matchId,
     home,
     away,
+    advancingTeamId: inferredAdvancingTeamId,
   });
 
   revalidatePath(`/c/${client.slug}/admin`);
   revalidatePath(`/c/${client.slug}/liga`);
-  return { matchId, message: "Guardado · puntos recalculados" };
+  return { matchId, message: "Guardado · ranking actualizado" };
 }
 
 export async function clearResultAction(

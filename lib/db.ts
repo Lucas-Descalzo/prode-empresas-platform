@@ -214,9 +214,15 @@ async function ensureB2BSchema(sql: SqlClient) {
       match_id TEXT NOT NULL,
       home_score INTEGER NOT NULL,
       away_score INTEGER NOT NULL,
+      advancing_team_id TEXT,
       saved_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       PRIMARY KEY (company_id, match_id)
     )
+  `;
+
+  await sql`
+    ALTER TABLE company_official_results
+    ADD COLUMN IF NOT EXISTS advancing_team_id TEXT
   `;
 
   await sql`

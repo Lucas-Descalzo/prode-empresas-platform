@@ -28,28 +28,27 @@ export function ScoringExplainer({ compact = false, enabled = true }: ScoringExp
         ) : null}
 
         <div>
-          <strong>Fase de grupos</strong>
+          <strong>Pre-Mundial: grupos y mejores terceros</strong>
           <p>
-            +1 por cada seleccion que pronosticaste clasificada a 16avos y
-            efectivamente clasifico. Si ademas acertaste su puesto exacto en el
-            grupo, suma +2 extra.
+            Cada equipo en su posicion exacta del grupo suma +2. Si acertaste el
+            top-2 pero invertiste el 1.o y 2.o, recibis +1 por cada uno. Ademas,
+            cada mejor tercero que efectivamente avanza suma +2.
           </p>
         </div>
 
         <div>
-          <strong>Supervivencia en eliminatorias</strong>
+          <strong>Eliminatoria por ronda alcanzada</strong>
           <p>
-            Se compara que equipos llegan a cada instancia, sin importar el cruce
-            exacto: 16avos +1, octavos +2, cuartos +3, semifinales +5 y finalistas
-            +7 por equipo acertado.
+            Se compara hasta que ronda bancaste a cada equipo, sin importar la
+            llave exacta: octavos +2, cuartos +4, semifinales +6 y final +8.
           </p>
         </div>
 
         <div>
-          <strong>Bonus finales</strong>
+          <strong>Definiciones</strong>
           <p>
-            Final exacta +3, campeon +10 y ganador del tercer puesto +3. El ranking
-            se actualiza cuando Lucas carga resultados reales desde el admin.
+            Campeon +10 y ganador del tercer puesto +2. El ranking se actualiza
+            cuando se cargan resultados reales desde el admin.
           </p>
         </div>
       </div>

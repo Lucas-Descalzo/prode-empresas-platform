@@ -320,14 +320,7 @@ export function GroupPageClient({ data }: GroupPageClientProps) {
                   <span>{row.displayName}</span>
                   <b>{row.total} pts</b>
                   <small>
-                    {row.groupClassificationPoints + row.groupExactPositionPoints} grupos +{" "}
-                    {row.roundOf32Points +
-                      row.roundOf16Points +
-                      row.quarterFinalPoints +
-                      row.semiFinalPoints +
-                      row.finalistPoints}{" "}
-                    supervivencia +{" "}
-                    {row.exactFinalBonus + row.championBonus + row.thirdPlaceBonus} bonus
+                    {row.preWorldCupPoints} pre-Mundial + {row.knockoutPoints} eliminatoria
                   </small>
                 </div>
               ))}

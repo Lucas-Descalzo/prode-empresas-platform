@@ -1,10 +1,18 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { FixtureBuilder } from "@/components/fixture-builder";
 import type { CompanyRecord } from "@/lib/corporate/types";
 import { getRemainingKnockoutMatchesCount } from "@/lib/group-utils";
+import {
+  formatSimpleModeCutoffLabel,
+  getSimpleModeCountdownLabel,
+  isSimpleModeLocked,
+  SIMPLE_MODE_KNOCKOUT_MAX_POINTS,
+  SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS,
+  SIMPLE_MODE_TOTAL_MAX_POINTS,
+} from "@/lib/simple-mode-rules";
 import { createInitialFixtureState, normalizeFixtureState } from "@/lib/world-cup-fixture";
 import type { FixtureState } from "@/lib/world-cup-types";
 import styles from "./corporate-shell.module.css";
@@ -46,8 +54,22 @@ export function SimpleModeApp({
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [feedback, setFeedback] = useState("");
   const [lastSavedAt, setLastSavedAt] = useState("");
+  const [now, setNow] = useState(() => new Date());
   const stateVersionRef = useRef(0);
   const saveRequestRef = useRef(0);
+  const locked = isSimpleModeLocked(now);
+
+  useEffect(() => {
+    if (locked) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setNow(new Date());
+    }, 60000);
+
+    return () => window.clearInterval(intervalId);
+  }, [locked]);
 
   const remainingKnockout = useMemo(
     () => getRemainingKnockoutMatchesCount(fixtureState),
@@ -93,6 +115,11 @@ export function SimpleModeApp({
   );
 
   async function saveFixtureState(nextFixtureState = fixtureState) {
+    if (locked) {
+      setSaveState("error");
+      return false;
+    }
+
     const savedVersion = stateVersionRef.current;
     const requestId = saveRequestRef.current + 1;
     saveRequestRef.current = requestId;
@@ -160,7 +187,9 @@ export function SimpleModeApp({
         : "Guardar fixture";
 
   const statusLabel =
-    saveState === "saving"
+    locked
+      ? "La prediccion ya quedo cerrada. Compite la ultima version completa guardada antes del arranque."
+      : saveState === "saving"
       ? "Estamos guardando tu prediccion."
       : saveState === "saved"
         ? lastSavedAt
@@ -177,6 +206,7 @@ export function SimpleModeApp({
       <FixtureBuilder
         fixtureState={fixtureState}
         onFixtureStateChange={handleFixtureStateChange}
+        readOnly={locked}
         currentStep={currentStep}
         onStepChange={handleStepChange}
         onFeedback={setFeedback}
@@ -186,17 +216,40 @@ export function SimpleModeApp({
         posterBrandName={client.shortName}
         beforeBuilder={
           <section className={styles.sectionBlock}>
+            <div className={styles.simpleModeMetricGrid}>
+              <article className={styles.simpleModeMetricCard}>
+                <strong>{SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS} pts</strong>
+                <span>Pre-Mundial</span>
+              </article>
+              <article className={styles.simpleModeMetricCard}>
+                <strong>{SIMPLE_MODE_KNOCKOUT_MAX_POINTS} pts</strong>
+                <span>Eliminatoria</span>
+              </article>
+              <article className={styles.simpleModeMetricCard}>
+                <strong>{SIMPLE_MODE_TOTAL_MAX_POINTS} pts</strong>
+                <span>Maximo total</span>
+              </article>
+            </div>
+
             <div className={styles.simpleModeBar}>
               <div className={styles.simpleModeStatus}>
                 <span className={styles.sectionEyebrow}>Estado del fixture</span>
                 <p className={styles.predictionStatus}>{statusLabel}</p>
+                <p className={styles.simpleModeDeadline}>
+                  Cierre: {formatSimpleModeCutoffLabel()} · {getSimpleModeCountdownLabel(now)}
+                </p>
               </div>
 
               <button
                 type="button"
                 className={styles.simpleModeSaveButton}
                 onClick={() => void saveFixtureState()}
-                disabled={saveState === "saving" || saveState === "idle" || saveState === "saved"}
+                disabled={
+                  locked ||
+                  saveState === "saving" ||
+                  saveState === "idle" ||
+                  saveState === "saved"
+                }
               >
                 {saveLabel}
               </button>

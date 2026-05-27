@@ -6,17 +6,20 @@ const ROUND_OF_32_MATCHES = knockoutMatchOrder.slice(0, 16);
 const ROUND_OF_16_MATCHES = knockoutMatchOrder.slice(16, 24);
 const QUARTER_FINAL_MATCHES = knockoutMatchOrder.slice(24, 28);
 
+const TOTAL_SCORING_UNITS = 88;
+
 export interface FixtureScoreBreakdown {
-  groupClassificationPoints: number;
-  groupExactPositionPoints: number;
-  roundOf32Points: number;
+  groupExactPoints: number;
+  topTwoPartialPoints: number;
+  bestThirdPoints: number;
   roundOf16Points: number;
   quarterFinalPoints: number;
   semiFinalPoints: number;
-  finalistPoints: number;
-  exactFinalBonus: number;
-  championBonus: number;
-  thirdPlaceBonus: number;
+  finalPoints: number;
+  championPoints: number;
+  thirdPlaceWinnerPoints: number;
+  preWorldCupPoints: number;
+  knockoutPoints: number;
   total: number;
   scoredUnits: number;
   pendingUnits: number;
@@ -31,17 +34,10 @@ function countSetHits(predicted: TeamId[], official: TeamId[]) {
   return predicted.filter((teamId) => officialSet.has(teamId)).length;
 }
 
-function getQualifiedTeamIds(state: FixtureState) {
-  return uniqueTeamIds([
-    ...Object.values(state.groupOrders).flatMap((groupOrder) => groupOrder.slice(0, 2)),
-    ...state.qualifiedThirdPlaces,
-  ]);
-}
-
-function hasOfficialRoundOf32(state: FixtureState) {
+function hasOfficialGroupPhase(officialState: FixtureState) {
   return (
-    state.qualifiedThirdPlaces.length === 8 &&
-    Object.keys(state.thirdPlaceAssignments).length === 8
+    officialState.qualifiedThirdPlaces.length === 8 &&
+    Object.keys(officialState.thirdPlaceAssignments).length === 8
   );
 }
 
@@ -65,55 +61,53 @@ function getWinnerIdsByMatchIds(
 }
 
 function getGroupPhasePoints(predictionState: FixtureState, officialState: FixtureState) {
-  if (!hasOfficialRoundOf32(officialState)) {
+  if (!hasOfficialGroupPhase(officialState)) {
     return {
-      groupClassificationPoints: 0,
-      groupExactPositionPoints: 0,
-      scoredTeams: 0,
+      groupExactPoints: 0,
+      topTwoPartialPoints: 0,
+      bestThirdPoints: 0,
     };
   }
 
-  const predictedQualified = getQualifiedTeamIds(predictionState);
-  const officialQualified = getQualifiedTeamIds(officialState);
-  const officialQualifiedSet = new Set(officialQualified);
-  let groupClassificationPoints = 0;
-  let groupExactPositionPoints = 0;
-
-  for (const teamId of predictedQualified) {
-    if (!officialQualifiedSet.has(teamId)) {
-      continue;
-    }
-
-    groupClassificationPoints += 1;
-  }
+  let groupExactPoints = 0;
+  let topTwoPartialPoints = 0;
 
   for (const groupId of Object.keys(predictionState.groupOrders) as Array<
     keyof FixtureState["groupOrders"]
   >) {
     const predictionOrder = predictionState.groupOrders[groupId];
     const officialOrder = officialState.groupOrders[groupId];
+    const officialTopTwo = new Set(officialOrder.slice(0, 2));
 
-    for (let index = 0; index < 3; index += 1) {
+    for (let index = 0; index < predictionOrder.length; index += 1) {
       const predictedTeamId = predictionOrder[index];
+      if (!predictedTeamId) {
+        continue;
+      }
 
-      if (
-        predictedTeamId &&
-        predictedTeamId === officialOrder[index] &&
-        officialQualifiedSet.has(predictedTeamId)
-      ) {
-        groupExactPositionPoints += 2;
+      if (predictedTeamId === officialOrder[index]) {
+        groupExactPoints += 2;
+        continue;
+      }
+
+      if (index < 2 && officialTopTwo.has(predictedTeamId)) {
+        topTwoPartialPoints += 1;
       }
     }
   }
 
   return {
-    groupClassificationPoints,
-    groupExactPositionPoints,
-    scoredTeams: officialQualified.length,
+    groupExactPoints,
+    topTwoPartialPoints,
+    bestThirdPoints:
+      countSetHits(
+        predictionState.qualifiedThirdPlaces,
+        officialState.qualifiedThirdPlaces,
+      ) * 2,
   };
 }
 
-function scoreSurvivalRound(
+function scoreStageReach(
   predictedTeams: TeamId[],
   officialTeams: TeamId[],
   pointsPerTeam: number,
@@ -126,13 +120,25 @@ function scoreSurvivalRound(
 }
 
 function countScoredUnits(officialState: FixtureState) {
+  const matchesById = deriveMatches(officialState).matchesById;
   let scoredUnits = 0;
 
-  if (hasOfficialRoundOf32(officialState)) {
-    scoredUnits += 48;
+  if (hasOfficialGroupPhase(officialState)) {
+    scoredUnits += 56;
   }
 
-  scoredUnits += Object.keys(officialState.knockoutWinners).length;
+  scoredUnits += getWinnerIdsByMatchIds(matchesById, ROUND_OF_32_MATCHES).length;
+  scoredUnits += getWinnerIdsByMatchIds(matchesById, ROUND_OF_16_MATCHES).length;
+  scoredUnits += getWinnerIdsByMatchIds(matchesById, QUARTER_FINAL_MATCHES).length;
+  scoredUnits += getParticipantIdsByMatchIds(matchesById, ["M104"]).length;
+
+  if (matchesById.M104.winnerId) {
+    scoredUnits += 1;
+  }
+
+  if (matchesById.M103.winnerId) {
+    scoredUnits += 1;
+  }
 
   return scoredUnits;
 }
@@ -147,75 +153,78 @@ export function scoreFixture(
   const officialMatches = deriveMatches(officialState).matchesById;
   const groupPoints = getGroupPhasePoints(predictionState, officialState);
 
-  const predictedRoundOf32 = hasOfficialRoundOf32(officialState)
-    ? getQualifiedTeamIds(predictionState)
-    : [];
-  const officialRoundOf32 = hasOfficialRoundOf32(officialState)
-    ? getQualifiedTeamIds(officialState)
-    : [];
   const predictedRoundOf16 = getWinnerIdsByMatchIds(predictionMatches, ROUND_OF_32_MATCHES);
   const officialRoundOf16 = getWinnerIdsByMatchIds(officialMatches, ROUND_OF_32_MATCHES);
   const predictedQuarterFinalists = getWinnerIdsByMatchIds(
     predictionMatches,
     ROUND_OF_16_MATCHES,
   );
-  const officialQuarterFinalists = getWinnerIdsByMatchIds(officialMatches, ROUND_OF_16_MATCHES);
-  const predictedSemiFinalists = getWinnerIdsByMatchIds(predictionMatches, QUARTER_FINAL_MATCHES);
-  const officialSemiFinalists = getWinnerIdsByMatchIds(officialMatches, QUARTER_FINAL_MATCHES);
+  const officialQuarterFinalists = getWinnerIdsByMatchIds(
+    officialMatches,
+    ROUND_OF_16_MATCHES,
+  );
+  const predictedSemiFinalists = getWinnerIdsByMatchIds(
+    predictionMatches,
+    QUARTER_FINAL_MATCHES,
+  );
+  const officialSemiFinalists = getWinnerIdsByMatchIds(
+    officialMatches,
+    QUARTER_FINAL_MATCHES,
+  );
   const predictedFinalists = getParticipantIdsByMatchIds(predictionMatches, ["M104"]);
   const officialFinalists = getParticipantIdsByMatchIds(officialMatches, ["M104"]);
 
-  const roundOf32Points = scoreSurvivalRound(predictedRoundOf32, officialRoundOf32, 1);
-  const roundOf16Points = scoreSurvivalRound(predictedRoundOf16, officialRoundOf16, 2);
-  const quarterFinalPoints = scoreSurvivalRound(
+  const roundOf16Points = scoreStageReach(predictedRoundOf16, officialRoundOf16, 2);
+  const quarterFinalPoints = scoreStageReach(
     predictedQuarterFinalists,
     officialQuarterFinalists,
-    3,
+    4,
   );
-  const semiFinalPoints = scoreSurvivalRound(predictedSemiFinalists, officialSemiFinalists, 5);
-  const finalistPoints = scoreSurvivalRound(predictedFinalists, officialFinalists, 7);
-  const exactFinalBonus =
-    officialFinalists.length === 2 && countSetHits(predictedFinalists, officialFinalists) === 2
-      ? 3
-      : 0;
-  const championBonus =
+  const semiFinalPoints = scoreStageReach(
+    predictedSemiFinalists,
+    officialSemiFinalists,
+    6,
+  );
+  const finalPoints = scoreStageReach(predictedFinalists, officialFinalists, 8);
+  const championPoints =
     officialMatches.M104.winnerId &&
     predictionMatches.M104.winnerId === officialMatches.M104.winnerId
       ? 10
       : 0;
-  const thirdPlaceBonus =
+  const thirdPlaceWinnerPoints =
     officialMatches.M103.winnerId &&
     predictionMatches.M103.winnerId === officialMatches.M103.winnerId
-      ? 3
+      ? 2
       : 0;
 
-  const total =
-    groupPoints.groupClassificationPoints +
-    groupPoints.groupExactPositionPoints +
-    roundOf32Points +
+  const preWorldCupPoints =
+    groupPoints.groupExactPoints +
+    groupPoints.topTwoPartialPoints +
+    groupPoints.bestThirdPoints;
+  const knockoutPoints =
     roundOf16Points +
     quarterFinalPoints +
     semiFinalPoints +
-    finalistPoints +
-    exactFinalBonus +
-    championBonus +
-    thirdPlaceBonus;
-
+    finalPoints +
+    championPoints +
+    thirdPlaceWinnerPoints;
+  const total = preWorldCupPoints + knockoutPoints;
   const scoredUnits = countScoredUnits(officialState);
 
   return {
-    groupClassificationPoints: groupPoints.groupClassificationPoints,
-    groupExactPositionPoints: groupPoints.groupExactPositionPoints,
-    roundOf32Points,
+    groupExactPoints: groupPoints.groupExactPoints,
+    topTwoPartialPoints: groupPoints.topTwoPartialPoints,
+    bestThirdPoints: groupPoints.bestThirdPoints,
     roundOf16Points,
     quarterFinalPoints,
     semiFinalPoints,
-    finalistPoints,
-    exactFinalBonus,
-    championBonus,
-    thirdPlaceBonus,
+    finalPoints,
+    championPoints,
+    thirdPlaceWinnerPoints,
+    preWorldCupPoints,
+    knockoutPoints,
     total,
     scoredUnits,
-    pendingUnits: Math.max(0, 80 - scoredUnits),
+    pendingUnits: Math.max(0, TOTAL_SCORING_UNITS - scoredUnits),
   };
 }

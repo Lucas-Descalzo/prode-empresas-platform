@@ -10,6 +10,7 @@ import {
 import { teamMap } from "@/data/world-cup-2026";
 import type { OfficialResultRow } from "@/lib/corporate/db";
 import type { UnifiedMatch } from "@/lib/corporate/match-registry";
+import { inferAdvancingTeamFromResult } from "@/lib/corporate/simple-mode-official";
 import type { CorporateClient } from "@/lib/corporate/types";
 import styles from "./corporate-shell.module.css";
 
@@ -109,9 +110,8 @@ export function AdminPanel({ client, matches, officialResults }: AdminPanelProps
         <h1 className={styles.gameTitle}>Resultados oficiales</h1>
         <p className={styles.gameStatus}>
           {totalLoaded} de {totalPlayable} resultados cargados.{" "}
-          {client.gameMode === "simple"
-            ? "La conexión del fixture completo con el ranking simple está pendiente de implementación."
-            : "Cada guardado recalcula automáticamente los puntos internos."}
+          Cada guardado actualiza el ranking interno. En cruces empatados,
+          marcá además quién avanza.
         </p>
       </div>
 
@@ -205,6 +205,12 @@ function ResultRow({
   initial: OfficialResultRow | null;
 }) {
   const slotUndefined = !match.homeTeamId || !match.awayTeamId;
+  const isKnockout = match.stage !== "groups";
+  const initialAdvancingTeamId = inferAdvancingTeamFromResult(
+    match.homeTeamId,
+    match.awayTeamId,
+    initial,
+  );
 
   const [state, formAction, isPending] = useReactActionState(
     saveResultAction,
@@ -267,6 +273,19 @@ function ResultRow({
         >
           {isPending ? "..." : "Guardar"}
         </button>
+        {isKnockout && match.homeTeamId && match.awayTeamId ? (
+          <select
+            name="advancingTeamId"
+            defaultValue={initialAdvancingTeamId ?? ""}
+            className={styles.adminAdvanceSelect}
+            aria-label="Equipo que avanza"
+            disabled={slotUndefined || isPending}
+          >
+            <option value="">Avanza...</option>
+            <option value={match.homeTeamId}>{teamMap[match.homeTeamId].shortName}</option>
+            <option value={match.awayTeamId}>{teamMap[match.awayTeamId].shortName}</option>
+          </select>
+        ) : null}
       </form>
 
       <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>

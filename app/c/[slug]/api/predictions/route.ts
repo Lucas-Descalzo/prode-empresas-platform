@@ -8,6 +8,7 @@ import {
 import { getCurrentParticipant } from "@/lib/corporate/session";
 import type { Prediction } from "@/lib/corporate/types";
 import { getMatchById } from "@/lib/corporate/match-registry";
+import { isSimpleModeLocked } from "@/lib/simple-mode-rules";
 import { normalizeFixtureState } from "@/lib/world-cup-fixture";
 import type { FixtureState } from "@/lib/world-cup-types";
 
@@ -81,6 +82,10 @@ export async function POST(
   const body = payload as { matchId?: unknown; prediction?: unknown };
 
   if (client.gameMode === "simple") {
+    if (isSimpleModeLocked()) {
+      return NextResponse.json({ error: "simple_mode_locked" }, { status: 409 });
+    }
+
     const simpleBody = payload as { fixtureState?: unknown };
 
     if (!isValidFixtureState(simpleBody.fixtureState)) {

@@ -187,16 +187,17 @@ function buildRanking(entries: EntryRecord[], officialState: FixtureState | null
         entryId: entry.id,
         displayName: formatDisplayName(entry.firstName, entry.lastName),
         updatedAt: entry.updatedAt,
-        groupClassificationPoints: score.groupClassificationPoints,
-        groupExactPositionPoints: score.groupExactPositionPoints,
-        roundOf32Points: score.roundOf32Points,
+        groupExactPoints: score.groupExactPoints,
+        topTwoPartialPoints: score.topTwoPartialPoints,
+        bestThirdPoints: score.bestThirdPoints,
         roundOf16Points: score.roundOf16Points,
         quarterFinalPoints: score.quarterFinalPoints,
         semiFinalPoints: score.semiFinalPoints,
-        finalistPoints: score.finalistPoints,
-        exactFinalBonus: score.exactFinalBonus,
-        championBonus: score.championBonus,
-        thirdPlaceBonus: score.thirdPlaceBonus,
+        finalPoints: score.finalPoints,
+        championPoints: score.championPoints,
+        thirdPlaceWinnerPoints: score.thirdPlaceWinnerPoints,
+        preWorldCupPoints: score.preWorldCupPoints,
+        knockoutPoints: score.knockoutPoints,
         total: score.total,
         scoredUnits: score.scoredUnits,
         pendingUnits: score.pendingUnits,
@@ -205,6 +206,10 @@ function buildRanking(entries: EntryRecord[], officialState: FixtureState | null
     .sort((left, right) => {
       if (right.total !== left.total) {
         return right.total - left.total;
+      }
+
+      if (right.preWorldCupPoints !== left.preWorldCupPoints) {
+        return right.preWorldCupPoints - left.preWorldCupPoints;
       }
 
       return left.displayName.localeCompare(right.displayName, "es-AR");
