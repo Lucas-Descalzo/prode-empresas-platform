@@ -108,8 +108,10 @@ export function AdminPanel({ client, matches, officialResults }: AdminPanelProps
         <span className={styles.gameEyebrow}>Panel operador</span>
         <h1 className={styles.gameTitle}>Resultados oficiales</h1>
         <p className={styles.gameStatus}>
-          {totalLoaded} de {totalPlayable} resultados cargados. Cada guardado
-          recalcula automáticamente los puntos internos.
+          {totalLoaded} de {totalPlayable} resultados cargados.{" "}
+          {client.gameMode === "simple"
+            ? "La conexión del fixture completo con el ranking simple está pendiente de implementación."
+            : "Cada guardado recalcula automáticamente los puntos internos."}
         </p>
       </div>
 
