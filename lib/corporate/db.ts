@@ -721,6 +721,7 @@ export async function getCompanyUserById(
     FROM company_users
     WHERE id = ${userId}
       AND company_id = ${companyId}
+      AND status <> 'disabled'
     LIMIT 1
   `) as CompanyUserRow[];
 

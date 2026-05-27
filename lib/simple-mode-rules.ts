@@ -36,13 +36,13 @@ export const SIMPLE_MODE_POINT_BLOCKS: SimpleModePointBlock[] = [
     maxPoints: SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS,
     rows: [
       {
-        label: "Equipo en su posicion exacta del grupo (1.o, 2.o, 3.o o 4.o)",
+        label: "Equipo en su posición exacta del grupo (1°, 2°, 3° o 4°)",
         points: "+2",
       },
       {
-        label: "Top-2 acertado, pero con 1.o y 2.o invertidos",
+        label: "Top-2 acertado, pero con 1° y 2° invertidos",
         points: "+1 por equipo",
-        note: "Es credito parcial y ya esta incluido dentro del maximo de grupos.",
+        note: "Es crédito parcial y ya está incluido dentro del máximo de grupos.",
       },
       {
         label: "Cada mejor tercero que efectivamente avanza a 16avos",
@@ -71,11 +71,11 @@ export const SIMPLE_MODE_POINT_BLOCKS: SimpleModePointBlock[] = [
         points: "+8",
       },
       {
-        label: "Campeon",
+        label: "Campeón",
         points: "+10",
       },
       {
-        label: "Ganador del partido por el 3.er puesto",
+        label: "Ganador del partido por el 3° puesto",
         points: "+2",
       },
     ],
@@ -84,87 +84,87 @@ export const SIMPLE_MODE_POINT_BLOCKS: SimpleModePointBlock[] = [
 
 export const SIMPLE_MODE_FAQS: SimpleModeFaqItem[] = [
   {
-    question: "¿Hasta cuando puedo cargar mi prode?",
+    question: "¿Hasta cuándo puedo cargar mi prode?",
     answer: [
-      "Tenes tiempo hasta el inicio del primer partido del Mundial, el 11 de junio de 2026.",
+      "Tenés tiempo hasta el inicio del primer partido del Mundial, el 11 de junio de 2026.",
       "Una vez que arranca el torneo, las predicciones de grupos y cuadro quedan cerradas.",
     ],
   },
   {
-    question: "¿Puedo modificar mi prediccion despues de cargarla?",
+    question: "¿Puedo modificar mi predicción después de cargarla?",
     answer: [
-      "Si. Podes editar todas las veces que quieras mientras el Mundial no haya empezado.",
-      "Cuenta la ultima version guardada antes del cierre.",
+      "Sí. Podés editar todas las veces que quieras mientras el Mundial no haya empezado.",
+      "Cuenta la última versión guardada antes del cierre.",
     ],
   },
   {
     question: "¿Tengo que cargar todo de una vez?",
     answer: [
-      "No. Podes avanzar por partes y volver mas tarde.",
+      "No. Podés avanzar por partes y volver más tarde.",
       "Tu progreso queda guardado, pero para competir tiene que quedar completo antes del cierre.",
     ],
   },
   {
-    question: "¿Que pasa si no completo mi prode antes del primer partido?",
+    question: "¿Qué pasa si no completo mi prode antes del primer partido?",
     answer: [
       "Si queda incompleto al inicio del Mundial, no suma puntos.",
-      "No hay carga retroactiva porque el juego esta pensado para predecir antes de que empiece el torneo.",
+      "No hay carga retroactiva porque el juego está pensado para predecir antes de que empiece el torneo.",
     ],
   },
   {
-    question: "¿Que son los mejores terceros?",
+    question: "¿Qué son los mejores terceros?",
     answer: [
-      "En el Mundial 2026 pasan a 16avos los dos primeros de cada grupo mas los 8 mejores terceros entre los 12 grupos.",
-      "Vos elegis cuales crees que van a ser esos 8 terceros que avanzan. Cada acierto suma 2 puntos.",
+      "En el Mundial 2026 pasan a 16avos los dos primeros de cada grupo más los 8 mejores terceros entre los 12 grupos.",
+      "Vos elegís cuáles crees que van a ser esos 8 terceros que avanzan. Cada acierto suma 2 puntos.",
     ],
   },
   {
-    question: "¿Y si acierto los dos primeros del grupo pero invierto el 1.o y el 2.o?",
+    question: "¿Y si acierto los dos primeros del grupo pero invierto el 1° y el 2°?",
     answer: [
-      "Recibis 1 punto por cada uno de esos dos equipos en lugar de 2 puntos por acierto exacto.",
-      "Ese credito parcial solo aplica al top-2 del grupo.",
+      "Recibís 1 punto por cada uno de esos dos equipos en lugar de 2 puntos por acierto exacto.",
+      "Ese crédito parcial solo aplica al top-2 del grupo.",
     ],
   },
   {
-    question: "¿Como puntua la eliminatoria?",
+    question: "¿Cómo puntúa la eliminatoria?",
     answer: [
-      "Se puntua por equipo y por ronda alcanzada, no por llave exacta.",
-      "Si bancaste a un equipo hasta semifinales y en la realidad llega a semifinales, cobras octavos + cuartos + semifinales aunque haya llegado por el otro lado del cuadro.",
+      "Se puntúa por equipo y por ronda alcanzada, no por llave exacta.",
+      "Si bancaste a un equipo hasta semifinales y en la realidad llega a semifinales, cobrás octavos + cuartos + semifinales aunque haya llegado por el otro lado del cuadro.",
     ],
   },
   {
-    question: "¿Que pasa si puse a un equipo como campeon y termina cayendo antes?",
+    question: "¿Qué pasa si puse a un equipo como campeón y termina cayendo antes?",
     answer: [
-      "Cobras todos los escalones que efectivamente alcanzo en la realidad, hasta el maximo de ronda que vos lo bancaste.",
-      "Por ejemplo, si lo pusiste campeon y cae en semis, suma 2 + 4 + 6 = 12 puntos.",
+      "Cobrás todos los escalones que efectivamente alcanzó en la realidad, hasta el máximo de ronda que vos lo bancaste.",
+      "Por ejemplo, si lo pusiste campeón y cae en semis, suma 2 + 4 + 6 = 12 puntos.",
     ],
   },
   {
-    question: "¿Cuando se actualiza el ranking?",
+    question: "¿Cuándo se actualiza el ranking?",
     answer: [
       "Los puntos del pre-Mundial aparecen cuando termina la fase de grupos.",
       "La eliminatoria se va sumando ronda por ronda a medida que se cargan los resultados oficiales.",
     ],
   },
   {
-    question: "¿Como se desempata si dos personas terminan con el mismo puntaje?",
+    question: "¿Cómo se desempata si dos personas terminan con el mismo puntaje?",
     answer: [
-      "Primero desempata quien tenga mas puntos del pre-Mundial.",
-      "Si persiste, queda como empate compartido en esa posicion.",
+      "Primero desempata quien tenga más puntos del pre-Mundial.",
+      "Si persiste, queda como empate compartido en esa posición.",
     ],
   },
   {
-    question: "¿Que pasa si un partido se define por penales?",
+    question: "¿Qué pasa si un partido se define por penales?",
     answer: [
-      "En Modo Simple no importa el marcador ni los penales, solo que equipo avanza a la ronda siguiente.",
-      "Por eso el panel operador debe dejar marcado quien avanzo en los cruces empatados.",
+      "En Modo Simple no importa el marcador ni los penales, solo qué equipo avanza a la ronda siguiente.",
+      "Por eso el panel operador debe dejar marcado quién avanzó en los cruces empatados.",
     ],
   },
   {
     question: "¿Puedo jugar desde el celular?",
     answer: [
-      "Si. La plataforma funciona en computadora y en mobile.",
-      "La carga puede empezarse en un momento y retomarse mas tarde antes del cierre.",
+      "Sí. La plataforma funciona en computadora y en mobile.",
+      "La carga puede empezarse en un momento y retomarse más tarde antes del cierre.",
     ],
   },
 ];
@@ -200,7 +200,7 @@ export function getSimpleModeCountdownLabel(now = new Date()) {
   const diffMs = getSimpleModeCutoffDate().getTime() - now.getTime();
 
   if (diffMs <= 0) {
-    return "Prediccion cerrada";
+    return "Predicción cerrada";
   }
 
   const totalMinutes = Math.floor(diffMs / 60000);

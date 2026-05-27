@@ -9,9 +9,6 @@ import {
   formatSimpleModeCutoffLabel,
   getSimpleModeCountdownLabel,
   isSimpleModeLocked,
-  SIMPLE_MODE_KNOCKOUT_MAX_POINTS,
-  SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS,
-  SIMPLE_MODE_TOTAL_MAX_POINTS,
 } from "@/lib/simple-mode-rules";
 import { createInitialFixtureState, normalizeFixtureState } from "@/lib/world-cup-fixture";
 import type { FixtureState } from "@/lib/world-cup-types";
@@ -188,18 +185,18 @@ export function SimpleModeApp({
 
   const statusLabel =
     locked
-      ? "La prediccion ya quedo cerrada. Compite la ultima version completa guardada antes del arranque."
+      ? "La predicción ya quedó cerrada. Compite la última versión completa guardada antes del arranque."
       : saveState === "saving"
-      ? "Estamos guardando tu prediccion."
+      ? "Estamos guardando tu predicción."
       : saveState === "saved"
         ? lastSavedAt
-          ? `Ultimo guardado a las ${lastSavedAt}.`
-          : "Tu fixture ya quedo guardado."
+          ? `Último guardado a las ${lastSavedAt}.`
+          : "Tu fixture ya quedó guardado."
         : saveState === "error"
           ? "No pudimos guardar. Reintenta antes de seguir."
           : saveState === "dirty"
             ? "Hay cambios sin guardar."
-            : "Completa los pasos y guarda cuando quieras confirmar avances.";
+            : "Completa los pasos y guardá cuando quieras confirmar avances.";
 
   return (
     <>
@@ -218,53 +215,15 @@ export function SimpleModeApp({
           <section className={styles.sectionBlock}>
             <div className={styles.simpleModeIntro}>
               <div className={styles.simpleModeStatus}>
-                <span className={styles.sectionEyebrow}>Tu prediccion</span>
+                <span className={styles.sectionEyebrow}>Tu predicción</span>
                 <p className={styles.simpleModeSummary}>
-                  Completa grupos, mejores terceros y cuadro final. La ultima version
+                  Completa grupos, mejores terceros y cuadro final. La última versión
                   guardada antes del arranque es la que entra en competencia.
                 </p>
                 <p className={styles.simpleModeDeadline}>
                   Cierre: {formatSimpleModeCutoffLabel()} · {getSimpleModeCountdownLabel(now)}
                 </p>
-              </div>
-
-              <button
-                type="button"
-                className={styles.simpleModeSaveButton}
-                onClick={() => void saveFixtureState()}
-                disabled={
-                  locked ||
-                  saveState === "saving" ||
-                  saveState === "idle" ||
-                  saveState === "saved"
-                }
-              >
-                {saveLabel}
-              </button>
-            </div>
-
-            <div className={styles.simpleModeMetricGrid}>
-              <article className={styles.simpleModeMetricCard}>
-                <strong>{SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS} pts</strong>
-                <span>Pre-Mundial</span>
-              </article>
-              <article className={styles.simpleModeMetricCard}>
-                <strong>{SIMPLE_MODE_KNOCKOUT_MAX_POINTS} pts</strong>
-                <span>Eliminatoria</span>
-              </article>
-              <article className={styles.simpleModeMetricCard}>
-                <strong>{SIMPLE_MODE_TOTAL_MAX_POINTS} pts</strong>
-                <span>Maximo total</span>
-              </article>
-            </div>
-
-            <div className={styles.simpleModeBar}>
-              <div className={styles.simpleModeStatus}>
-                <span className={styles.sectionEyebrow}>Estado actual</span>
                 <p className={styles.predictionStatus}>{statusLabel}</p>
-                <p className={styles.simpleModeDeadline}>
-                  Cierre: {formatSimpleModeCutoffLabel()} · {getSimpleModeCountdownLabel(now)}
-                </p>
               </div>
 
               <button

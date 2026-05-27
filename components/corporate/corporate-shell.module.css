@@ -1192,7 +1192,6 @@
 .predictionStatus {
   font-size: 0.72rem;
   color: var(--client-muted);
-  text-align: center;
   letter-spacing: 0.04em;
 }
 
