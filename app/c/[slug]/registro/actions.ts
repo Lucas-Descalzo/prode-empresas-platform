@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 
+import { isValidCompanyArea } from "@/lib/corporate/area-options";
 import { getCorporateClient } from "@/lib/corporate/clients";
 import { normalizeDocumentId } from "@/lib/corporate/document-id";
 import {
@@ -23,6 +24,7 @@ export async function signupAction(
   const token = String(formData.get("token") ?? "").trim();
   const firstName = String(formData.get("firstName") ?? "").trim();
   const lastName = String(formData.get("lastName") ?? "").trim();
+  const area = String(formData.get("area") ?? "").trim();
   const documentIdRaw = String(formData.get("documentId") ?? "").trim();
   const password = String(formData.get("password") ?? "").trim();
   const confirmPassword = String(formData.get("confirmPassword") ?? "").trim();
@@ -38,6 +40,16 @@ export async function signupAction(
 
   if (!firstName || !lastName) {
     return { error: "Ingresa nombre y apellido." };
+  }
+
+  if (client.collectsArea) {
+    if (!area) {
+      return { error: `Selecciona tu ${client.areaLabel.toLowerCase()}.` };
+    }
+
+    if (!isValidCompanyArea(client, area)) {
+      return { error: `${client.areaLabel} no valida.` };
+    }
   }
 
   const documentId = normalizeDocumentId(documentIdRaw);
@@ -57,6 +69,7 @@ export async function signupAction(
     companyId: client.id,
     firstName,
     lastName,
+    area: client.collectsArea ? area : null,
     documentId,
     password,
   });

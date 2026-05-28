@@ -752,6 +752,7 @@ export async function createSignupLinkParticipant(input: {
   companyId: string;
   firstName: string;
   lastName: string;
+  area: string | null;
   documentId: string;
   password: string;
 }): Promise<SignupParticipantResult> {
@@ -813,7 +814,7 @@ export async function createSignupLinkParticipant(input: {
       ${fullName},
       ${null},
       ${documentId},
-      ${null},
+      ${input.area?.trim() || null},
       'active',
       false
     )

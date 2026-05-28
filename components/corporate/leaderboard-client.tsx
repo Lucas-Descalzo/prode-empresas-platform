@@ -43,6 +43,7 @@ export function LeaderboardClient({
   const filteredRows = normalizedQuery
     ? indexedRows.filter(({ row }) => normalizeSearchValue(row.fullName).includes(normalizedQuery))
     : indexedRows;
+  const emptyAreaLabel = `Sin ${areaLabel.toLocaleLowerCase("es-AR")}`;
 
   return (
     <div className={styles.leaderboardCard}>
@@ -97,7 +98,7 @@ export function LeaderboardClient({
                     <td className={styles.leaderboardRank} data-label="Posicion">
                       {rank}
                     </td>
-                    <td data-label="Nombre">
+                    <td className={styles.leaderboardNameColumn} data-label="Nombre">
                       <div className={styles.leaderboardNameCell}>
                         <strong>
                           {row.fullName}
@@ -111,7 +112,7 @@ export function LeaderboardClient({
                       </div>
                     </td>
                     {collectsArea ? (
-                      <td data-label={areaLabel}>{row.area ?? "Sin area"}</td>
+                      <td data-label={areaLabel}>{row.area ?? emptyAreaLabel}</td>
                     ) : null}
                     <td data-label="Predicciones">{row.predictionCount}</td>
                     <td className={styles.leaderboardPoints} data-label="Puntos">

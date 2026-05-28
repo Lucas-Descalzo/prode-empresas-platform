@@ -9,6 +9,7 @@ import type {
 } from "react";
 
 import { signupAction, type SignupActionState } from "@/app/c/[slug]/registro/actions";
+import { getCompanyAreaOptions } from "@/lib/corporate/area-options";
 import { sanitizeDocumentIdInput } from "@/lib/corporate/document-id";
 import type { CompanyRecord } from "@/lib/corporate/types";
 import styles from "./corporate-shell.module.css";
@@ -52,6 +53,7 @@ export function SignupForm({
   token: string;
 }) {
   const [state, formAction, isPending] = useActionState(signupAction, INITIAL_STATE);
+  const areaOptions = getCompanyAreaOptions(client);
 
   return (
     <form action={formAction} className={styles.formCard}>
@@ -98,6 +100,35 @@ export function SignupForm({
           <label htmlFor="signup-last-name">Apellido</label>
           <input id="signup-last-name" name="lastName" required />
         </div>
+
+        {client.collectsArea ? (
+          <div className={styles.formField}>
+            <label htmlFor="signup-area">{client.areaLabel}</label>
+            {areaOptions.length > 0 ? (
+              <select id="signup-area" name="area" defaultValue="" required>
+                <option value="" disabled>
+                  Selecciona tu sede
+                </option>
+                {areaOptions.map((option) => (
+                  <option key={option} value={option}>
+                    Sede {option}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                id="signup-area"
+                name="area"
+                autoComplete="off"
+                placeholder={`Tu ${client.areaLabel.toLowerCase()}`}
+                required
+              />
+            )}
+            <span className={styles.formFieldNote}>
+              Usa la sede con la que juegas habitualmente.
+            </span>
+          </div>
+        ) : null}
 
         <div className={styles.formField}>
           <label htmlFor="signup-document-id">DNI</label>
