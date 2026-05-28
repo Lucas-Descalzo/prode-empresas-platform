@@ -4,7 +4,10 @@ import { notFound } from "next/navigation";
 
 import styles from "@/components/corporate/corporate-shell.module.css";
 import { SimpleModeGuide } from "@/components/corporate/simple-mode-guide";
-import { getCorporateClient } from "@/lib/corporate/clients";
+import {
+  getCorporateClient,
+  listCorporateClients,
+} from "@/lib/corporate/clients";
 import {
   getAccessCopy,
   getGameModeCopy,
@@ -12,6 +15,18 @@ import {
   getLandingHeroTitle,
   getRankingCopy,
 } from "@/lib/corporate/copy";
+import { isDatabaseConfigured } from "@/lib/db";
+
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  if (!isDatabaseConfigured()) {
+    return [];
+  }
+
+  const clients = await listCorporateClients();
+  return clients.map((client) => ({ slug: client.slug }));
+}
 
 export default async function CorporateLandingPage({
   params,
