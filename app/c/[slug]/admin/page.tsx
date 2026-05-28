@@ -14,12 +14,23 @@ import { ADMIN_SESSION_COOKIE, isValidAdminSession } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
+type AdminTab = "results" | "access" | "participants";
+
 export default async function CorporateAdminPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { slug } = await params;
+  const resolvedSearchParams = await searchParams;
+  const tabValue = resolvedSearchParams.tab;
+  const initialTab: AdminTab =
+    typeof tabValue === "string" &&
+    ["results", "access", "participants"].includes(tabValue)
+      ? (tabValue as AdminTab)
+      : "results";
   const client = await getCorporateClient(slug);
   if (!client) {
     notFound();
@@ -46,6 +57,7 @@ export default async function CorporateAdminPage({
       officialResults={officialResults}
       users={users}
       signupLink={signupLink}
+      initialTab={initialTab}
     />
   );
 }

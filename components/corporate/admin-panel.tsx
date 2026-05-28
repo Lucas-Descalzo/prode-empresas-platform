@@ -34,6 +34,7 @@ interface AdminPanelProps {
   officialResults: Record<string, OfficialResultRow>;
   users: CompanyUserRecord[];
   signupLink: CompanySignupLinkRecord | null;
+  initialTab?: TabId;
 }
 
 type Filter = "pending" | "loaded" | "all";
@@ -121,8 +122,9 @@ export function AdminPanel({
   officialResults,
   users,
   signupLink,
+  initialTab = "results",
 }: AdminPanelProps) {
-  const [activeTab, setActiveTab] = useState<TabId>("results");
+  const [activeTab, setActiveTab] = useState<TabId>(initialTab);
   const [filter, setFilter] = useState<Filter>("pending");
   const participantUsers = useMemo(
     () => users.filter((user) => user.role === "participant"),
