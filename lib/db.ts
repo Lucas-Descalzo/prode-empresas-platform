@@ -122,14 +122,40 @@ async function ensureB2BSchema(sql: SqlClient) {
   `;
 
   await sql`
-    ALTER TABLE companies
-    DROP CONSTRAINT IF EXISTS companies_access_mode_check
-  `;
+    DO $$
+    DECLARE
+      existing_definition TEXT;
+    BEGIN
+      SELECT pg_get_constraintdef(constraint_row.oid)
+      INTO existing_definition
+      FROM pg_constraint AS constraint_row
+      INNER JOIN pg_class AS relation_row
+        ON relation_row.oid = constraint_row.conrelid
+      WHERE relation_row.relname = 'companies'
+        AND constraint_row.conname = 'companies_access_mode_check';
 
-  await sql`
-    ALTER TABLE companies
-    ADD CONSTRAINT companies_access_mode_check
-    CHECK (access_mode IN ('invited_only', 'corporate_domain_signup', 'signup_link'))
+      IF existing_definition IS NULL THEN
+        BEGIN
+          ALTER TABLE companies
+          ADD CONSTRAINT companies_access_mode_check
+          CHECK (access_mode IN ('invited_only', 'corporate_domain_signup', 'signup_link'));
+        EXCEPTION
+          WHEN duplicate_object THEN NULL;
+        END;
+      ELSIF position('signup_link' in existing_definition) = 0 THEN
+        ALTER TABLE companies
+        DROP CONSTRAINT companies_access_mode_check;
+
+        BEGIN
+          ALTER TABLE companies
+          ADD CONSTRAINT companies_access_mode_check
+          CHECK (access_mode IN ('invited_only', 'corporate_domain_signup', 'signup_link'));
+        EXCEPTION
+          WHEN duplicate_object THEN NULL;
+        END;
+      END IF;
+    END
+    $$;
   `;
 
   await sql`
