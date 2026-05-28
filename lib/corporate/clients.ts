@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 
 import { getCompanyBySlug, listCompanies } from "./db";
 
@@ -12,8 +13,14 @@ export function getRootDomain() {
   ).toLowerCase();
 }
 
+const getCorporateClientCached = unstable_cache(
+  async (slug: string) => getCompanyBySlug(slug),
+  ["corporate-client"],
+  { revalidate: 300 },
+);
+
 export const getCorporateClient = cache(async (slug: string) => {
-  return getCompanyBySlug(slug);
+  return getCorporateClientCached(slug);
 });
 
 export async function listCorporateClients() {

@@ -5,6 +5,20 @@ export type SqlClient = postgres.Sql<Record<string, unknown>>;
 let sqlClient: SqlClient | null = null;
 let schemaReadyPromise: Promise<void> | null = null;
 
+function shouldAutoEnsureDatabaseSchema() {
+  const override = process.env.RUNTIME_DB_SCHEMA_ENSURE?.trim().toLowerCase();
+
+  if (override === "true") {
+    return true;
+  }
+
+  if (override === "false") {
+    return false;
+  }
+
+  return process.env.NODE_ENV !== "production";
+}
+
 function getDatabaseUrl() {
   return (
     process.env.POSTGRES_URL ??
@@ -304,6 +318,12 @@ async function ensureB2BSchema(sql: SqlClient) {
 
 export async function ensureDatabaseSchema() {
   if (!isDatabaseConfigured()) {
+    return;
+  }
+
+  // Production already runs against a provisioned database, so we keep
+  // schema bootstrap off the request path unless it is explicitly re-enabled.
+  if (!shouldAutoEnsureDatabaseSchema()) {
     return;
   }
 
