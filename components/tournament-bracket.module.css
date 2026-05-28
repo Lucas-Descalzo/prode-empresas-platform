@@ -774,6 +774,7 @@ button.countryNode:disabled {
 .compactBracketHint {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 0.75rem;
   padding: 0.75rem 0.9rem;
   border-radius: 0.85rem;
@@ -789,11 +790,24 @@ button.countryNode:disabled {
   text-transform: uppercase;
 }
 
+.compactBracketHint span {
+  max-inline-size: 34ch;
+  line-height: 1.45;
+  text-align: right;
+}
+
 .compactStage {
   content-visibility: auto;
   contain-intrinsic-size: 18rem;
   display: grid;
   gap: 0.7rem;
+}
+
+.compactStageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
 .compactStageTitle {
@@ -803,6 +817,27 @@ button.countryNode:disabled {
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.compactStageMeta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 7rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--brand-text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.compactStageMetaComplete {
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+  color: var(--brand-primary);
 }
 
 .compactMatchGrid {
@@ -835,6 +870,20 @@ button.countryNode:disabled {
 }
 
 @media (max-width: 380px) {
+  .compactBracketHint {
+    flex-direction: column;
+  }
+
+  .compactBracketHint span {
+    max-inline-size: none;
+    text-align: left;
+  }
+
+  .compactStageHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .compactMatchGrid {
     grid-template-columns: 1fr;
   }

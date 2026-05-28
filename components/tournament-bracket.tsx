@@ -643,6 +643,19 @@ const compactStages: StageId[] = [
   "bronzeFinal",
 ];
 
+function getCompactStageProgress(
+  stage: StageId,
+  matchesById: Record<MatchId, DerivedMatch>,
+) {
+  const stageMatches = knockoutSlots.filter((slot) => slot.stage === stage);
+  const resolvedMatches = stageMatches.filter((slot) => matchesById[slot.matchId]?.winnerId).length;
+
+  return {
+    stageMatches,
+    resolvedMatches,
+  };
+}
+
 function CompactTournamentBracket({
   matchesById,
   onPickWinner,
@@ -654,15 +667,30 @@ function CompactTournamentBracket({
     <div className={styles.compactBracket}>
       <div className={styles.compactBracketHint}>
         <strong>Cuadro final</strong>
-        <span>Selecciona ganadores ronda por ronda.</span>
+        <span>
+          {readOnly
+            ? "Revisa cada ronda y usa info para ver sede, fecha y numero de partido."
+            : "Toca el equipo que avanza en cada cruce. El cuadro se completa ronda por ronda."}
+        </span>
       </div>
 
       {compactStages.map((stage) => {
-        const stageMatches = knockoutSlots.filter((slot) => slot.stage === stage);
+        const { stageMatches, resolvedMatches } = getCompactStageProgress(stage, matchesById);
+        const isStageComplete = resolvedMatches === stageMatches.length;
 
         return (
           <section className={styles.compactStage} key={stage}>
-            <h3 className={styles.compactStageTitle}>{stageLabels[stage]}</h3>
+            <div className={styles.compactStageHeader}>
+              <h3 className={styles.compactStageTitle}>{stageLabels[stage]}</h3>
+              <span
+                className={cn(
+                  styles.compactStageMeta,
+                  isStageComplete && styles.compactStageMetaComplete,
+                )}
+              >
+                {resolvedMatches}/{stageMatches.length} definidos
+              </span>
+            </div>
             <div
               className={cn(
                 styles.compactMatchGrid,

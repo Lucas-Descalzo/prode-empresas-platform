@@ -500,12 +500,12 @@ export function FixtureBuilder({
         <div className={styles.sectionHeader}>
           <div>
             <p className={styles.sectionEyebrow}>Paso 1</p>
-            <h2>{readOnly ? "Orden final de los grupos" : "Ordená los grupos"}</h2>
+            <h2>{readOnly ? "Orden final de los grupos" : "Ordena los grupos"}</h2>
           </div>
           <p className={styles.sectionHint}>
             {readOnly
-              ? "Tocá un grupo para ver el orden final guardado."
-              : `${groups.filter((g) => isGroupEdited(g.id)).length}/${groups.length} grupos editados`}
+              ? "Abri cada grupo para revisar el orden final guardado."
+              : `${groups.filter((g) => isGroupEdited(g.id)).length}/${groups.length} grupos cerrados`}
           </p>
         </div>
 
@@ -907,7 +907,7 @@ export function FixtureBuilder({
                 onStepChange ? onStepChange(2) : scrollToSection("terceros")
               }
             >
-              Confirmar grupos →
+              Guardar grupos y seguir
             </button>
             {confirmingStepReset === 1 ? (
               <div className={styles.confirmResetRow}>
@@ -946,12 +946,12 @@ export function FixtureBuilder({
         <div className={styles.sectionHeader}>
           <div>
             <p className={styles.sectionEyebrow}>Paso 2</p>
-            <h2>{readOnly ? "Terceros clasificados" : "Elegí los 8 terceros clasificados"}</h2>
+            <h2>{readOnly ? "Terceros clasificados" : "Elegi los 8 mejores terceros"}</h2>
           </div>
           <p className={styles.sectionHint}>
             {readOnly
               ? "Se muestran las terceras selecciones que avanzan a 16avos."
-              : "Vos elegís qué terceros pasan. El sistema los ubica automáticamente en el cuadro."}
+              : "Marca ocho selecciones. El sistema las ubica solo en el cuadro final."}
           </p>
         </div>
 
@@ -1031,7 +1031,7 @@ export function FixtureBuilder({
               }
               disabled={!isKnockoutReady}
             >
-              Continuar al cuadro →
+              Seguir al cuadro final
             </button>
           </div>
         ) : null}
@@ -1039,15 +1039,15 @@ export function FixtureBuilder({
 
       <details className={styles.assignmentDisclosure}>
         <summary>
-          <span>Ubicación de los terceros</span>
+          <span>Como se acomodan los terceros</span>
           <strong>{thirdAssignmentCount}/8 resueltos</strong>
         </summary>
         <p>
           {fixtureState.qualifiedThirdPlaces.length < 8
-            ? "Elegí ocho terceros clasificados para ver cómo caen en el cuadro."
+            ? "Elegi ocho terceros clasificados para ver donde cae cada uno."
             : allThirdSlotsReady
-              ? "La matriz de cruces del torneo ubicó automáticamente a cada tercero."
-              : "La combinación seleccionada todavía no pudo resolverse con la matriz de cruces."}
+              ? "La matriz oficial del torneo ya ubico automaticamente a cada tercero."
+              : "La combinacion elegida todavia no pudo resolverse con la matriz oficial."}
         </p>
 
         {allThirdSlotsReady ? (
@@ -1088,33 +1088,33 @@ export function FixtureBuilder({
         <div className={styles.sectionHeader}>
           <div>
             <p className={styles.sectionEyebrow}>Paso 3</p>
-            <h2>{readOnly ? "Cuadro final guardado" : "Completá el cuadro final"}</h2>
+            <h2>{readOnly ? "Cuadro final guardado" : "Completa el cuadro final"}</h2>
           </div>
           <p className={styles.sectionHint}>
             {readOnly
               ? "Esta vista conserva las selecciones guardadas hasta la final."
               : isKnockoutReady
-                ? "Cada partido muestra la fecha. Tocá el botón de info para ver sede y número de partido, y elegí una selección ganadora."
-                : "El cuadro se habilita cuando elegís los ocho mejores terceros clasificados."}
+                ? "Toca el equipo que avanza en cada partido. Usa info para ver fecha, sede y numero de juego."
+                : "El cuadro se activa cuando elegis los ocho mejores terceros clasificados."}
           </p>
         </div>
 
         <div className={styles.championBand}>
           <div>
-            <p className={styles.sectionEyebrow}>Campeón proyectado</p>
+            <p className={styles.sectionEyebrow}>Campeon proyectado</p>
             <h3>
               {!isKnockoutReady
                 ? "Cuadro pendiente"
                 : champion
                   ? champion.shortName
-                  : "Todavía no elegiste campeón"}
+                  : "Todavia no elegiste campeon"}
             </h3>
             <p>
               {!isKnockoutReady
-                ? "Primero definí los mejores terceros para que aparezcan los cruces."
+                ? "Primero defini los mejores terceros para que aparezcan los cruces."
                 : champion
-                ? `Tu predicción levanta la copa en ${matches.M104.meta.city}.`
-                : "Hace falta completar todos los cruces hasta la final para cerrar la predicción."}
+                ? `Tu prediccion levanta la copa en ${matches.M104.meta.city}.`
+                : "Hace falta completar todos los cruces hasta la final para cerrar la prediccion."}
             </p>
           </div>
           {isKnockoutReady && champion ? <TeamBadge teamId={champion.id} /> : null}
@@ -1136,7 +1136,7 @@ export function FixtureBuilder({
               onClick={() => onStepChange(4)}
               disabled={!isKnockoutReady}
             >
-              Ver resumen →
+              Revisar resumen final
             </button>
             {confirmingStepReset === 3 ? (
               <div className={styles.confirmResetRow}>
