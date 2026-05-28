@@ -81,7 +81,7 @@ export function LoginForm({ client }: { client: CompanyRecord }) {
             placeholder={getLoginIdentifierPlaceholder(client)}
             autoComplete={usesDocumentId ? "off" : "email"}
             inputMode={usesDocumentId ? "numeric" : undefined}
-            pattern={usesDocumentId ? "\\d{7,8}" : undefined}
+            pattern={usesDocumentId ? "[0-9]{7,8}" : undefined}
             minLength={usesDocumentId ? 7 : undefined}
             maxLength={usesDocumentId ? 8 : undefined}
             onChange={usesDocumentId ? handleDocumentIdChange : undefined}

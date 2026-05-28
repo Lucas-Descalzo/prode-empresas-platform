@@ -86,7 +86,7 @@ export function SignupForm({
             name="documentId"
             placeholder="12345678"
             inputMode="numeric"
-            pattern="\\d{7,8}"
+            pattern="[0-9]{7,8}"
             minLength={7}
             maxLength={8}
             autoComplete="off"
