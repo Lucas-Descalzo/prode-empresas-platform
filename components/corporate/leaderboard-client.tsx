@@ -95,8 +95,11 @@ export function LeaderboardClient({
 
                 return (
                   <tr key={row.id} className={isSelf ? styles.leaderboardSelf : ""}>
-                    <td className={styles.leaderboardRank} data-label="Posicion">
-                      {rank}
+                    <td
+                      className={`${styles.leaderboardRank} ${styles.leaderboardRankCell}`}
+                      data-label="Posicion"
+                    >
+                      <span className={styles.leaderboardRankValue}>#{rank}</span>
                     </td>
                     <td className={styles.leaderboardNameColumn} data-label="Nombre">
                       <div className={styles.leaderboardNameCell}>
@@ -104,6 +107,18 @@ export function LeaderboardClient({
                           {row.fullName}
                           {isSelf ? " (vos)" : ""}
                         </strong>
+                        <div className={styles.leaderboardMetaRail}>
+                          {collectsArea ? (
+                            <span className={styles.leaderboardMetaPill}>
+                              <span>{areaLabel}</span>
+                              <strong>{row.area ?? emptyAreaLabel}</strong>
+                            </span>
+                          ) : null}
+                          <span className={styles.leaderboardMetaPill}>
+                            <span>Predicciones</span>
+                            <strong>{row.predictionCount}</strong>
+                          </span>
+                        </div>
                         {gameMode === "simple" ? (
                           <div className={styles.leaderboardSubline}>
                             {row.preWorldCupPoints} pre-Mundial · {row.knockoutPoints} eliminatoria
@@ -112,11 +127,21 @@ export function LeaderboardClient({
                       </div>
                     </td>
                     {collectsArea ? (
-                      <td data-label={areaLabel}>{row.area ?? emptyAreaLabel}</td>
+                      <td className={styles.leaderboardAreaCell} data-label={areaLabel}>
+                        {row.area ?? emptyAreaLabel}
+                      </td>
                     ) : null}
-                    <td data-label="Predicciones">{row.predictionCount}</td>
-                    <td className={styles.leaderboardPoints} data-label="Puntos">
-                      {row.totalPoints}
+                    <td className={styles.leaderboardPredictionCell} data-label="Predicciones">
+                      {row.predictionCount}
+                    </td>
+                    <td
+                      className={`${styles.leaderboardPoints} ${styles.leaderboardPointsCell}`}
+                      data-label="Puntos"
+                    >
+                      <span className={styles.leaderboardPointsBadge}>
+                        <strong>{row.totalPoints}</strong>
+                        <span>pts</span>
+                      </span>
                     </td>
                   </tr>
                 );
