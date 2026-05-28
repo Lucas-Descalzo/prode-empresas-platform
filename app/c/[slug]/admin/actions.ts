@@ -38,6 +38,7 @@ export async function adminLoginAction(
   formData: FormData,
 ): Promise<AdminLoginState> {
   const slug = String(formData.get("slug") ?? "").trim();
+  const tab = String(formData.get("tab") ?? "").trim();
   const password = String(formData.get("password") ?? "").trim();
 
   const client = await getCorporateClient(slug);
@@ -62,7 +63,14 @@ export async function adminLoginAction(
     maxAge: ADMIN_SESSION_MAX_AGE_SECONDS,
   });
 
-  redirect(`/c/${client.slug}/admin`);
+  const targetTab =
+    tab === "access" || tab === "participants" || tab === "results" ? tab : "";
+
+  redirect(
+    targetTab
+      ? `/c/${client.slug}/admin?tab=${targetTab}`
+      : `/c/${client.slug}/admin`,
+  );
 }
 
 export async function adminLogoutAction(slug: string): Promise<void> {

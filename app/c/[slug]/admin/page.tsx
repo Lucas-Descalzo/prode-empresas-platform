@@ -39,7 +39,7 @@ export default async function CorporateAdminPage({
   const jar = await cookies();
   const authenticated = isValidAdminSession(jar.get(ADMIN_SESSION_COOKIE)?.value);
   if (!authenticated) {
-    return <AdminLogin client={client} />;
+    return <AdminLogin client={client} initialTab={initialTab} />;
   }
 
   const [officialResults, users, signupLink] = await Promise.all([

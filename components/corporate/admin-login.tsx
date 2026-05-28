@@ -8,12 +8,19 @@ import styles from "./corporate-shell.module.css";
 
 const INITIAL: AdminLoginState = {};
 
-export function AdminLogin({ client }: { client: CompanyRecord }) {
+export function AdminLogin({
+  client,
+  initialTab,
+}: {
+  client: CompanyRecord;
+  initialTab?: "results" | "access" | "participants";
+}) {
   const [state, formAction, isPending] = useActionState(adminLoginAction, INITIAL);
 
   return (
     <form action={formAction} className={styles.formCard}>
       <input type="hidden" name="slug" value={client.slug} />
+      <input type="hidden" name="tab" value={initialTab ?? "results"} />
 
       <div className={styles.formTitleBlock}>
         <span className={styles.formEyebrow}>Panel operador</span>
