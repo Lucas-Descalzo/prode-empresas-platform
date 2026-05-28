@@ -116,9 +116,20 @@ async function ensureB2BSchema(sql: SqlClient) {
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       CONSTRAINT companies_game_mode_check CHECK (game_mode IN ('simple', 'interactive')),
-      CONSTRAINT companies_access_mode_check CHECK (access_mode IN ('invited_only', 'corporate_domain_signup')),
+      CONSTRAINT companies_access_mode_check CHECK (access_mode IN ('invited_only', 'corporate_domain_signup', 'signup_link')),
       CONSTRAINT companies_status_check CHECK (status IN ('draft', 'active', 'paused'))
     )
+  `;
+
+  await sql`
+    ALTER TABLE companies
+    DROP CONSTRAINT IF EXISTS companies_access_mode_check
+  `;
+
+  await sql`
+    ALTER TABLE companies
+    ADD CONSTRAINT companies_access_mode_check
+    CHECK (access_mode IN ('invited_only', 'corporate_domain_signup', 'signup_link'))
   `;
 
   await sql`
@@ -160,7 +171,8 @@ async function ensureB2BSchema(sql: SqlClient) {
       first_name TEXT NOT NULL,
       last_name TEXT NOT NULL,
       full_name TEXT NOT NULL,
-      email TEXT NOT NULL,
+      email TEXT,
+      document_id TEXT,
       area TEXT,
       role TEXT NOT NULL DEFAULT 'participant',
       status TEXT NOT NULL DEFAULT 'invited',
@@ -175,8 +187,24 @@ async function ensureB2BSchema(sql: SqlClient) {
   `;
 
   await sql`
+    ALTER TABLE company_users
+    ALTER COLUMN email DROP NOT NULL
+  `;
+
+  await sql`
+    ALTER TABLE company_users
+    ADD COLUMN IF NOT EXISTS document_id TEXT
+  `;
+
+  await sql`
     CREATE INDEX IF NOT EXISTS company_users_company_idx
     ON company_users (company_id, status)
+  `;
+
+  await sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS company_users_unique_document_idx
+    ON company_users (company_id, document_id)
+    WHERE document_id IS NOT NULL
   `;
 
   await sql`
@@ -223,6 +251,17 @@ async function ensureB2BSchema(sql: SqlClient) {
   await sql`
     ALTER TABLE company_official_results
     ADD COLUMN IF NOT EXISTS advancing_team_id TEXT
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS company_signup_links (
+      company_id UUID PRIMARY KEY REFERENCES companies(id) ON DELETE CASCADE,
+      token_hash TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'active',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      CONSTRAINT company_signup_links_status_check CHECK (status IN ('active', 'inactive'))
+    )
   `;
 
   await sql`

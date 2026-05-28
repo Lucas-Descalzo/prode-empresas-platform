@@ -24,6 +24,17 @@ const IMPORT_INITIAL_STATE: ImportUsersActionState = {};
 const RESET_INITIAL_STATE: ResetUserPasswordState = {};
 const UPDATE_INITIAL_STATE: UpdateCompanyActionState = {};
 
+function getAccessModeLabel(accessMode: CompanyRecord["accessMode"]) {
+  switch (accessMode) {
+    case "corporate_domain_signup":
+      return "Dominio";
+    case "signup_link":
+      return "Link";
+    default:
+      return "Invitados";
+  }
+}
+
 export function AdminDashboard({ companies }: { companies: CompanyWithUsers[] }) {
   const totalUsers = companies.reduce((sum, company) => sum + company.users.length, 0);
   const activeCompanies = companies.filter((company) => company.status === "active").length;
@@ -33,9 +44,9 @@ export function AdminDashboard({ companies }: { companies: CompanyWithUsers[] })
       <section className={styles.hero}>
         <div>
           <span className={styles.eyebrow}>Panel operador</span>
-          <h1>Versión madre B2B lista para alta de empresas y padrón inicial.</h1>
+          <h1>Version madre B2B lista para alta de empresas y padron inicial.</h1>
           <p>
-            Desde acá ya podés crear cada tenant, definir branding, importar
+            Desde aca ya podes crear cada tenant, definir branding, importar
             participantes y regenerar accesos temporales.
           </p>
         </div>
@@ -71,13 +82,13 @@ export function AdminDashboard({ companies }: { companies: CompanyWithUsers[] })
       <section className={styles.section}>
         <div className={styles.sectionHeading}>
           <span className={styles.eyebrow}>Empresas</span>
-          <h2>Operación actual</h2>
+          <h2>Operacion actual</h2>
         </div>
 
         <div className={styles.companyGrid}>
           {companies.length === 0 ? (
             <div className={styles.emptyState}>
-              Todavía no hay empresas creadas. La primera alta desde este panel ya te
+              Todavia no hay empresas creadas. La primera alta desde este panel ya te
               deja un slug listo para su subdominio futuro.
             </div>
           ) : (
@@ -127,7 +138,7 @@ function CreateCompanyForm() {
           <span>Tagline</span>
           <input
             name="tagline"
-            placeholder="Edición interna Mundial 2026"
+            placeholder="Edicion interna Mundial 2026"
             required
           />
         </label>
@@ -145,6 +156,7 @@ function CreateCompanyForm() {
           <select name="accessMode" defaultValue="invited_only">
             <option value="invited_only">Invitados</option>
             <option value="corporate_domain_signup">Registro por dominio</option>
+            <option value="signup_link">Link de alta</option>
           </select>
         </label>
 
@@ -154,8 +166,8 @@ function CreateCompanyForm() {
         </label>
 
         <label className={styles.field}>
-          <span>Etiqueta de área</span>
-          <input name="areaLabel" placeholder="Área" defaultValue="Área" />
+          <span>Etiqueta de area</span>
+          <input name="areaLabel" placeholder="Area" defaultValue="Area" />
         </label>
 
         <label className={styles.field}>
@@ -180,7 +192,7 @@ function CreateCompanyForm() {
             value="true"
             defaultChecked
           />
-          <span>Guardar área o sector del participante</span>
+          <span>Guardar area o sector del participante</span>
         </label>
       </div>
 
@@ -213,7 +225,7 @@ function CompanyCard({ company }: { company: CompanyWithUsers }) {
 
         <div className={styles.companyMeta}>
           <span>{company.gameMode === "interactive" ? "Interactivo" : "Simple"}</span>
-          <span>{company.accessMode === "invited_only" ? "Invitados" : "Dominio"}</span>
+          <span>{getAccessModeLabel(company.accessMode)}</span>
           <span>{company.primaryDomain ?? `${company.slug}.prode-empresas.com`}</span>
         </div>
       </header>
@@ -226,11 +238,11 @@ function CompanyCard({ company }: { company: CompanyWithUsers }) {
 
       <UpdateCompanyForm company={company} />
 
-      <ImportUsersForm company={company} />
+      {company.accessMode !== "signup_link" ? <ImportUsersForm company={company} /> : null}
 
       <div className={styles.userList}>
         {company.users.length === 0 ? (
-          <p className={styles.inlineMuted}>Todavía no hay participantes importados.</p>
+          <p className={styles.inlineMuted}>Todavia no hay participantes importados.</p>
         ) : (
           company.users.map((user) => <UserRow key={user.id} company={company} user={user} />)
         )}
@@ -272,7 +284,25 @@ function UpdateCompanyForm({ company }: { company: CompanyWithUsers }) {
         </label>
 
         <label className={styles.field}>
-          <span>Etiqueta de área</span>
+          <span>Modo de acceso</span>
+          <select name="accessMode" defaultValue={company.accessMode}>
+            <option value="invited_only">Invitados</option>
+            <option value="corporate_domain_signup">Registro por dominio</option>
+            <option value="signup_link">Link de alta</option>
+          </select>
+        </label>
+
+        <label className={styles.field}>
+          <span>Dominio corporativo</span>
+          <input
+            name="allowedEmailDomain"
+            defaultValue={company.allowedEmailDomain ?? ""}
+            placeholder="empresa.com"
+          />
+        </label>
+
+        <label className={styles.field}>
+          <span>Etiqueta de area</span>
           <input name="areaLabel" defaultValue={company.areaLabel} />
         </label>
 
@@ -311,7 +341,7 @@ function UpdateCompanyForm({ company }: { company: CompanyWithUsers }) {
             value="true"
             defaultChecked={company.collectsArea}
           />
-          <span>Guardar área o sector del participante</span>
+          <span>Guardar area o sector del participante</span>
         </label>
       </div>
 
@@ -350,8 +380,8 @@ function ImportUsersForm({ company }: { company: CompanyWithUsers }) {
       </button>
 
       <p className={styles.inlineMuted}>
-        Formato: nombre completo, email y área opcional. Acepta coma, punto y coma
-        o tabulación.
+        Formato: nombre completo, email y area opcional. Acepta coma, punto y coma
+        o tabulacion.
       </p>
 
       {state.error ? <p className={styles.error}>{state.error}</p> : null}
@@ -360,9 +390,12 @@ function ImportUsersForm({ company }: { company: CompanyWithUsers }) {
       {state.credentials?.length ? (
         <div className={styles.credentialsBox}>
           {state.credentials.map((credential) => (
-            <div key={credential.email} className={styles.credentialRow}>
+            <div
+              key={`${credential.fullName}-${credential.email ?? "sin-email"}`}
+              className={styles.credentialRow}
+            >
               <strong>{credential.fullName}</strong>
-              <span>{credential.email}</span>
+              <span>{credential.email ?? "Sin email"}</span>
               <code>{credential.temporaryPassword}</code>
             </div>
           ))}
@@ -389,7 +422,7 @@ function UserRow({
       <div>
         <strong>{user.fullName}</strong>
         <p>
-          {user.email}
+          {user.email ?? `DNI ${user.documentId ?? "sin dato"}`}
           {company.collectsArea && user.area ? ` · ${user.area}` : ""}
         </p>
       </div>

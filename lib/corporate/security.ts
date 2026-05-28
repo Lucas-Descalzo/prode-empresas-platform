@@ -1,4 +1,5 @@
 import {
+  createHash,
   createHmac,
   randomBytes,
   scryptSync,
@@ -22,6 +23,20 @@ export function isSessionSecretConfigured() {
 
 export function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
+}
+
+export function buildCompanySignupToken(companyId: string) {
+  if (!isSessionSecretConfigured()) {
+    throw new Error("SESSION_SECRET is not configured.");
+  }
+
+  return createHmac("sha256", getSessionSecret())
+    .update(`signup-link:${companyId}`)
+    .digest("base64url");
+}
+
+export function hashCompanySignupToken(token: string) {
+  return createHash("sha256").update(token).digest("hex");
 }
 
 export function hashPassword(password: string) {

@@ -1,6 +1,11 @@
 import { notFound } from "next/navigation";
 
 import styles from "@/components/corporate/corporate-shell.module.css";
+import { LeaderboardClient } from "@/components/corporate/leaderboard-client";
+import {
+  ChangePasswordForm,
+  LoginForm,
+} from "@/components/corporate/login-form";
 import { getCorporateClient } from "@/lib/corporate/clients";
 import {
   getLeaderboardForCompany,
@@ -31,6 +36,14 @@ export default async function LigaPage({
     getOfficialResultsForCompany(client.id),
   ]);
 
+  if (!currentParticipant) {
+    return <LoginForm client={client} />;
+  }
+
+  if (currentParticipant.mustChangePassword) {
+    return <ChangePasswordForm client={client} participant={currentParticipant} />;
+  }
+
   const totalResults = Object.keys(officialResults).length;
   const participantsWithPredictions = rows.filter(
     (row) => row.predictionCount > 0,
@@ -52,54 +65,18 @@ export default async function LigaPage({
         </div>
       </section>
 
-      <div className={styles.leaderboardCard}>
-        {client.gameMode === "simple" ? (
-          <p className={styles.leaderboardInfo}>
-            {SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS} pts pre-Mundial +{" "}
-            {SIMPLE_MODE_KNOCKOUT_MAX_POINTS} pts eliminatoria. Si empatan en el total,
-            desempata quien tenga mas puntos del pre-Mundial.
-          </p>
-        ) : null}
-        {rows.length === 0 ? (
-          <p className={styles.leaderboardEmpty}>
-            Todavia no hay participantes dados de alta.
-          </p>
-        ) : (
-          <table className={styles.leaderboardTable}>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                {client.collectsArea ? <th>{client.areaLabel}</th> : null}
-                <th>Predicciones</th>
-                <th>Puntos</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, index) => {
-                const isSelf = currentParticipant?.id === row.id;
-                return (
-                  <tr key={row.id} className={isSelf ? styles.leaderboardSelf : ""}>
-                    <td className={styles.leaderboardRank}>{index + 1}</td>
-                    <td>
-                      {row.fullName}
-                      {isSelf ? " (vos)" : ""}
-                      {client.gameMode === "simple" ? (
-                        <div className={styles.leaderboardSubline}>
-                          {row.preWorldCupPoints} pre-Mundial · {row.knockoutPoints} eliminatoria
-                        </div>
-                      ) : null}
-                    </td>
-                    {client.collectsArea ? <td>{row.area ?? "—"}</td> : null}
-                    <td>{row.predictionCount}</td>
-                    <td className={styles.leaderboardPoints}>{row.totalPoints}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
+      <LeaderboardClient
+        rows={rows}
+        currentParticipantId={currentParticipant.id}
+        collectsArea={client.collectsArea}
+        areaLabel={client.areaLabel}
+        gameMode={client.gameMode}
+        scoringSummary={
+          client.gameMode === "simple"
+            ? `${SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS} pts pre-Mundial + ${SIMPLE_MODE_KNOCKOUT_MAX_POINTS} pts eliminatoria. Si empatan en el total, desempata quien tenga mas puntos del pre-Mundial.`
+            : null
+        }
+      />
     </>
   );
 }

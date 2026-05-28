@@ -5,7 +5,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { getCorporateClient } from "@/lib/corporate/clients";
-import { deleteOfficialResult, saveOfficialResult } from "@/lib/corporate/db";
+import {
+  deleteOfficialResult,
+  resetCompanyUserPassword,
+  saveOfficialResult,
+  setCompanyUserStatus,
+  updateCompanySignupLinkStatus,
+} from "@/lib/corporate/db";
 import { getMatchById } from "@/lib/corporate/match-registry";
 import { inferAdvancingTeamFromResult } from "@/lib/corporate/simple-mode-official";
 import {
@@ -40,11 +46,11 @@ export async function adminLoginAction(
   }
 
   if (!isAdminConfigured()) {
-    return { error: "Configurá ADMIN_PASSWORD para usar el panel operador." };
+    return { error: "Configura ADMIN_PASSWORD para usar el panel operador." };
   }
 
   if (!verifyAdminPassword(password)) {
-    return { error: "Contraseña incorrecta." };
+    return { error: "Contrasena incorrecta." };
   }
 
   const jar = await cookies();
@@ -105,7 +111,7 @@ export async function saveResultAction(
     home > 20 ||
     away > 20
   ) {
-    return { matchId, error: "Resultado inválido." };
+    return { matchId, error: "Resultado invalido." };
   }
 
   const inferredAdvancingTeamId = inferAdvancingTeamFromResult(
@@ -118,12 +124,8 @@ export async function saveResultAction(
     },
   );
 
-  if (
-    match.stage !== "groups" &&
-    home === away &&
-    !inferredAdvancingTeamId
-  ) {
-    return { matchId, error: "Elegí quién avanza en el empate." };
+  if (match.stage !== "groups" && home === away && !inferredAdvancingTeamId) {
+    return { matchId, error: "Elige quien avanza en el empate." };
   }
 
   await saveOfficialResult({
@@ -163,4 +165,128 @@ export async function clearResultAction(
   revalidatePath(`/c/${client.slug}/admin`);
   revalidatePath(`/c/${client.slug}/liga`);
   return { matchId, message: "Resultado borrado" };
+}
+
+export interface SignupLinkState {
+  success?: string;
+  error?: string;
+}
+
+export async function updateSignupLinkStatusAction(
+  prevState: SignupLinkState,
+  formData: FormData,
+): Promise<SignupLinkState> {
+  const slug = String(formData.get("slug") ?? "").trim();
+  const status = String(formData.get("status") ?? "").trim();
+
+  const client = await getCorporateClient(slug);
+  if (!client) {
+    return { error: "Empresa no encontrada." };
+  }
+
+  if (!(await isGlobalAdminAuthenticated())) {
+    return { error: "No autorizado." };
+  }
+
+  if (status !== "active" && status !== "inactive") {
+    return { error: "Estado invalido." };
+  }
+
+  await updateCompanySignupLinkStatus({
+    companyId: client.id,
+    status,
+  });
+
+  revalidatePath(`/c/${client.slug}/admin`);
+  revalidatePath(`/c/${client.slug}/registro`);
+
+  return {
+    success:
+      status === "active"
+        ? "Link de alta activado."
+        : "Link de alta desactivado.",
+  };
+}
+
+export interface ParticipantAdminState {
+  userId?: string;
+  success?: string;
+  error?: string;
+  temporaryPassword?: string;
+}
+
+export async function resetParticipantPasswordAction(
+  prevState: ParticipantAdminState,
+  formData: FormData,
+): Promise<ParticipantAdminState> {
+  const slug = String(formData.get("slug") ?? "").trim();
+  const userId = String(formData.get("userId") ?? "").trim();
+  const fullName = String(formData.get("fullName") ?? "").trim();
+
+  const client = await getCorporateClient(slug);
+  if (!client) {
+    return { error: "Empresa no encontrada." };
+  }
+
+  if (!(await isGlobalAdminAuthenticated())) {
+    return { error: "No autorizado." };
+  }
+
+  if (!userId) {
+    return { error: "Faltan datos del participante." };
+  }
+
+  const temporaryPassword = await resetCompanyUserPassword({
+    companyId: client.id,
+    userId,
+  });
+
+  revalidatePath(`/c/${client.slug}/admin`);
+
+  return {
+    userId,
+    success: `Clave temporal regenerada para ${fullName}.`,
+    temporaryPassword,
+  };
+}
+
+export async function updateParticipantStatusAction(
+  prevState: ParticipantAdminState,
+  formData: FormData,
+): Promise<ParticipantAdminState> {
+  const slug = String(formData.get("slug") ?? "").trim();
+  const userId = String(formData.get("userId") ?? "").trim();
+  const fullName = String(formData.get("fullName") ?? "").trim();
+  const status = String(formData.get("status") ?? "").trim();
+
+  const client = await getCorporateClient(slug);
+  if (!client) {
+    return { error: "Empresa no encontrada." };
+  }
+
+  if (!(await isGlobalAdminAuthenticated())) {
+    return { error: "No autorizado." };
+  }
+
+  if (status !== "active" && status !== "disabled") {
+    return { error: "Estado invalido." };
+  }
+
+  await setCompanyUserStatus({
+    companyId: client.id,
+    userId,
+    status,
+  });
+
+  revalidatePath(`/c/${client.slug}/admin`);
+  revalidatePath(`/c/${client.slug}/liga`);
+  revalidatePath(`/c/${client.slug}/partidos`);
+
+  return {
+    userId,
+    success:
+      status === "disabled"
+        ? `${fullName} fue dado de baja.`
+        : `${fullName} fue reactivado.`,
+  };
 }

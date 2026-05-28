@@ -4,7 +4,11 @@ import { notFound } from "next/navigation";
 import { AdminLogin } from "@/components/corporate/admin-login";
 import { AdminPanel } from "@/components/corporate/admin-panel";
 import { getCorporateClient } from "@/lib/corporate/clients";
-import { getOfficialResultsForCompany } from "@/lib/corporate/db";
+import {
+  getCompanySignupLink,
+  getOfficialResultsForCompany,
+  listUsersForCompany,
+} from "@/lib/corporate/db";
 import { allMatches } from "@/lib/corporate/match-registry";
 import { ADMIN_SESSION_COOKIE, isValidAdminSession } from "@/lib/admin-auth";
 
@@ -27,13 +31,21 @@ export default async function CorporateAdminPage({
     return <AdminLogin client={client} />;
   }
 
-  const officialResults = await getOfficialResultsForCompany(client.id);
+  const [officialResults, users, signupLink] = await Promise.all([
+    getOfficialResultsForCompany(client.id),
+    listUsersForCompany(client.id),
+    client.accessMode === "signup_link"
+      ? getCompanySignupLink(client.id, client.slug)
+      : Promise.resolve(null),
+  ]);
 
   return (
     <AdminPanel
       client={client}
       matches={allMatches}
       officialResults={officialResults}
+      users={users}
+      signupLink={signupLink}
     />
   );
 }

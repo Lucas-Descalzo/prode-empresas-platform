@@ -17,17 +17,17 @@ export function AdminLogin({ client }: { client: CompanyRecord }) {
 
       <div className={styles.formTitleBlock}>
         <span className={styles.formEyebrow}>Panel operador</span>
-        <h2 className={styles.formTitle}>Cargar resultados oficiales</h2>
+        <h2 className={styles.formTitle}>Administrar TM Boxing</h2>
       </div>
 
       <p className={styles.formHint}>
-        Este acceso usa la misma clave global del panel operador. No se expone una
-        contraseña distinta por empresa.
+        Este acceso usa la misma clave global del panel operador. Desde aqui puedes
+        cargar resultados, gestionar el link de alta y asistir a participantes.
       </p>
 
       <div className={styles.formGrid}>
         <div className={styles.formField}>
-          <label htmlFor="admin-pw">Contraseña operador</label>
+          <label htmlFor="admin-pw">Contrasena operador</label>
           <input
             id="admin-pw"
             name="password"

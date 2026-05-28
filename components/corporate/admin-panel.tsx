@@ -1,26 +1,44 @@
 "use client";
 
-import { useActionState as useReactActionState, useMemo, useState } from "react";
+import {
+  useActionState as useReactActionState,
+  useDeferredValue,
+  useMemo,
+  useState,
+} from "react";
 
 import {
   clearResultAction,
+  resetParticipantPasswordAction,
   saveResultAction,
+  updateParticipantStatusAction,
+  updateSignupLinkStatusAction,
+  type ParticipantAdminState,
   type SaveResultState,
+  type SignupLinkState,
 } from "@/app/c/[slug]/admin/actions";
 import { teamMap } from "@/data/world-cup-2026";
 import type { OfficialResultRow } from "@/lib/corporate/db";
+import type {
+  CompanySignupLinkRecord,
+  CompanyUserRecord,
+  CorporateClient,
+} from "@/lib/corporate/types";
 import type { UnifiedMatch } from "@/lib/corporate/match-registry";
 import { inferAdvancingTeamFromResult } from "@/lib/corporate/simple-mode-official";
-import type { CorporateClient } from "@/lib/corporate/types";
 import styles from "./corporate-shell.module.css";
 
 interface AdminPanelProps {
   client: CorporateClient;
   matches: UnifiedMatch[];
   officialResults: Record<string, OfficialResultRow>;
+  users: CompanyUserRecord[];
+  signupLink: CompanySignupLinkRecord | null;
 }
 
 type Filter = "pending" | "loaded" | "all";
+type TabId = "results" | "access" | "participants";
+type ParticipantStatusFilter = "all" | "active" | "invited" | "disabled";
 
 const STAGE_LABELS: Record<string, string> = {
   groups: "Fase de grupos",
@@ -31,6 +49,30 @@ const STAGE_LABELS: Record<string, string> = {
   bronzeFinal: "Tercer puesto",
   final: "Final",
 };
+
+const TAB_LABELS: Array<{ id: TabId; label: string }> = [
+  { id: "results", label: "Resultados" },
+  { id: "access", label: "Acceso" },
+  { id: "participants", label: "Participantes" },
+];
+
+const PARTICIPANT_FILTER_LABELS: Array<{
+  id: ParticipantStatusFilter;
+  label: string;
+}> = [
+  { id: "all", label: "Todos" },
+  { id: "active", label: "Activos" },
+  { id: "invited", label: "Pendientes" },
+  { id: "disabled", label: "Baja" },
+];
+
+function normalizeSearchValue(value: string) {
+  return value
+    .trim()
+    .toLocaleLowerCase("es-AR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
 
 function teamLabel(match: UnifiedMatch, side: "home" | "away"): string {
   const teamId = side === "home" ? match.homeTeamId : match.awayTeamId;
@@ -43,9 +85,9 @@ function teamLabel(match: UnifiedMatch, side: "home" | "away"): string {
 
   switch (ref.kind) {
     case "placement":
-      return `${ref.place}.º Grupo ${ref.group}`;
+      return `${ref.place}.o Grupo ${ref.group}`;
     case "third":
-      return "Mejor 3.º";
+      return "Mejor 3.o";
     case "winner":
       return `Gan. ${ref.matchId}`;
     case "loser":
@@ -62,8 +104,30 @@ function formatDate(dateStr: string): string {
   });
 }
 
-export function AdminPanel({ client, matches, officialResults }: AdminPanelProps) {
+function formatLastLogin(value: string | null) {
+  if (!value) {
+    return "Sin ingreso";
+  }
+
+  return new Date(value).toLocaleString("es-AR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+}
+
+export function AdminPanel({
+  client,
+  matches,
+  officialResults,
+  users,
+  signupLink,
+}: AdminPanelProps) {
+  const [activeTab, setActiveTab] = useState<TabId>("results");
   const [filter, setFilter] = useState<Filter>("pending");
+  const participantUsers = useMemo(
+    () => users.filter((user) => user.role === "participant"),
+    [users],
+  );
 
   const filteredMatches = useMemo(() => {
     if (filter === "all") return matches;
@@ -88,108 +152,457 @@ export function AdminPanel({ client, matches, officialResults }: AdminPanelProps
     return groups;
   }, [filteredMatches]);
 
-  const stageOrder = [
-    "groups",
-    "roundOf32",
-    "roundOf16",
-    "quarterFinal",
-    "semiFinal",
-    "bronzeFinal",
-    "final",
-  ];
-
   const totalLoaded = Object.keys(officialResults).length;
   const totalPlayable = matches.filter(
     (match) => Boolean(match.homeTeamId) && Boolean(match.awayTeamId),
   ).length;
+  const activeUsers = participantUsers.filter((user) => user.status === "active").length;
+  const invitedUsers = participantUsers.filter((user) => user.status === "invited").length;
+  const disabledUsers = participantUsers.filter((user) => user.status === "disabled").length;
 
   return (
     <>
       <div className={styles.gameHeader}>
-        <span className={styles.gameEyebrow}>Panel operador</span>
-        <h1 className={styles.gameTitle}>Resultados oficiales</h1>
+        <span className={styles.gameEyebrow}>Panel TM Boxing</span>
+        <h1 className={styles.gameTitle}>Operacion del tenant</h1>
         <p className={styles.gameStatus}>
-          {totalLoaded} de {totalPlayable} resultados cargados.{" "}
-          Cada guardado actualiza el ranking interno. En cruces empatados,
-          marcá además quién avanza.
+          Gestiona resultados, el link de alta y la base de participantes desde el
+          mismo acceso administrador.
         </p>
       </div>
 
       <div className={styles.adminCard}>
         <div className={styles.adminTopBar}>
           <div className={styles.adminFilters}>
-            <button
-              type="button"
-              className={`${styles.adminFilterTab} ${
-                filter === "pending" ? styles.adminFilterTabActive : ""
-              }`}
-              onClick={() => setFilter("pending")}
-            >
-              Pendientes
-            </button>
-            <button
-              type="button"
-              className={`${styles.adminFilterTab} ${
-                filter === "loaded" ? styles.adminFilterTabActive : ""
-              }`}
-              onClick={() => setFilter("loaded")}
-            >
-              Cargados
-            </button>
-            <button
-              type="button"
-              className={`${styles.adminFilterTab} ${
-                filter === "all" ? styles.adminFilterTabActive : ""
-              }`}
-              onClick={() => setFilter("all")}
-            >
-              Todos
-            </button>
+            {TAB_LABELS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`${styles.adminFilterTab} ${
+                  activeTab === tab.id ? styles.adminFilterTabActive : ""
+                }`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {stageOrder.map((stage) => {
-          const stageMatches = groupedByStage.get(stage);
-          if (!stageMatches || stageMatches.length === 0) {
-            return null;
-          }
+        {activeTab === "results" ? (
+          <>
+            <div className={styles.adminSummaryGrid}>
+              <article className={styles.adminSummaryCard}>
+                <span>Resultados cargados</span>
+                <strong>
+                  {totalLoaded}/{totalPlayable}
+                </strong>
+              </article>
+              <article className={styles.adminSummaryCard}>
+                <span>Participantes activos</span>
+                <strong>{activeUsers}</strong>
+              </article>
+              <article className={styles.adminSummaryCard}>
+                <span>Link de alta</span>
+                <strong>{signupLink?.status === "active" ? "Activo" : "Inactivo"}</strong>
+              </article>
+            </div>
 
-          return (
-            <section key={stage} className={styles.stageGroup}>
-              <header className={styles.stageHead}>
-                <h2 className={styles.stageHeadLabel}>
-                  {STAGE_LABELS[stage] ?? stage}
-                </h2>
-                <span className={styles.stageHeadCount}>
-                  {stageMatches.length} partidos
-                </span>
-              </header>
+            <div className={styles.adminFilters}>
+              <button
+                type="button"
+                className={`${styles.adminFilterTab} ${
+                  filter === "pending" ? styles.adminFilterTabActive : ""
+                }`}
+                onClick={() => setFilter("pending")}
+              >
+                Pendientes
+              </button>
+              <button
+                type="button"
+                className={`${styles.adminFilterTab} ${
+                  filter === "loaded" ? styles.adminFilterTabActive : ""
+                }`}
+                onClick={() => setFilter("loaded")}
+              >
+                Cargados
+              </button>
+              <button
+                type="button"
+                className={`${styles.adminFilterTab} ${
+                  filter === "all" ? styles.adminFilterTabActive : ""
+                }`}
+                onClick={() => setFilter("all")}
+              >
+                Todos
+              </button>
+            </div>
 
-              <div style={{ display: "grid", gap: "0.5rem" }}>
-                {stageMatches.map((match) => (
-                  <ResultRow
-                    key={match.id}
-                    client={client}
-                    match={match}
-                    initial={officialResults[match.id] ?? null}
-                  />
-                ))}
-              </div>
-            </section>
-          );
-        })}
+            {["groups", "roundOf32", "roundOf16", "quarterFinal", "semiFinal", "bronzeFinal", "final"].map(
+              (stage) => {
+                const stageMatches = groupedByStage.get(stage);
+                if (!stageMatches || stageMatches.length === 0) {
+                  return null;
+                }
 
-        {filteredMatches.length === 0 ? (
-          <p className={styles.leaderboardEmpty}>
-            {filter === "pending"
-              ? "No hay partidos pendientes de carga."
-              : filter === "loaded"
-                ? "Todavía no cargaste ningún resultado."
-                : "No hay partidos disponibles."}
-          </p>
+                return (
+                  <section key={stage} className={styles.stageGroup}>
+                    <header className={styles.stageHead}>
+                      <h2 className={styles.stageHeadLabel}>
+                        {STAGE_LABELS[stage] ?? stage}
+                      </h2>
+                      <span className={styles.stageHeadCount}>
+                        {stageMatches.length} partidos
+                      </span>
+                    </header>
+
+                    <div style={{ display: "grid", gap: "0.5rem" }}>
+                      {stageMatches.map((match) => (
+                        <ResultRow
+                          key={match.id}
+                          client={client}
+                          match={match}
+                          initial={officialResults[match.id] ?? null}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                );
+              },
+            )}
+
+            {filteredMatches.length === 0 ? (
+              <p className={styles.leaderboardEmpty}>
+                {filter === "pending"
+                  ? "No hay partidos pendientes de carga."
+                  : filter === "loaded"
+                    ? "Todavia no cargaste ningun resultado."
+                    : "No hay partidos disponibles."}
+              </p>
+            ) : null}
+          </>
+        ) : null}
+
+        {activeTab === "access" ? (
+          <AccessPanel
+            client={client}
+            signupLink={signupLink}
+            totalUsers={participantUsers.length}
+            activeUsers={activeUsers}
+            invitedUsers={invitedUsers}
+            disabledUsers={disabledUsers}
+          />
+        ) : null}
+
+        {activeTab === "participants" ? (
+          <ParticipantsPanel client={client} users={participantUsers} />
         ) : null}
       </div>
     </>
+  );
+}
+
+function AccessPanel({
+  client,
+  signupLink,
+  totalUsers,
+  activeUsers,
+  invitedUsers,
+  disabledUsers,
+}: {
+  client: CorporateClient;
+  signupLink: CompanySignupLinkRecord | null;
+  totalUsers: number;
+  activeUsers: number;
+  invitedUsers: number;
+  disabledUsers: number;
+}) {
+  const [state, formAction, isPending] = useReactActionState<SignupLinkState, FormData>(
+    updateSignupLinkStatusAction,
+    {},
+  );
+  const [copyFeedback, setCopyFeedback] = useState("");
+
+  async function handleCopyLink() {
+    if (!signupLink) {
+      return;
+    }
+
+    const fullUrl = new URL(signupLink.path, window.location.origin).toString();
+    await navigator.clipboard.writeText(fullUrl);
+    setCopyFeedback("Link copiado");
+    window.setTimeout(() => setCopyFeedback(""), 1800);
+  }
+
+  return (
+    <div className={styles.adminSectionStack}>
+      <div className={styles.adminSummaryGrid}>
+        <article className={styles.adminSummaryCard}>
+          <span>Total participantes</span>
+          <strong>{totalUsers}</strong>
+        </article>
+        <article className={styles.adminSummaryCard}>
+          <span>Activos</span>
+          <strong>{activeUsers}</strong>
+        </article>
+        <article className={styles.adminSummaryCard}>
+          <span>Pendientes</span>
+          <strong>{invitedUsers}</strong>
+        </article>
+        <article className={styles.adminSummaryCard}>
+          <span>Deshabilitados</span>
+          <strong>{disabledUsers}</strong>
+        </article>
+      </div>
+
+      {signupLink ? (
+        <section className={styles.adminAccessCard}>
+          <div className={styles.adminAccessHeader}>
+            <div>
+              <span className={styles.sectionEyebrow}>Link unico</span>
+              <h2 className={styles.adminSectionTitle}>Alta de participantes</h2>
+            </div>
+            <span
+              className={`${styles.adminStatusPill} ${
+                signupLink.status === "active"
+                  ? styles.adminStatusPillActive
+                  : styles.adminStatusPillMuted
+              }`}
+            >
+              {signupLink.status === "active" ? "Activo" : "Inactivo"}
+            </span>
+          </div>
+
+          <p className={styles.adminAccessCopy}>
+            Comparte este link solo con personas que pagaron la cuota de junio. Quien
+            entre podra crear su cuenta con DNI y clave propia.
+          </p>
+
+          <code className={styles.adminAccessPath}>{signupLink.path}</code>
+
+          <div className={styles.adminAccessActions}>
+            <button
+              type="button"
+              className={styles.formSubmit}
+              onClick={() => void handleCopyLink()}
+            >
+              Copiar link
+            </button>
+
+            <form action={formAction}>
+              <input type="hidden" name="slug" value={client.slug} />
+              <input
+                type="hidden"
+                name="status"
+                value={signupLink.status === "active" ? "inactive" : "active"}
+              />
+              <button
+                type="submit"
+                className={styles.adminSecondaryAction}
+                disabled={isPending}
+              >
+                {isPending
+                  ? "Guardando..."
+                  : signupLink.status === "active"
+                    ? "Desactivar link"
+                    : "Activar link"}
+              </button>
+            </form>
+          </div>
+
+          {copyFeedback ? <p className={styles.adminFeedback}>{copyFeedback}</p> : null}
+          {state.error ? <p className={styles.formError}>{state.error}</p> : null}
+          {state.success ? <p className={styles.formInfo}>{state.success}</p> : null}
+        </section>
+      ) : (
+        <p className={styles.leaderboardEmpty}>
+          Este tenant no usa alta por link en este momento.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function ParticipantsPanel({
+  client,
+  users,
+}: {
+  client: CorporateClient;
+  users: CompanyUserRecord[];
+}) {
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<ParticipantStatusFilter>("all");
+  const deferredQuery = useDeferredValue(query);
+  const normalizedQuery = normalizeSearchValue(deferredQuery);
+
+  const filteredUsers = useMemo(() => {
+    return users.filter((user) => {
+      if (statusFilter !== "all" && user.status !== statusFilter) {
+        return false;
+      }
+
+      if (!normalizedQuery) {
+        return true;
+      }
+
+      const searchable = normalizeSearchValue(
+        `${user.fullName} ${user.documentId ?? ""}`,
+      );
+      return searchable.includes(normalizedQuery);
+    });
+  }, [normalizedQuery, statusFilter, users]);
+
+  if (users.length === 0) {
+    return (
+      <p className={styles.leaderboardEmpty}>
+        Todavia no hay participantes registrados para este tenant.
+      </p>
+    );
+  }
+
+  return (
+    <div className={styles.adminSectionStack}>
+      <div className={styles.adminParticipantsToolbar}>
+        <label className={styles.adminParticipantsSearch}>
+          <span className={styles.leaderboardSearchLabel}>Buscar participante</span>
+          <input
+            type="search"
+            inputMode="search"
+            autoComplete="off"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Nombre, apellido o DNI"
+            className={styles.leaderboardSearchInput}
+          />
+        </label>
+
+        <div className={styles.adminParticipantsMeta}>
+          <strong>{filteredUsers.length}</strong>
+          <span>
+            {normalizedQuery || statusFilter !== "all"
+              ? `de ${users.length} visibles`
+              : "participantes cargados"}
+          </span>
+        </div>
+      </div>
+
+      <div className={styles.adminFilters}>
+        {PARTICIPANT_FILTER_LABELS.map((filterOption) => (
+          <button
+            key={filterOption.id}
+            type="button"
+            className={`${styles.adminFilterTab} ${
+              statusFilter === filterOption.id ? styles.adminFilterTabActive : ""
+            }`}
+            onClick={() => setStatusFilter(filterOption.id)}
+          >
+            {filterOption.label}
+          </button>
+        ))}
+      </div>
+
+      {filteredUsers.length === 0 ? (
+        <p className={styles.leaderboardEmpty}>
+          No encontramos participantes con ese criterio. Ajusta la busqueda o cambia el
+          filtro.
+        </p>
+      ) : (
+        <div className={styles.adminParticipantsList}>
+          {filteredUsers.map((user) => (
+            <ParticipantRow key={user.id} client={client} user={user} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ParticipantRow({
+  client,
+  user,
+}: {
+  client: CorporateClient;
+  user: CompanyUserRecord;
+}) {
+  const [resetState, resetAction, isResetPending] =
+    useReactActionState<ParticipantAdminState, FormData>(
+      resetParticipantPasswordAction,
+      {},
+    );
+  const [statusState, statusAction, isStatusPending] =
+    useReactActionState<ParticipantAdminState, FormData>(
+      updateParticipantStatusAction,
+      {},
+    );
+
+  const stateForUser =
+    resetState.userId === user.id ? resetState : statusState.userId === user.id ? statusState : {};
+
+  return (
+    <article className={styles.adminParticipantCard}>
+      <div className={styles.adminParticipantMain}>
+        <div>
+          <strong>{user.fullName}</strong>
+          <p>DNI {user.documentId ?? "Sin DNI"} · {formatLastLogin(user.lastLoginAt)}</p>
+        </div>
+        <span
+          className={`${styles.adminStatusPill} ${
+            user.status === "disabled"
+              ? styles.adminStatusPillMuted
+              : user.status === "active"
+                ? styles.adminStatusPillActive
+                : styles.adminStatusPillPending
+          }`}
+        >
+          {user.status}
+        </span>
+      </div>
+
+      <div className={styles.adminParticipantActions}>
+        <form action={resetAction}>
+          <input type="hidden" name="slug" value={client.slug} />
+          <input type="hidden" name="userId" value={user.id} />
+          <input type="hidden" name="fullName" value={user.fullName} />
+          <button
+            type="submit"
+            className={styles.adminSecondaryAction}
+            disabled={isResetPending}
+          >
+            {isResetPending ? "..." : "Resetear clave"}
+          </button>
+        </form>
+
+        <form action={statusAction}>
+          <input type="hidden" name="slug" value={client.slug} />
+          <input type="hidden" name="userId" value={user.id} />
+          <input type="hidden" name="fullName" value={user.fullName} />
+          <input
+            type="hidden"
+            name="status"
+            value={user.status === "disabled" ? "active" : "disabled"}
+          />
+          <button
+            type="submit"
+            className={styles.adminSecondaryAction}
+            disabled={isStatusPending}
+          >
+            {isStatusPending
+              ? "..."
+              : user.status === "disabled"
+                ? "Reactivar"
+                : "Dar de baja"}
+          </button>
+        </form>
+      </div>
+
+      {stateForUser.error ? <p className={styles.formError}>{stateForUser.error}</p> : null}
+      {stateForUser.success ? <p className={styles.formInfo}>{stateForUser.success}</p> : null}
+      {resetState.userId === user.id && resetState.temporaryPassword ? (
+        <p className={styles.adminCredentialNote}>
+          Clave temporal: <code>{resetState.temporaryPassword}</code>
+        </p>
+      ) : null}
+    </article>
   );
 }
 
@@ -221,12 +634,9 @@ function ResultRow({
     INITIAL_STATE,
   );
 
-  const showSavedFlag =
-    state.matchId === match.id && state.message ? state.message : "";
+  const showSavedFlag = state.matchId === match.id && state.message ? state.message : "";
   const showClearedFlag =
-    clearState.matchId === match.id && clearState.message
-      ? clearState.message
-      : "";
+    clearState.matchId === match.id && clearState.message ? clearState.message : "";
 
   return (
     <div className={styles.adminMatchRow}>
@@ -305,9 +715,7 @@ function ResultRow({
         ) : null}
 
         {(showSavedFlag || showClearedFlag) && (
-          <span className={styles.adminSavedFlag}>
-            {showSavedFlag || showClearedFlag}
-          </span>
+          <span className={styles.adminSavedFlag}>{showSavedFlag || showClearedFlag}</span>
         )}
 
         {(state.error && state.matchId === match.id) ||

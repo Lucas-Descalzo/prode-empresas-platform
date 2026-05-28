@@ -21,7 +21,7 @@ export interface ImportUsersActionState {
   success?: string;
   credentials?: Array<{
     fullName: string;
-    email: string;
+    email: string | null;
     temporaryPassword: string;
   }>;
 }
@@ -138,7 +138,9 @@ export async function createCompanyAction(
       formData.get("accessMode") ?? "invited_only",
     ) as CompanyAccessMode;
     const allowedEmailDomain =
-      String(formData.get("allowedEmailDomain") ?? "").trim().toLowerCase() || null;
+      accessMode === "corporate_domain_signup"
+        ? String(formData.get("allowedEmailDomain") ?? "").trim().toLowerCase() || null
+        : null;
     const primaryColor = normalizeHexColor(
       String(formData.get("primaryColor") ?? ""),
       "#0f4c81",
@@ -149,10 +151,10 @@ export async function createCompanyAction(
     );
     const logoText = String(formData.get("logoText") ?? "").trim() || shortName;
     const collectsArea = String(formData.get("collectsArea") ?? "true") === "true";
-    const areaLabel = String(formData.get("areaLabel") ?? "").trim() || "Área";
+    const areaLabel = String(formData.get("areaLabel") ?? "").trim() || "Area";
 
     if (!displayName || !shortName || !slug || !tagline) {
-      return { error: "Completá nombre, nombre corto, slug y tagline." };
+      return { error: "Completa nombre, nombre corto, slug y tagline." };
     }
 
     const created = await createCompany({
@@ -180,8 +182,7 @@ export async function createCompanyAction(
       createdSlug: created.slug,
     };
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "No pude crear la empresa.";
+    const message = error instanceof Error ? error.message : "No pude crear la empresa.";
     return { error: message };
   }
 }
@@ -195,7 +196,14 @@ export async function updateCompanyAction(
     const displayName = String(formData.get("displayName") ?? "").trim();
     const shortName = String(formData.get("shortName") ?? "").trim();
     const tagline = String(formData.get("tagline") ?? "").trim();
-    const areaLabel = String(formData.get("areaLabel") ?? "").trim() || "Área";
+    const accessMode = String(
+      formData.get("accessMode") ?? "invited_only",
+    ) as CompanyAccessMode;
+    const allowedEmailDomain =
+      accessMode === "corporate_domain_signup"
+        ? String(formData.get("allowedEmailDomain") ?? "").trim().toLowerCase() || null
+        : null;
+    const areaLabel = String(formData.get("areaLabel") ?? "").trim() || "Area";
     const collectsArea = String(formData.get("collectsArea") ?? "false") === "true";
     const primaryColor = normalizeHexColor(
       String(formData.get("primaryColor") ?? ""),
@@ -209,7 +217,7 @@ export async function updateCompanyAction(
     const logoUrl = String(formData.get("logoUrl") ?? "").trim() || null;
 
     if (!companyId || !displayName || !shortName || !tagline) {
-      return { error: "Completá los datos principales de la empresa." };
+      return { error: "Completa los datos principales de la empresa." };
     }
 
     await updateCompanySettings({
@@ -217,6 +225,8 @@ export async function updateCompanyAction(
       displayName,
       shortName,
       tagline,
+      accessMode,
+      allowedEmailDomain,
       collectsArea,
       areaLabel,
       branding: buildBranding({
@@ -247,7 +257,7 @@ export async function importUsersAction(
 
     const validRows = rows.filter((row) => row.fullName && row.email);
     if (!companyId || validRows.length === 0) {
-      return { error: "Pegá al menos un participante válido." };
+      return { error: "Pega al menos un participante valido." };
     }
 
     const imported = await importCompanyUsers(companyId, validRows);
@@ -263,8 +273,7 @@ export async function importUsersAction(
       })),
     };
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "No pude importar el padrón.";
+    const message = error instanceof Error ? error.message : "No pude importar el padron.";
     return { error: message };
   }
 }
@@ -279,19 +288,19 @@ export async function resetUserPasswordAction(
     const fullName = String(formData.get("fullName") ?? "").trim();
 
     if (!companyId || !userId) {
-      return { error: "Faltan datos para resetear la contraseña." };
+      return { error: "Faltan datos para resetear la contrasena." };
     }
 
     const temporaryPassword = await resetCompanyUserPassword({ companyId, userId });
     revalidatePath("/admin");
 
     return {
-      success: `Contraseña temporal regenerada para ${fullName}.`,
+      success: `Contrasena temporal regenerada para ${fullName}.`,
       temporaryPassword,
     };
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "No pude resetear la contraseña.";
+      error instanceof Error ? error.message : "No pude resetear la contrasena.";
     return { error: message };
   }
 }

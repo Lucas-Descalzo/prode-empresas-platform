@@ -1,7 +1,10 @@
 import { computeScore } from "./scoring";
+import { normalizeDocumentId } from "./document-id";
 import { buildSimpleModeOfficialFixtureState } from "./simple-mode-official";
 import {
+  buildCompanySignupToken,
   generateTemporaryPassword,
+  hashCompanySignupToken,
   hashPassword,
   normalizeEmail,
   verifyPassword,
@@ -11,6 +14,7 @@ import type {
   CompanyFixturePrediction,
   CompanyGameMode,
   CompanyRecord,
+  CompanySignupLinkRecord,
   CompanyUserRecord,
   Prediction,
 } from "./types";
@@ -66,7 +70,8 @@ type CompanyUserRow = {
   first_name: string;
   last_name: string;
   full_name: string;
-  email: string;
+  email: string | null;
+  document_id: string | null;
   area: string | null;
   role: "participant" | "operator";
   status: "invited" | "active" | "disabled";
@@ -74,6 +79,14 @@ type CompanyUserRow = {
   created_at: string | Date;
   updated_at: string | Date;
   last_login_at: string | Date | null;
+};
+
+type CompanySignupLinkRow = {
+  company_id: string;
+  token_hash: string;
+  status: "active" | "inactive";
+  created_at: string | Date;
+  updated_at: string | Date;
 };
 
 type CompanyCredentialRow = {
@@ -109,6 +122,7 @@ function mapCompanyUser(row: CompanyUserRow): CompanyUserRecord {
     lastName: row.last_name,
     fullName: row.full_name,
     email: row.email,
+    documentId: row.document_id,
     area: row.area,
     role: row.role,
     status: row.status,
@@ -186,6 +200,43 @@ async function hydrateCompany(sql: SqlClient, row: CompanyRow): Promise<CompanyR
     },
     domains: domains.map((domain) => domain.domain),
     primaryDomain: domains.find((domain) => domain.is_primary)?.domain ?? null,
+  };
+}
+
+function buildSignupLinkPath(slug: string, token: string) {
+  return `/c/${slug}/registro?token=${encodeURIComponent(token)}`;
+}
+
+async function ensureSignupLinkRow(sql: SqlClient, companyId: string) {
+  const token = buildCompanySignupToken(companyId);
+  const tokenHash = hashCompanySignupToken(token);
+
+  await sql`
+    INSERT INTO company_signup_links (company_id, token_hash, status)
+    VALUES (${companyId}, ${tokenHash}, 'active')
+    ON CONFLICT (company_id)
+    DO UPDATE SET
+      token_hash = EXCLUDED.token_hash,
+      updated_at = NOW()
+    WHERE company_signup_links.token_hash <> EXCLUDED.token_hash
+  `;
+
+  return { token, tokenHash };
+}
+
+function mapSignupLink(
+  row: CompanySignupLinkRow,
+  slug: string,
+): CompanySignupLinkRecord {
+  const token = buildCompanySignupToken(row.company_id);
+
+  return {
+    companyId: row.company_id,
+    status: row.status,
+    token,
+    path: buildSignupLinkPath(slug, token),
+    createdAt: new Date(row.created_at).toISOString(),
+    updatedAt: new Date(row.updated_at).toISOString(),
   };
 }
 
@@ -334,6 +385,10 @@ export async function createCompany(input: {
     VALUES (${company.id}, ${domain}, true)
   `;
 
+  if (input.accessMode === "signup_link") {
+    await ensureSignupLinkRow(sql, company.id);
+  }
+
   return hydrateCompany(sql, company);
 }
 
@@ -342,6 +397,8 @@ export async function updateCompanySettings(input: {
   displayName: string;
   shortName: string;
   tagline: string;
+  accessMode: CompanyAccessMode;
+  allowedEmailDomain: string | null;
   collectsArea: boolean;
   areaLabel: string;
   branding: CompanyRecord["branding"];
@@ -355,6 +412,8 @@ export async function updateCompanySettings(input: {
       display_name = ${input.displayName.trim()},
       short_name = ${input.shortName.trim()},
       tagline = ${input.tagline.trim()},
+      access_mode = ${input.accessMode},
+      allowed_email_domain = ${input.allowedEmailDomain?.trim().toLowerCase() || null},
       collects_area = ${input.collectsArea},
       area_label = ${input.areaLabel.trim()},
       updated_at = NOW()
@@ -377,6 +436,10 @@ export async function updateCompanySettings(input: {
       updated_at = NOW()
     WHERE company_id = ${input.companyId}
   `;
+
+  if (input.accessMode === "signup_link") {
+    await ensureSignupLinkRow(sql, input.companyId);
+  }
 }
 
 export async function listUsersForCompany(companyId: string): Promise<CompanyUserRecord[]> {
@@ -390,6 +453,7 @@ export async function listUsersForCompany(companyId: string): Promise<CompanyUse
       last_name,
       full_name,
       email,
+      document_id,
       area,
       role,
       status,
@@ -403,6 +467,41 @@ export async function listUsersForCompany(companyId: string): Promise<CompanyUse
   `) as CompanyUserRow[];
 
   return rows.map(mapCompanyUser);
+}
+
+export async function getCompanySignupLink(
+  companyId: string,
+  slug: string,
+): Promise<CompanySignupLinkRecord | null> {
+  await ensureDatabaseSchema();
+  const sql = getSql();
+  await ensureSignupLinkRow(sql, companyId);
+
+  const rows = (await sql`
+    SELECT company_id, token_hash, status, created_at, updated_at
+    FROM company_signup_links
+    WHERE company_id = ${companyId}
+    LIMIT 1
+  `) as CompanySignupLinkRow[];
+
+  return rows[0] ? mapSignupLink(rows[0], slug) : null;
+}
+
+export async function updateCompanySignupLinkStatus(input: {
+  companyId: string;
+  status: "active" | "inactive";
+}) {
+  await ensureDatabaseSchema();
+  const sql = getSql();
+  await ensureSignupLinkRow(sql, input.companyId);
+
+  await sql`
+    UPDATE company_signup_links
+    SET
+      status = ${input.status},
+      updated_at = NOW()
+    WHERE company_id = ${input.companyId}
+  `;
 }
 
 function splitFullName(fullName: string) {
@@ -441,6 +540,7 @@ export async function importCompanyUsers(
         last_name,
         full_name,
         email,
+        document_id,
         area,
         role,
         status,
@@ -478,6 +578,7 @@ export async function importCompanyUsers(
           last_name,
           full_name,
           email,
+          document_id,
           area,
           role,
           status,
@@ -508,11 +609,12 @@ export async function importCompanyUsers(
     const insertedRows = (await sql`
       INSERT INTO company_users (
         company_id,
-        first_name,
-        last_name,
-        full_name,
-        email,
-        area,
+          first_name,
+          last_name,
+          full_name,
+          email,
+          document_id,
+          area,
         status,
         must_change_password
       )
@@ -522,6 +624,7 @@ export async function importCompanyUsers(
         ${lastName},
         ${fullName},
         ${email},
+        ${null},
         ${area},
         'invited',
         true
@@ -533,6 +636,7 @@ export async function importCompanyUsers(
         last_name,
         full_name,
         email,
+        document_id,
         area,
         role,
         status,
@@ -590,6 +694,159 @@ export async function resetCompanyUserPassword(input: {
   return temporaryPassword;
 }
 
+export async function setCompanyUserStatus(input: {
+  companyId: string;
+  userId: string;
+  status: "active" | "disabled";
+}) {
+  await ensureDatabaseSchema();
+  const sql = getSql();
+  const statusRows =
+    input.status === "disabled"
+      ? []
+      : (await sql`
+          SELECT CASE
+            WHEN must_change_password THEN 'invited'
+            ELSE 'active'
+          END AS next_status
+          FROM company_users
+          WHERE id = ${input.userId}
+            AND company_id = ${input.companyId}
+          LIMIT 1
+        `) as Array<{ next_status: "active" | "invited" }>;
+  const nextStatus =
+    input.status === "disabled" ? "disabled" : statusRows[0]?.next_status ?? "active";
+
+  const rows = (await sql`
+    UPDATE company_users
+    SET
+      status = ${nextStatus},
+      updated_at = NOW()
+    WHERE id = ${input.userId}
+      AND company_id = ${input.companyId}
+    RETURNING
+      id,
+      company_id,
+      first_name,
+      last_name,
+      full_name,
+      email,
+      document_id,
+      area,
+      role,
+      status,
+      must_change_password,
+      created_at,
+      updated_at,
+      last_login_at
+  `) as CompanyUserRow[];
+
+  return rows[0] ? mapCompanyUser(rows[0]) : null;
+}
+
+export type SignupParticipantResult =
+  | { kind: "created"; user: CompanyUserRecord }
+  | { kind: "existing"; user: CompanyUserRecord };
+
+export async function createSignupLinkParticipant(input: {
+  companyId: string;
+  firstName: string;
+  lastName: string;
+  documentId: string;
+  password: string;
+}): Promise<SignupParticipantResult> {
+  await ensureDatabaseSchema();
+  const sql = getSql();
+  const documentId = normalizeDocumentId(input.documentId);
+
+  if (!documentId) {
+    throw new Error("DNI invalido.");
+  }
+
+  const existingRows = (await sql`
+    SELECT
+      id,
+      company_id,
+      first_name,
+      last_name,
+      full_name,
+      email,
+      document_id,
+      area,
+      role,
+      status,
+      must_change_password,
+      created_at,
+      updated_at,
+      last_login_at
+    FROM company_users
+    WHERE company_id = ${input.companyId}
+      AND document_id = ${documentId}
+    LIMIT 1
+  `) as CompanyUserRow[];
+
+  if (existingRows[0]) {
+    return {
+      kind: "existing",
+      user: mapCompanyUser(existingRows[0]),
+    };
+  }
+
+  const password = hashPassword(input.password);
+  const fullName = `${input.firstName.trim()} ${input.lastName.trim()}`.trim();
+  const insertedRows = (await sql`
+    INSERT INTO company_users (
+      company_id,
+      first_name,
+      last_name,
+      full_name,
+      email,
+      document_id,
+      area,
+      status,
+      must_change_password
+    )
+    VALUES (
+      ${input.companyId},
+      ${input.firstName.trim()},
+      ${input.lastName.trim()},
+      ${fullName},
+      ${null},
+      ${documentId},
+      ${null},
+      'active',
+      false
+    )
+    RETURNING
+      id,
+      company_id,
+      first_name,
+      last_name,
+      full_name,
+      email,
+      document_id,
+      area,
+      role,
+      status,
+      must_change_password,
+      created_at,
+      updated_at,
+      last_login_at
+  `) as CompanyUserRow[];
+
+  const user = insertedRows[0];
+
+  await sql`
+    INSERT INTO company_user_credentials (user_id, password_hash, password_salt)
+    VALUES (${user.id}, ${password.hash}, ${password.salt})
+  `;
+
+  return {
+    kind: "created",
+    user: mapCompanyUser(user),
+  };
+}
+
 async function getUserCredential(sql: SqlClient, userId: string) {
   const rows = (await sql`
     SELECT user_id, password_hash, password_salt
@@ -601,35 +858,95 @@ async function getUserCredential(sql: SqlClient, userId: string) {
   return rows[0] ?? null;
 }
 
+export async function isSignupLinkTokenValid(input: {
+  companyId: string;
+  token: string;
+}) {
+  await ensureDatabaseSchema();
+  const sql = getSql();
+  await ensureSignupLinkRow(sql, input.companyId);
+
+  const rows = (await sql`
+    SELECT company_id, token_hash, status, created_at, updated_at
+    FROM company_signup_links
+    WHERE company_id = ${input.companyId}
+    LIMIT 1
+  `) as CompanySignupLinkRow[];
+
+  const link = rows[0];
+  if (!link || link.status !== "active") {
+    return false;
+  }
+
+  const expectedToken = buildCompanySignupToken(input.companyId);
+  if (input.token !== expectedToken) {
+    return false;
+  }
+
+  return hashCompanySignupToken(input.token) === link.token_hash;
+}
+
 export async function authenticateCompanyUser(input: {
   companyId: string;
-  email: string;
+  accessMode: CompanyAccessMode;
+  identifier: string;
   password: string;
 }) {
   await ensureDatabaseSchema();
   const sql = getSql();
-  const email = normalizeEmail(input.email);
+  let userRows: CompanyUserRow[] = [];
 
-  const userRows = (await sql`
-    SELECT
-      id,
-      company_id,
-      first_name,
-      last_name,
-      full_name,
-      email,
-      area,
-      role,
-      status,
-      must_change_password,
-      created_at,
-      updated_at,
-      last_login_at
-    FROM company_users
-    WHERE company_id = ${input.companyId}
-      AND email = ${email}
-    LIMIT 1
-  `) as CompanyUserRow[];
+  if (input.accessMode === "signup_link") {
+    const documentId = normalizeDocumentId(input.identifier);
+    if (!documentId) {
+      return null;
+    }
+
+    userRows = (await sql`
+      SELECT
+        id,
+        company_id,
+        first_name,
+        last_name,
+        full_name,
+        email,
+        document_id,
+        area,
+        role,
+        status,
+        must_change_password,
+        created_at,
+        updated_at,
+        last_login_at
+      FROM company_users
+      WHERE company_id = ${input.companyId}
+        AND document_id = ${documentId}
+      LIMIT 1
+    `) as CompanyUserRow[];
+  } else {
+    const email = normalizeEmail(input.identifier);
+    userRows = (await sql`
+      SELECT
+        id,
+        company_id,
+        first_name,
+        last_name,
+        full_name,
+        email,
+        document_id,
+        area,
+        role,
+        status,
+        must_change_password,
+        created_at,
+        updated_at,
+        last_login_at
+      FROM company_users
+      WHERE company_id = ${input.companyId}
+        AND email = ${email}
+      LIMIT 1
+    `) as CompanyUserRow[];
+  }
 
   const user = userRows[0];
   if (!user || user.status === "disabled") {
@@ -711,6 +1028,7 @@ export async function getCompanyUserById(
       last_name,
       full_name,
       email,
+      document_id,
       area,
       role,
       status,

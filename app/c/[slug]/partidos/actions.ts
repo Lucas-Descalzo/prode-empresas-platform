@@ -21,7 +21,7 @@ export async function loginAction(
   formData: FormData,
 ): Promise<LoginActionState> {
   const slug = String(formData.get("slug") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
+  const identifier = String(formData.get("identifier") ?? "").trim();
   const password = String(formData.get("password") ?? "").trim();
 
   const client = await getCorporateClient(slug);
@@ -29,18 +29,29 @@ export async function loginAction(
     return { error: "Empresa no encontrada." };
   }
 
-  if (!email || !password) {
-    return { error: "Ingresá tu email y tu contraseña." };
+  if (!identifier || !password) {
+    return {
+      error:
+        client.accessMode === "signup_link"
+          ? "Ingresa tu DNI y tu clave."
+          : "Ingresa tu email y tu contrasena.",
+    };
   }
 
   const user = await authenticateCompanyUser({
     companyId: client.id,
-    email,
+    accessMode: client.accessMode,
+    identifier,
     password,
   });
 
   if (!user) {
-    return { error: "Email o contraseña incorrectos." };
+    return {
+      error:
+        client.accessMode === "signup_link"
+          ? "DNI o clave incorrectos."
+          : "Email o contrasena incorrectos.",
+    };
   }
 
   await setParticipantSession({
@@ -71,11 +82,11 @@ export async function changePasswordAction(
   }
 
   if (password.length < 8) {
-    return { error: "La contraseña debe tener al menos 8 caracteres." };
+    return { error: "La contrasena debe tener al menos 8 caracteres." };
   }
 
   if (password !== confirmPassword) {
-    return { error: "Las contraseñas no coinciden." };
+    return { error: "Las contrasenas no coinciden." };
   }
 
   await changeCompanyUserPassword({

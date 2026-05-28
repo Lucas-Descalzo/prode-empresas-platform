@@ -4,7 +4,10 @@ import type { StageId, TeamId } from "@/lib/world-cup-types";
 export type PredictionMode = "1X2" | "score";
 export type PredictionStage = "groups" | StageId;
 export type CompanyGameMode = "simple" | "interactive";
-export type CompanyAccessMode = "invited_only" | "corporate_domain_signup";
+export type CompanyAccessMode =
+  | "invited_only"
+  | "corporate_domain_signup"
+  | "signup_link";
 
 export interface CompanyBranding {
   primary: string;
@@ -46,7 +49,8 @@ export interface CompanyUserRecord {
   firstName: string;
   lastName: string;
   fullName: string;
-  email: string;
+  email: string | null;
+  documentId: string | null;
   area: string | null;
   role: "participant" | "operator";
   status: "invited" | "active" | "disabled";
@@ -72,4 +76,13 @@ export interface CompanyOfficialResult {
   awayScore: number;
   advancingTeamId: TeamId | null;
   savedAt: string;
+}
+
+export interface CompanySignupLinkRecord {
+  companyId: string;
+  status: "active" | "inactive";
+  token: string;
+  path: string;
+  createdAt: string;
+  updatedAt: string;
 }

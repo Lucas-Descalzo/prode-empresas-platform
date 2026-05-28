@@ -2,9 +2,19 @@
 
 ## Current branch context
 
-- Working branch: `feat/tm-boxing-bracket-polish`
-- The working tree is still dirty with ongoing bracket/mobile polish work.
-- Avoid mixing the next auth/admin changes with the current visual polish in the same commit.
+- Production was resynced after commit `ea200e6` (`UX: simplificar Partidos, corregir ordinales y acentos`).
+- Current review branch: `chore/post-deploy-sync-review`
+- `main` is clean and aligned with `origin/main`.
+- The previous bracket/mobile polish work is no longer pending locally; it was already committed and deployed.
+- The next auth/admin work should start in a fresh feature branch from the deployed state.
+
+## Post-deploy functional check
+
+- `/c/[slug]/partidos` is still the real private entrypoint and login gate.
+- `/c/[slug]/liga` still renders the ranking without forcing login.
+- `/c/[slug]/admin` still focuses on official results only.
+- The disabled-session safety fix is still present in `lib/corporate/db.ts`.
+- No working-tree drift was detected during the post-deploy sync review.
 
 ## What already exists in the codebase
 
@@ -202,8 +212,25 @@ Scope:
 
 ## Suggested delivery order
 
-1. Finish and isolate the current bracket/mobile polish work.
+1. Refresh this plan after each deployed milestone so branch assumptions do not go stale.
 2. Build private ranking plus search.
 3. Add tenant participant management with disable/enable.
 4. Build invite-link signup.
 5. Polish owner UX and copy for launch.
+
+## Recommended next slice
+
+The clearest next slice is still `tenant access and privacy baseline`, but now from the deployed state.
+
+Suggested scope for that slice:
+
+- require participant session on `/c/[slug]/liga`
+- preserve the current `partidos` login flow as the shared gate
+- add client-side ranking search
+- avoid touching tenant admin yet unless the ranking work needs shared helpers
+
+Why this remains the best next step:
+
+- it solves a direct client requirement already confirmed
+- it is smaller and safer than starting with invite-link signup
+- it keeps the owner-panel expansion separate from participant-facing access changes

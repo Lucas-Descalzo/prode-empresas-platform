@@ -896,6 +896,16 @@
   font-weight: 500;
 }
 
+.formInfo {
+  font-size: 0.85rem;
+  color: var(--state-success);
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.7rem;
+  background: var(--state-success-bg);
+  border: 1px solid var(--state-success-border);
+  font-weight: 500;
+}
+
 .formSubmit {
   display: inline-flex;
   align-items: center;
@@ -928,6 +938,19 @@
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+.formSecondaryLink {
+  color: var(--client-muted-strong);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.formSecondaryLink:hover {
+  color: var(--brand-text);
 }
 
 /* ── Match list (game screen) ───────────────────────────────── */
@@ -1228,6 +1251,78 @@
   line-height: 1.5;
 }
 
+.leaderboardToolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 0.9rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.leaderboardSearch {
+  display: grid;
+  gap: 0.45rem;
+  flex: 1 1 18rem;
+}
+
+.leaderboardSearchLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--client-muted-strong);
+}
+
+.leaderboardSearchInput {
+  min-height: 2.9rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--client-line-strong);
+  background: var(--brand-surface);
+  color: var(--client-fg);
+  font-size: 0.94rem;
+}
+
+.leaderboardSearchInput::placeholder {
+  color: var(--client-muted);
+}
+
+.leaderboardSearchInput:focus {
+  outline: none;
+  border-color: var(--client-primary);
+  box-shadow: 0 0 0 3px var(--brand-focus-ring);
+}
+
+.leaderboardSearchMeta {
+  display: grid;
+  gap: 0.12rem;
+  min-width: 9rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line);
+  background: var(--client-card-soft);
+  text-align: right;
+}
+
+.leaderboardSearchMeta strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.15rem;
+  color: var(--brand-text);
+}
+
+.leaderboardSearchMeta span {
+  font-size: 0.76rem;
+  color: var(--client-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.leaderboardTableWrap {
+  width: 100%;
+}
+
 .leaderboardTable {
   width: 100%;
   border-collapse: collapse;
@@ -1285,6 +1380,83 @@
   margin-top: 0.2rem;
   font-size: 0.78rem;
   color: var(--client-muted);
+}
+
+.leaderboardNameCell {
+  display: grid;
+  gap: 0.18rem;
+}
+
+@media (max-width: 760px) {
+  .leaderboardCard {
+    padding: 1rem;
+    box-shadow: none;
+  }
+
+  .leaderboardToolbar {
+    align-items: stretch;
+  }
+
+  .leaderboardSearchMeta {
+    width: 100%;
+    text-align: left;
+  }
+
+  .leaderboardTable,
+  .leaderboardTable thead,
+  .leaderboardTable tbody,
+  .leaderboardTable tr,
+  .leaderboardTable th,
+  .leaderboardTable td {
+    display: block;
+  }
+
+  .leaderboardTable thead {
+    display: none;
+  }
+
+  .leaderboardTable tbody {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .leaderboardTable tr {
+    border: 1px solid var(--client-line);
+    border-radius: 1rem;
+    background: var(--client-card-soft);
+    overflow: hidden;
+  }
+
+  .leaderboardTable td {
+    display: grid;
+    grid-template-columns: minmax(5.5rem, auto) minmax(0, 1fr);
+    gap: 0.8rem;
+    align-items: start;
+    padding: 0.8rem 0.95rem;
+    border-bottom: 1px solid var(--client-line);
+  }
+
+  .leaderboardTable td:last-child {
+    border-bottom: none;
+  }
+
+  .leaderboardTable td::before {
+    content: attr(data-label);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--client-muted);
+  }
+
+  .leaderboardTable tr:hover td {
+    background: transparent;
+  }
+
+  .leaderboardRank,
+  .leaderboardPoints {
+    font-size: 1rem;
+  }
 }
 
 /* ── Admin (capa 2) ──────────────────────────────────────────── */
@@ -1446,6 +1618,227 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.adminSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.adminSummaryCard {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line);
+  background: var(--client-card-soft);
+}
+
+.adminSummaryCard span {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--client-muted);
+}
+
+.adminSummaryCard strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.1rem;
+  color: var(--brand-text);
+}
+
+.adminSectionStack {
+  display: grid;
+  gap: 1rem;
+}
+
+.adminAccessCard,
+.adminParticipantCard {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem 1.05rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line);
+  background: var(--client-card-soft);
+}
+
+.adminAccessHeader,
+.adminParticipantMain {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.adminSectionTitle {
+  margin-top: 0.25rem;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brand-text);
+}
+
+.adminStatusPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--client-line-strong);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.adminStatusPillActive {
+  color: var(--state-success);
+  background: var(--state-success-bg);
+  border-color: var(--state-success-border);
+}
+
+.adminStatusPillMuted {
+  color: var(--client-muted-strong);
+  background: var(--brand-surface);
+}
+
+.adminStatusPillPending {
+  color: var(--state-warning);
+  background: var(--state-warning-bg);
+  border-color: var(--state-warning-border);
+}
+
+.adminAccessCopy {
+  color: var(--client-muted-strong);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.adminAccessPath {
+  display: block;
+  overflow-x: auto;
+  padding: 0.8rem 0.9rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--client-line);
+  background: var(--brand-surface);
+  color: var(--brand-text);
+  font-size: 0.8rem;
+}
+
+.adminAccessActions,
+.adminParticipantActions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.adminSecondaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.65rem;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--client-line-strong);
+  background: var(--brand-surface);
+  color: var(--brand-text);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.adminSecondaryAction:hover {
+  background: var(--client-hover-soft);
+}
+
+.adminSecondaryAction:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.adminFeedback {
+  font-size: 0.78rem;
+  color: var(--client-muted-strong);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.adminParticipantsList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.adminParticipantsToolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.adminParticipantsSearch {
+  display: grid;
+  gap: 0.45rem;
+  flex: 1 1 18rem;
+}
+
+.adminParticipantsMeta {
+  display: grid;
+  gap: 0.12rem;
+  min-width: 9rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line);
+  background: var(--client-card-soft);
+  text-align: right;
+}
+
+.adminParticipantsMeta strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.15rem;
+  color: var(--brand-text);
+}
+
+.adminParticipantsMeta span {
+  font-size: 0.76rem;
+  color: var(--client-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.adminParticipantMain strong {
+  color: var(--brand-text);
+  font-size: 0.98rem;
+}
+
+.adminParticipantMain p {
+  color: var(--client-muted-strong);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.adminCredentialNote {
+  color: var(--client-muted-strong);
+  font-size: 0.82rem;
+}
+
+.adminCredentialNote code {
+  color: var(--brand-text);
+}
+
+@media (max-width: 760px) {
+  .adminParticipantsMeta {
+    width: 100%;
+    text-align: left;
+  }
 }
 
 /* ── Section block (intro to a step) ────────────────────────── */

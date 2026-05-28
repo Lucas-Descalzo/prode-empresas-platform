@@ -42,6 +42,10 @@ export function getAccessCopy(
     "displayName" | "shortName" | "tagline" | "collectsArea" | "accessMode"
   >,
 ) {
+  if (client.accessMode === "signup_link") {
+    return `Cada persona habilitada por ${client.shortName} recibe un link privado para crear su usuario y entrar con DNI y clave.`;
+  }
+
   if (client.accessMode === "corporate_domain_signup") {
     return usesCommunityVoice(client)
       ? "Cada miembro activa su cuenta privada con su mail y entra a la plataforma."
@@ -78,15 +82,43 @@ export function getFooterAttribution(client: Pick<CompanyRecord, "displayName">)
 }
 
 export function getLoginCopy(
-  client: Pick<CompanyRecord, "shortName">,
+  client: Pick<CompanyRecord, "shortName" | "accessMode">,
 ) {
+  if (client.accessMode === "signup_link") {
+    return `Si ya te registraste, entra con tu DNI y la clave que creaste. Si todavia no tenes cuenta, pedi el link de alta a ${client.shortName}.`;
+  }
+
   return `${client.shortName} te comparte un email y una contrasena inicial. En tu primer ingreso podes definir la tuya.`;
 }
 
-export function getLoginEmailPlaceholder(
-  client: Pick<CompanyRecord, "allowedEmailDomain">,
+export function getLoginIdentifierLabel(
+  client: Pick<CompanyRecord, "accessMode">,
 ) {
+  return client.accessMode === "signup_link" ? "DNI" : "Email";
+}
+
+export function getLoginIdentifierPlaceholder(
+  client: Pick<CompanyRecord, "accessMode" | "allowedEmailDomain">,
+) {
+  if (client.accessMode === "signup_link") {
+    return "12345678";
+  }
+
   return client.allowedEmailDomain
     ? `nombre@${client.allowedEmailDomain}`
     : "nombre@correo.com";
+}
+
+export function getLoginPasswordLabel(
+  client: Pick<CompanyRecord, "accessMode">,
+) {
+  return client.accessMode === "signup_link" ? "Clave" : "Contrasena temporal";
+}
+
+export function getLoginTitle(
+  client: Pick<CompanyRecord, "accessMode">,
+) {
+  return client.accessMode === "signup_link"
+    ? "Entra con tu DNI y tu clave"
+    : "Entra con tu acceso temporal";
 }
