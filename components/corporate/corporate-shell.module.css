@@ -1918,33 +1918,60 @@
 }
 
 .simpleModeBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  display: grid;
+  gap: 0.9rem;
   padding: 0.9rem 1rem;
   border-radius: 1.1rem;
   border: 1px solid var(--client-line);
   background: var(--client-card-soft);
 }
 
-.simpleModeMetricGrid {
-  display: flex;
-  gap: 0.7rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: 0.15rem;
+.simpleModeGuidance {
+  display: grid;
+  gap: 0.3rem;
 }
 
-.simpleModeMetricGrid::-webkit-scrollbar {
-  display: none;
+.simpleModeGuidanceKicker {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--client-eyebrow);
+}
+
+.simpleModeGuidanceTitle {
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(1rem, 2.4vw, 1.2rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: var(--client-fg);
+}
+
+.simpleModeGuidanceText,
+.simpleModeGuidanceFoot {
+  margin: 0;
+  color: var(--client-muted-strong);
+  line-height: 1.5;
+}
+
+.simpleModeGuidanceText {
+  font-size: 0.92rem;
+}
+
+.simpleModeGuidanceFoot {
+  font-size: 0.8rem;
+  color: var(--client-muted);
+}
+
+.simpleModeMetricGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
 }
 
 .simpleModeMetricCard {
   display: grid;
   gap: 0.2rem;
-  min-width: 10.5rem;
   padding: 0.85rem 0.95rem;
   border-radius: 1rem;
   border: 1px solid var(--client-line);
@@ -2015,7 +2042,7 @@
 
 .simpleModeSteps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.7rem;
 }
 
@@ -2087,10 +2114,60 @@
     grid-template-columns: 1fr;
   }
 
+  .simpleModeBar {
+    padding: 0.95rem;
+  }
+
+  .simpleModeMetricGrid {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 0.15rem;
+    margin-inline: -0.05rem;
+  }
+
+  .simpleModeMetricGrid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .simpleModeMetricCard {
+    min-width: 9.5rem;
+  }
+
+  .simpleModeSteps {
+    display: flex;
+    gap: 0.55rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: -0.1rem;
+    padding-bottom: 0.15rem;
+    scroll-snap-type: x proximity;
+  }
+
+  .simpleModeSteps::-webkit-scrollbar {
+    display: none;
+  }
+
   .simpleModeStep,
   .simpleModeSaveButton {
     transition: background 0.12s, border-color 0.12s, color 0.12s;
     touch-action: manipulation;
+  }
+
+  .simpleModeStep {
+    flex: 0 0 11.25rem;
+    min-height: 5.6rem;
+    padding: 0.85rem 0.9rem;
+    scroll-snap-align: start;
+  }
+
+  .simpleModeStep strong {
+    font-size: 0.78rem;
+    line-height: 1.1;
+  }
+
+  .simpleModeStep span {
+    font-size: 0.76rem;
   }
 
   .simpleModeStepActive {
@@ -2111,11 +2188,13 @@
 }
 
 @media (min-width: 900px) {
+  .simpleModeBar {
+    grid-template-columns: minmax(0, 1.1fr) minmax(22rem, 0.9fr);
+    align-items: start;
+  }
+
   .simpleModeMetricGrid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    overflow: visible;
-    padding-bottom: 0;
+    min-width: 0;
   }
 
   .simpleModeMetricCard {

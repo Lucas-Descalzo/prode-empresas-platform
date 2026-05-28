@@ -10,7 +10,10 @@ import {
   getSimpleModeCountdownLabel,
   isSimpleModeLocked,
 } from "@/lib/simple-mode-rules";
-import { createInitialFixtureState, normalizeFixtureState } from "@/lib/world-cup-fixture";
+import {
+  createInitialFixtureState,
+  normalizeFixtureState,
+} from "@/lib/world-cup-fixture";
 import type { FixtureState } from "@/lib/world-cup-types";
 import styles from "./corporate-shell.module.css";
 
@@ -21,6 +24,10 @@ interface SimpleModeAppProps {
 
 type SaveState = "idle" | "dirty" | "saving" | "saved" | "error";
 type Step = 1 | 2 | 3 | 4;
+
+const DEFAULT_FIXTURE_STATE = createInitialFixtureState();
+const TOTAL_GROUPS = Object.keys(DEFAULT_FIXTURE_STATE.groupOrders).length;
+const TOTAL_KNOCKOUT_MATCHES = 32;
 
 function getAutoStep(state: FixtureState): Step {
   const remainingKnockout = getRemainingKnockoutMatchesCount(state);
@@ -38,6 +45,61 @@ function getAutoStep(state: FixtureState): Step {
   }
 
   return 1;
+}
+
+function getEditedGroupsCount(state: FixtureState) {
+  return Object.entries(state.groupOrders).filter(([groupId, order]) => {
+    const typedGroupId = groupId as keyof typeof DEFAULT_FIXTURE_STATE.groupOrders;
+    const defaultOrder = DEFAULT_FIXTURE_STATE.groupOrders[typedGroupId];
+
+    return (
+      state.groupPredictionModes[typedGroupId] === "matches" ||
+      order.some((teamId, index) => teamId !== defaultOrder[index])
+    );
+  }).length;
+}
+
+function getStepGuide(currentStep: Step) {
+  if (currentStep === 1) {
+    return {
+      kicker: "Ahora",
+      title: "Ordena cada grupo antes de seguir",
+      description:
+        "Abri un grupo, defini si lo cargas por partidos o manualmente y dejalo cerrado del 1ro al 4to puesto.",
+      foot:
+        "Cuando cierres los grupos, pasas a elegir los 8 mejores terceros que avanzan.",
+    };
+  }
+
+  if (currentStep === 2) {
+    return {
+      kicker: "Sigue",
+      title: "Elegi los 8 mejores terceros",
+      description:
+        "Selecciona solo ocho. Esos equipos completan los cruces de 16avos y cada acierto suma puntos.",
+      foot:
+        "No hace falta pensar la llave todavia, primero defini quienes avanzan.",
+    };
+  }
+
+  if (currentStep === 3) {
+    return {
+      kicker: "Definicion",
+      title: "Completa el cuadro hasta la final",
+      description:
+        "En cada cruce elegis que seleccion avanza. No importa por que lado llego, importa hasta que ronda la bancaste.",
+      foot:
+        "Cuando cierres todos los cruces, se habilita el resumen final para revisar y compartir.",
+    };
+  }
+
+  return {
+    kicker: "Revision final",
+    title: "Chequea tu pronostico completo",
+    description:
+      "Repasa campeon, subcampeon y tercer puesto. Desde aca podes exportar la imagen y guardar la version final.",
+    foot: "Si volves a tocar un resultado, el guardado se reactiva automaticamente.",
+  };
 }
 
 export function SimpleModeApp({
@@ -72,25 +134,34 @@ export function SimpleModeApp({
     () => getRemainingKnockoutMatchesCount(fixtureState),
     [fixtureState],
   );
+  const editedGroupsCount = useMemo(
+    () => getEditedGroupsCount(fixtureState),
+    [fixtureState],
+  );
+  const completedKnockoutMatches = TOTAL_KNOCKOUT_MATCHES - remainingKnockout;
+  const currentStepGuide = useMemo(() => getStepGuide(currentStep), [currentStep]);
 
   const steps = useMemo(
     () => [
       {
         id: 1 as Step,
         label: "Grupos",
-        meta: `${Object.keys(fixtureState.groupPredictionModes).length} con partidos`,
+        meta: `${editedGroupsCount}/${TOTAL_GROUPS} listos`,
         disabled: false,
       },
       {
         id: 2 as Step,
         label: "Terceros",
-        meta: `${fixtureState.qualifiedThirdPlaces.length}/8`,
+        meta: `${fixtureState.qualifiedThirdPlaces.length}/8 elegidos`,
         disabled: false,
       },
       {
         id: 3 as Step,
         label: "Cuadro",
-        meta: remainingKnockout === 0 ? "Completo" : `${remainingKnockout} pendientes`,
+        meta:
+          remainingKnockout === 0
+            ? "32/32 cerrados"
+            : `${completedKnockoutMatches}/${TOTAL_KNOCKOUT_MATCHES} definidos`,
         disabled: false,
       },
       {
@@ -98,14 +169,15 @@ export function SimpleModeApp({
         label: "Resumen",
         meta:
           remainingKnockout === 0 && fixtureState.qualifiedThirdPlaces.length === 8
-            ? "Listo"
-            : "Pendiente",
+            ? "Listo para revisar"
+            : "Se activa al completar",
         disabled:
           remainingKnockout > 0 || fixtureState.qualifiedThirdPlaces.length < 8,
       },
     ],
     [
-      fixtureState.groupPredictionModes,
+      completedKnockoutMatches,
+      editedGroupsCount,
       fixtureState.qualifiedThirdPlaces.length,
       remainingKnockout,
     ],
@@ -183,20 +255,19 @@ export function SimpleModeApp({
         ? "Guardado"
         : "Guardar fixture";
 
-  const statusLabel =
-    locked
-      ? "La predicción ya quedó cerrada. Compite la última versión completa guardada antes del arranque."
-      : saveState === "saving"
-      ? "Estamos guardando tu predicción."
+  const statusLabel = locked
+    ? "La prediccion ya quedo cerrada. Compite la ultima version completa guardada antes del arranque."
+    : saveState === "saving"
+      ? "Estamos guardando tu prediccion."
       : saveState === "saved"
         ? lastSavedAt
-          ? `Último guardado a las ${lastSavedAt}.`
-          : "Tu fixture ya quedó guardado."
+          ? `Ultimo guardado a las ${lastSavedAt}.`
+          : "Tu fixture ya quedo guardado."
         : saveState === "error"
           ? "No pudimos guardar. Reintenta antes de seguir."
           : saveState === "dirty"
             ? "Hay cambios sin guardar."
-            : "Completa los pasos y guardá cuando quieras confirmar avances.";
+            : "Completa los pasos y guarda cuando quieras confirmar avances.";
 
   return (
     <>
@@ -215,9 +286,9 @@ export function SimpleModeApp({
           <section className={styles.sectionBlock}>
             <div className={styles.simpleModeIntro}>
               <div className={styles.simpleModeStatus}>
-                <span className={styles.sectionEyebrow}>Tu predicción</span>
+                <span className={styles.sectionEyebrow}>Tu prediccion</span>
                 <p className={styles.simpleModeSummary}>
-                  Completa grupos, mejores terceros y cuadro final. La última versión
+                  Completa grupos, mejores terceros y cuadro final. La ultima version
                   guardada antes del arranque es la que entra en competencia.
                 </p>
                 <p className={styles.simpleModeDeadline}>
@@ -239,6 +310,55 @@ export function SimpleModeApp({
               >
                 {saveLabel}
               </button>
+            </div>
+
+            <div className={styles.simpleModeBar}>
+              <div className={styles.simpleModeGuidance}>
+                <span className={styles.simpleModeGuidanceKicker}>
+                  {currentStepGuide.kicker}
+                </span>
+                <strong className={styles.simpleModeGuidanceTitle}>
+                  {currentStepGuide.title}
+                </strong>
+                <p className={styles.simpleModeGuidanceText}>
+                  {currentStepGuide.description}
+                </p>
+                <p className={styles.simpleModeGuidanceFoot}>{currentStepGuide.foot}</p>
+              </div>
+
+              <div className={styles.simpleModeMetricGrid}>
+                <article className={styles.simpleModeMetricCard}>
+                  <strong>Paso {currentStep}</strong>
+                  <span>Etapa actual</span>
+                </article>
+                <article className={styles.simpleModeMetricCard}>
+                  <strong>
+                    {currentStep === 1
+                      ? `${editedGroupsCount}/${TOTAL_GROUPS}`
+                      : currentStep === 2
+                        ? `${fixtureState.qualifiedThirdPlaces.length}/8`
+                        : currentStep === 3
+                          ? `${completedKnockoutMatches}/${TOTAL_KNOCKOUT_MATCHES}`
+                          : remainingKnockout === 0 &&
+                              fixtureState.qualifiedThirdPlaces.length === 8
+                            ? "Listo"
+                            : "Pendiente"}
+                  </strong>
+                  <span>
+                    {currentStep === 1
+                      ? "Grupos revisados"
+                      : currentStep === 2
+                        ? "Terceros elegidos"
+                        : currentStep === 3
+                          ? "Cruces definidos"
+                          : "Estado del cierre"}
+                  </span>
+                </article>
+                <article className={styles.simpleModeMetricCard}>
+                  <strong>228 pts</strong>
+                  <span>Maximo total</span>
+                </article>
+              </div>
             </div>
 
             <nav className={styles.simpleModeSteps} aria-label="Pasos del fixture">
