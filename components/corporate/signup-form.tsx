@@ -68,6 +68,26 @@ export function SignupForm({
         solo tu nombre y apellido.
       </p>
 
+      <div className={styles.signupIntroGrid}>
+        <section className={styles.signupInfoCard}>
+          <span className={styles.formEyebrow}>Como funciona</span>
+          <ul className={styles.signupChecklist}>
+            <li>Recibes este link privado desde el gimnasio.</li>
+            <li>Creas tu cuenta una sola vez con DNI y clave propia.</li>
+            <li>Despues entras directo a cargar tus partidos y ver la liga.</li>
+          </ul>
+        </section>
+
+        <section className={`${styles.signupInfoCard} ${styles.signupInfoCardAccent}`}>
+          <span className={styles.formEyebrow}>Antes de empezar</span>
+          <ul className={styles.signupChecklist}>
+            <li>No hace falta email.</li>
+            <li>El DNI se usa solo para ingresar y para administracion interna.</li>
+            <li>El alta te deberia llevar menos de dos minutos.</li>
+          </ul>
+        </section>
+      </div>
+
       <div className={styles.formGrid}>
         <div className={styles.formField}>
           <label htmlFor="signup-first-name">Nombre</label>
@@ -95,6 +115,9 @@ export function SignupForm({
             onPaste={handleDocumentIdPaste}
             required
           />
+          <span className={styles.formFieldNote}>
+            Solo numeros, 7 u 8 digitos. No se muestra en el ranking.
+          </span>
         </div>
 
         <div className={styles.formField}>
@@ -107,6 +130,7 @@ export function SignupForm({
             autoComplete="new-password"
             required
           />
+          <span className={styles.formFieldNote}>Minimo 8 caracteres.</span>
         </div>
 
         <div className={styles.formField}>
@@ -128,6 +152,10 @@ export function SignupForm({
       <button type="submit" className={styles.formSubmit} disabled={isPending}>
         {isPending ? "Creando..." : "Crear usuario"}
       </button>
+
+      <p className={styles.signupSupportNote}>
+        Si ya te registraste antes, entra con tu DNI y tu clave actual.
+      </p>
 
       <Link href={`/c/${client.slug}/partidos`} className={styles.formSecondaryLink}>
         Ya tengo cuenta

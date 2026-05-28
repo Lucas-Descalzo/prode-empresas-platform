@@ -57,6 +57,24 @@ const TAB_LABELS: Array<{ id: TabId; label: string }> = [
   { id: "participants", label: "Participantes" },
 ];
 
+const TAB_COPY: Record<TabId, { title: string; description: string }> = {
+  results: {
+    title: "Carga oficial del torneo",
+    description:
+      "Actualiza los resultados reales para que las predicciones y la tabla reflejen el estado del Mundial.",
+  },
+  access: {
+    title: "Acceso privado del gimnasio",
+    description:
+      "Comparte el link correcto, controla si sigue abierto y revisa rapidamente el estado general de la comunidad.",
+  },
+  participants: {
+    title: "Base de participantes",
+    description:
+      "Busca personas por nombre o DNI, resetea claves y da de baja usuarios cuando haga falta.",
+  },
+};
+
 const PARTICIPANT_FILTER_LABELS: Array<{
   id: ParticipantStatusFilter;
   label: string;
@@ -66,6 +84,12 @@ const PARTICIPANT_FILTER_LABELS: Array<{
   { id: "invited", label: "Pendientes" },
   { id: "disabled", label: "Baja" },
 ];
+
+const PARTICIPANT_STATUS_LABELS: Record<Exclude<ParticipantStatusFilter, "all">, string> = {
+  active: "Activo",
+  invited: "Pendiente",
+  disabled: "Baja",
+};
 
 function normalizeSearchValue(value: string) {
   return value
@@ -161,6 +185,7 @@ export function AdminPanel({
   const activeUsers = participantUsers.filter((user) => user.status === "active").length;
   const invitedUsers = participantUsers.filter((user) => user.status === "invited").length;
   const disabledUsers = participantUsers.filter((user) => user.status === "disabled").length;
+  const activeTabCopy = TAB_COPY[activeTab];
 
   return (
     <>
@@ -190,6 +215,14 @@ export function AdminPanel({
             ))}
           </div>
         </div>
+
+        <section className={styles.adminTabLead}>
+          <div>
+            <span className={styles.sectionEyebrow}>Vista actual</span>
+            <h2 className={styles.adminSectionTitle}>{activeTabCopy.title}</h2>
+          </div>
+          <p className={styles.adminTabLeadCopy}>{activeTabCopy.description}</p>
+        </section>
 
         {activeTab === "results" ? (
           <>
@@ -297,7 +330,13 @@ export function AdminPanel({
         ) : null}
 
         {activeTab === "participants" ? (
-          <ParticipantsPanel client={client} users={participantUsers} />
+          <ParticipantsPanel
+            client={client}
+            users={participantUsers}
+            activeUsers={activeUsers}
+            invitedUsers={invitedUsers}
+            disabledUsers={disabledUsers}
+          />
         ) : null}
       </div>
     </>
@@ -358,64 +397,95 @@ function AccessPanel({
       </div>
 
       {signupLink ? (
-        <section className={styles.adminAccessCard}>
-          <div className={styles.adminAccessHeader}>
-            <div>
-              <span className={styles.sectionEyebrow}>Link unico</span>
-              <h2 className={styles.adminSectionTitle}>Alta de participantes</h2>
-            </div>
-            <span
-              className={`${styles.adminStatusPill} ${
-                signupLink.status === "active"
-                  ? styles.adminStatusPillActive
-                  : styles.adminStatusPillMuted
-              }`}
-            >
-              {signupLink.status === "active" ? "Activo" : "Inactivo"}
-            </span>
-          </div>
-
-          <p className={styles.adminAccessCopy}>
-            Comparte este link solo con personas que pagaron la cuota de junio. Quien
-            entre podra crear su cuenta con DNI y clave propia.
-          </p>
-
-          <code className={styles.adminAccessPath}>{signupLink.path}</code>
-
-          <div className={styles.adminAccessActions}>
-            <button
-              type="button"
-              className={styles.formSubmit}
-              onClick={() => void handleCopyLink()}
-            >
-              Copiar link
-            </button>
-
-            <form action={formAction}>
-              <input type="hidden" name="slug" value={client.slug} />
-              <input
-                type="hidden"
-                name="status"
-                value={signupLink.status === "active" ? "inactive" : "active"}
-              />
-              <button
-                type="submit"
-                className={styles.adminSecondaryAction}
-                disabled={isPending}
+        <div className={styles.adminAccessGrid}>
+          <section className={styles.adminAccessCard}>
+            <div className={styles.adminAccessHeader}>
+              <div>
+                <span className={styles.sectionEyebrow}>Link unico</span>
+                <h2 className={styles.adminSectionTitle}>Alta de participantes</h2>
+              </div>
+              <span
+                className={`${styles.adminStatusPill} ${
+                  signupLink.status === "active"
+                    ? styles.adminStatusPillActive
+                    : styles.adminStatusPillMuted
+                }`}
               >
-                {isPending
-                  ? "Guardando..."
-                  : signupLink.status === "active"
-                    ? "Desactivar link"
-                    : "Activar link"}
-              </button>
-            </form>
-          </div>
+                {signupLink.status === "active" ? "Activo" : "Inactivo"}
+              </span>
+            </div>
 
-          {copyFeedback ? <p className={styles.adminFeedback}>{copyFeedback}</p> : null}
-          {state.error ? <p className={styles.formError}>{state.error}</p> : null}
-          {state.success ? <p className={styles.formInfo}>{state.success}</p> : null}
-        </section>
+            <p className={styles.adminAccessCopy}>
+              Comparte este link solo con personas que pagaron la cuota de junio. Quien
+              entre podra crear su cuenta con DNI y clave propia.
+            </p>
+
+            <code className={styles.adminAccessPath}>{signupLink.path}</code>
+
+            <div className={styles.adminAccessActions}>
+              <button
+                type="button"
+                className={styles.formSubmit}
+                onClick={() => void handleCopyLink()}
+              >
+                Copiar link
+              </button>
+
+              <form action={formAction}>
+                <input type="hidden" name="slug" value={client.slug} />
+                <input
+                  type="hidden"
+                  name="status"
+                  value={signupLink.status === "active" ? "inactive" : "active"}
+                />
+                <button
+                  type="submit"
+                  className={styles.adminSecondaryAction}
+                  disabled={isPending}
+                >
+                  {isPending
+                    ? "Guardando..."
+                    : signupLink.status === "active"
+                      ? "Desactivar link"
+                      : "Activar link"}
+                </button>
+              </form>
+            </div>
+
+            {copyFeedback ? <p className={styles.adminFeedback}>{copyFeedback}</p> : null}
+            {state.error ? <p className={styles.formError}>{state.error}</p> : null}
+            {state.success ? <p className={styles.formInfo}>{state.success}</p> : null}
+          </section>
+
+          <aside className={styles.adminAccessGuide}>
+            <div className={styles.adminGuideBlock}>
+              <span className={styles.sectionEyebrow}>Uso recomendado</span>
+              <ul className={styles.adminGuideList}>
+                <li>Envia este link solo a socios habilitados para jugar.</li>
+                <li>Si necesitan pausar nuevas altas, desactiven el link y vuelvan a abrirlo despues.</li>
+                <li>Si alguien no corresponde, denlo de baja desde Participantes.</li>
+              </ul>
+            </div>
+
+            <div className={styles.adminGuideBlock}>
+              <span className={styles.sectionEyebrow}>Estado operativo</span>
+              <div className={styles.adminGuideStats}>
+                <div>
+                  <strong>{signupLink.status === "active" ? "Abierto" : "Cerrado"}</strong>
+                  <span>Registro por link</span>
+                </div>
+                <div>
+                  <strong>{activeUsers}</strong>
+                  <span>Jugando hoy</span>
+                </div>
+                <div>
+                  <strong>{disabledUsers}</strong>
+                  <span>Bajas aplicadas</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
       ) : (
         <p className={styles.leaderboardEmpty}>
           Este tenant no usa alta por link en este momento.
@@ -428,9 +498,15 @@ function AccessPanel({
 function ParticipantsPanel({
   client,
   users,
+  activeUsers,
+  invitedUsers,
+  disabledUsers,
 }: {
   client: CorporateClient;
   users: CompanyUserRecord[];
+  activeUsers: number;
+  invitedUsers: number;
+  disabledUsers: number;
 }) {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<ParticipantStatusFilter>("all");
@@ -464,6 +540,25 @@ function ParticipantsPanel({
 
   return (
     <div className={styles.adminSectionStack}>
+      <div className={styles.adminSummaryGrid}>
+        <article className={styles.adminSummaryCard}>
+          <span>Participantes</span>
+          <strong>{users.length}</strong>
+        </article>
+        <article className={styles.adminSummaryCard}>
+          <span>Activos</span>
+          <strong>{activeUsers}</strong>
+        </article>
+        <article className={styles.adminSummaryCard}>
+          <span>Pendientes</span>
+          <strong>{invitedUsers}</strong>
+        </article>
+        <article className={styles.adminSummaryCard}>
+          <span>Baja</span>
+          <strong>{disabledUsers}</strong>
+        </article>
+      </div>
+
       <div className={styles.adminParticipantsToolbar}>
         <label className={styles.adminParticipantsSearch}>
           <span className={styles.leaderboardSearchLabel}>Buscar participante</span>
@@ -539,13 +634,25 @@ function ParticipantRow({
 
   const stateForUser =
     resetState.userId === user.id ? resetState : statusState.userId === user.id ? statusState : {};
+  const statusLabel = PARTICIPANT_STATUS_LABELS[user.status];
+  const lastLoginLabel =
+    user.lastLoginAt === null
+      ? user.status === "invited"
+        ? "Todavia no entro"
+        : "Sin ingreso registrado"
+      : formatLastLogin(user.lastLoginAt);
 
   return (
     <article className={styles.adminParticipantCard}>
       <div className={styles.adminParticipantMain}>
         <div>
           <strong>{user.fullName}</strong>
-          <p>DNI {user.documentId ?? "Sin DNI"} · {formatLastLogin(user.lastLoginAt)}</p>
+          <div className={styles.adminParticipantMetaList}>
+            <span className={styles.adminParticipantMetaItem}>
+              DNI {user.documentId ?? "Sin DNI"}
+            </span>
+            <span className={styles.adminParticipantMetaItem}>{lastLoginLabel}</span>
+          </div>
         </div>
         <span
           className={`${styles.adminStatusPill} ${
@@ -556,7 +663,7 @@ function ParticipantRow({
                 : styles.adminStatusPillPending
           }`}
         >
-          {user.status}
+          {statusLabel}
         </span>
       </div>
 
@@ -585,7 +692,11 @@ function ParticipantRow({
           />
           <button
             type="submit"
-            className={styles.adminSecondaryAction}
+            className={
+              user.status === "disabled"
+                ? styles.adminSecondaryAction
+                : styles.adminDangerAction
+            }
             disabled={isStatusPending}
           >
             {isStatusPending
@@ -601,7 +712,7 @@ function ParticipantRow({
       {stateForUser.success ? <p className={styles.formInfo}>{stateForUser.success}</p> : null}
       {resetState.userId === user.id && resetState.temporaryPassword ? (
         <p className={styles.adminCredentialNote}>
-          Clave temporal: <code>{resetState.temporaryPassword}</code>
+          Clave temporal visible una sola vez: <code>{resetState.temporaryPassword}</code>
         </p>
       ) : null}
     </article>

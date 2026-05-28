@@ -847,6 +847,37 @@
   letter-spacing: 0.04em;
 }
 
+.signupIntroGrid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.signupInfoCard {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line);
+  background: var(--client-card-soft);
+}
+
+.signupInfoCardAccent {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-primary-muted) 72%, transparent), transparent 68%),
+    var(--client-card-soft);
+  border-color: var(--brand-primary-border);
+}
+
+.signupChecklist {
+  margin: 0;
+  padding-inline-start: 1rem;
+  display: grid;
+  gap: 0.38rem;
+  color: var(--client-muted-strong);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
 .formGrid {
   display: grid;
   gap: 0.85rem;
@@ -884,6 +915,12 @@
   border-color: var(--client-primary);
   background: var(--brand-focus-surface);
   box-shadow: 0 0 0 3px var(--brand-focus-ring);
+}
+
+.formFieldNote {
+  font-size: 0.76rem;
+  color: var(--client-muted);
+  line-height: 1.45;
 }
 
 .formError {
@@ -951,6 +988,12 @@
 
 .formSecondaryLink:hover {
   color: var(--brand-text);
+}
+
+.signupSupportNote {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--client-muted-strong);
 }
 
 /* ── Match list (game screen) ───────────────────────────────── */
@@ -1479,6 +1522,25 @@
   justify-content: space-between;
 }
 
+.adminTabLead {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--brand-primary-muted) 62%, transparent), transparent 55%),
+    var(--client-card-soft);
+}
+
+.adminTabLeadCopy {
+  margin: 0;
+  color: var(--client-muted-strong);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  max-width: 65ch;
+}
+
 .adminFilters {
   display: flex;
   flex-wrap: wrap;
@@ -1654,7 +1716,13 @@
   gap: 1rem;
 }
 
+.adminAccessGrid {
+  display: grid;
+  gap: 0.9rem;
+}
+
 .adminAccessCard,
+.adminAccessGuide,
 .adminParticipantCard {
   display: grid;
   gap: 0.85rem;
@@ -1763,11 +1831,65 @@
   cursor: not-allowed;
 }
 
+.adminDangerAction {
+  composes: adminSecondaryAction;
+  border-color: var(--state-danger-border);
+  background: var(--state-danger-bg);
+  color: var(--state-danger);
+}
+
+.adminDangerAction:hover {
+  background: color-mix(in srgb, var(--state-danger-bg) 72%, transparent);
+}
+
 .adminFeedback {
   font-size: 0.78rem;
   color: var(--client-muted-strong);
   font-weight: 700;
   letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.adminGuideBlock {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.adminGuideList {
+  margin: 0;
+  padding-inline-start: 1rem;
+  display: grid;
+  gap: 0.45rem;
+  color: var(--client-muted-strong);
+  font-size: 0.87rem;
+  line-height: 1.55;
+}
+
+.adminGuideStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.7rem;
+}
+
+.adminGuideStats div {
+  display: grid;
+  gap: 0.16rem;
+  padding: 0.8rem 0.85rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--client-line);
+  background: var(--brand-surface);
+}
+
+.adminGuideStats strong {
+  font-family: var(--font-heading), sans-serif;
+  color: var(--brand-text);
+  font-size: 1rem;
+}
+
+.adminGuideStats span {
+  color: var(--client-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -1819,15 +1941,35 @@
   font-size: 0.98rem;
 }
 
-.adminParticipantMain p {
+.adminParticipantMetaList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.38rem;
+}
+
+.adminParticipantMetaItem {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.9rem;
+  padding: 0.3rem 0.62rem;
+  border-radius: 999px;
+  border: 1px solid var(--client-line);
+  background: var(--brand-surface);
   color: var(--client-muted-strong);
-  font-size: 0.82rem;
-  line-height: 1.45;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .adminCredentialNote {
+  margin: 0;
   color: var(--client-muted-strong);
   font-size: 0.82rem;
+  line-height: 1.5;
+  padding: 0.8rem 0.9rem;
+  border-radius: 0.9rem;
+  border: 1px dashed var(--brand-primary-border);
+  background: color-mix(in srgb, var(--brand-primary-muted) 42%, transparent);
 }
 
 .adminCredentialNote code {
@@ -1835,9 +1977,35 @@
 }
 
 @media (max-width: 760px) {
+  .formCard {
+    padding: 1.25rem;
+  }
+
+  .formSubmit,
+  .adminSecondaryAction,
+  .adminDangerAction {
+    width: 100%;
+  }
+
+  .adminParticipantActions form,
+  .adminAccessActions form {
+    flex: 1 1 100%;
+  }
+
   .adminParticipantsMeta {
     width: 100%;
     text-align: left;
+  }
+}
+
+@media (min-width: 760px) {
+  .signupIntroGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .adminAccessGrid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(17rem, 0.95fr);
+    align-items: start;
   }
 }
 
