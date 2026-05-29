@@ -353,6 +353,14 @@
   line-height: 1.55;
 }
 
+.landingSupportNote {
+  margin: 0;
+  max-width: 50ch;
+  color: var(--brand-text-muted);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
 .landingCtaRow {
   display: flex;
   flex-wrap: wrap;
@@ -626,6 +634,40 @@
 .featureCopy {
   font-size: 0.875rem;
   line-height: 1.55;
+  color: var(--client-muted-strong);
+}
+
+.journeyGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+
+.journeyCard {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1.2rem 1.25rem;
+  border-radius: 1.4rem;
+  border: 1px solid var(--client-line);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-surface) 48%, transparent), transparent 52%),
+    var(--client-card-soft);
+  box-shadow: var(--client-card-shadow);
+}
+
+.journeyTitle {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--client-fg);
+}
+
+.journeyCopy {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.58;
   color: var(--client-muted-strong);
 }
 

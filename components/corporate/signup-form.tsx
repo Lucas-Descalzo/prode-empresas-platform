@@ -76,7 +76,7 @@ export function SignupForm({
           <ul className={styles.signupChecklist}>
             <li>Recibes este link privado desde el gimnasio.</li>
             <li>Creas tu cuenta una sola vez con DNI y clave propia.</li>
-            <li>Despues entras directo a cargar tus partidos y ver la liga.</li>
+            <li>Despues entras directo a completar tu prode y seguir el ranking.</li>
           </ul>
         </section>
 
@@ -185,7 +185,7 @@ export function SignupForm({
       </button>
 
       <p className={styles.signupSupportNote}>
-        Si ya te registraste antes, entra con tu DNI y tu clave actual.
+        Si ya te registraste antes, entra con tu DNI y tu clave actual para retomar tu prode.
       </p>
 
       <Link href={`/c/${client.slug}/partidos`} className={styles.formSecondaryLink}>

@@ -76,7 +76,7 @@ export async function signupAction(
 
   if (result.kind === "existing") {
     return {
-      info: "Ya existe una cuenta con ese DNI. Entra desde Partidos con tu DNI y tu clave.",
+      info: "Ya existe una cuenta con ese DNI. Entra desde Mi Prode con tu DNI y tu clave.",
     };
   }
 

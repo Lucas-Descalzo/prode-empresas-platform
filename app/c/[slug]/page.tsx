@@ -8,6 +8,7 @@ import {
   getCorporateClient,
   listCorporateClients,
 } from "@/lib/corporate/clients";
+import { getCurrentParticipant } from "@/lib/corporate/session";
 import {
   getAccessCopy,
   getGameModeCopy,
@@ -40,6 +41,8 @@ export default async function CorporateLandingPage({
     notFound();
   }
 
+  const participant = await getCurrentParticipant(client.id);
+
   const accessCopy = getAccessCopy(client);
   const modeCopy = getGameModeCopy(client);
   const rankingCopy = getRankingCopy(client);
@@ -50,6 +53,13 @@ export default async function CorporateLandingPage({
     client.gameMode === "simple"
       ? "Acceso privado, una sola carga antes del Mundial y ranking interno para la comunidad."
       : "Acceso privado, seguimiento partido a partido y ranking interno durante todo el torneo.";
+  const primaryCtaLabel = participant ? "Ir a mi prode" : "Entrar para jugar";
+  const secondaryCtaLabel = "Ver ranking";
+  const welcomeNote = participant
+    ? `Tu cuenta ya esta activa. Desde aqui puedes retomar tu prode y revisar como va la tabla.`
+    : client.accessMode === "signup_link"
+      ? "Si el gimnasio te compartio el link privado, primero crea tu cuenta y despues entra a completar tu prode."
+      : "Entra con tu acceso privado para completar tu prode y seguir el ranking interno.";
 
   return (
     <>
@@ -70,17 +80,18 @@ export default async function CorporateLandingPage({
                 prefetch={true}
                 className={styles.landingCta}
               >
-                Entrar a la plataforma
+                {primaryCtaLabel}
               </Link>
               <Link
                 href={`/c/${client.slug}/liga`}
                 className={styles.landingSecondaryCta}
               >
-                Ver ranking
+                {secondaryCtaLabel}
               </Link>
             </div>
 
             <p className={styles.landingSupportCopy}>{heroSupport}</p>
+            <p className={styles.landingSupportNote}>{welcomeNote}</p>
           </div>
 
           <div className={styles.landingHeroArt} aria-hidden="true">
@@ -126,22 +137,48 @@ export default async function CorporateLandingPage({
       <section className={styles.featureGrid}>
         <article className={styles.featureCard}>
           <span className={styles.featureNumber}>1</span>
-          <h2 className={styles.featureTitle}>Acceso privado</h2>
+          <h2 className={styles.featureTitle}>Como entras</h2>
           <p className={styles.featureCopy}>{accessCopy}</p>
         </article>
 
         <article className={styles.featureCard}>
           <span className={styles.featureNumber}>2</span>
-          <h2 className={styles.featureTitle}>
-            {client.gameMode === "simple" ? "Modo simple" : "Modo interactivo"}
-          </h2>
+          <h2 className={styles.featureTitle}>Tu prode</h2>
           <p className={styles.featureCopy}>{modeCopy}</p>
         </article>
 
         <article className={styles.featureCard}>
           <span className={styles.featureNumber}>3</span>
-          <h2 className={styles.featureTitle}>Ranking interno</h2>
+          <h2 className={styles.featureTitle}>Tu posicion</h2>
           <p className={styles.featureCopy}>{rankingCopy}</p>
+        </article>
+      </section>
+
+      <section className={styles.journeyGrid}>
+        <article className={styles.journeyCard}>
+          <span className={styles.sectionEyebrow}>Paso 1</span>
+          <h2 className={styles.journeyTitle}>Entra o crea tu cuenta</h2>
+          <p className={styles.journeyCopy}>
+            {client.accessMode === "signup_link"
+              ? "El gimnasio comparte el link privado. Con eso creas tu usuario una sola vez y ya quedas listo para jugar."
+              : "Usa el acceso privado que te compartieron para entrar a tu espacio y empezar el prode."}
+          </p>
+        </article>
+
+        <article className={styles.journeyCard}>
+          <span className={styles.sectionEyebrow}>Paso 2</span>
+          <h2 className={styles.journeyTitle}>Completa tu prode</h2>
+          <p className={styles.journeyCopy}>
+            Carga grupos, terceros y cuadro final desde Mi Prode. El sistema te va guiando paso a paso.
+          </p>
+        </article>
+
+        <article className={styles.journeyCard}>
+          <span className={styles.sectionEyebrow}>Paso 3</span>
+          <h2 className={styles.journeyTitle}>Sigue el ranking</h2>
+          <p className={styles.journeyCopy}>
+            Mira como quedas frente al resto de la comunidad a medida que el gimnasio carga resultados oficiales.
+          </p>
         </article>
       </section>
 

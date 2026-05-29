@@ -54,8 +54,8 @@ export default async function LigaPage({
       <section className={styles.sectionBlock}>
         <div className={styles.sectionHeader}>
           <div>
-            <span className={styles.sectionEyebrow}>Ranking interno</span>
-            <h2 className={styles.sectionTitle}>{client.shortName} · Mundial 2026</h2>
+            <span className={styles.sectionEyebrow}>Ranking</span>
+            <h2 className={styles.sectionTitle}>Posiciones de {client.shortName}</h2>
           </div>
           <p className={styles.sectionHint}>
             {rows.length} {rows.length === 1 ? "participante" : "participantes"} ·{" "}

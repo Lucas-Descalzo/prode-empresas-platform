@@ -62,10 +62,10 @@ export function getGameModeCopy(
   >,
 ) {
   if (client.gameMode === "simple") {
-    return "Completas tu prediccion una sola vez antes del Mundial: grupos, mejores terceros y cuadro final.";
+    return "Completas tu prode una sola vez antes del Mundial: grupos, mejores terceros y cuadro final.";
   }
 
-  return "La eliminacion directa se define partido a partido durante todo el torneo.";
+  return "Tu prode se completa partido a partido durante todo el torneo.";
 }
 
 export function getRankingCopy(
@@ -74,7 +74,7 @@ export function getRankingCopy(
     "displayName" | "shortName" | "tagline" | "collectsArea"
   >,
 ) {
-  return `Cada participante compite en el ranking interno de ${client.shortName}, con su nombre y puntaje actualizado durante el torneo.`;
+  return `Cada participante sigue su posicion en el ranking interno de ${client.shortName}, con nombre y puntaje actualizados durante el torneo.`;
 }
 
 export function getFooterAttribution(client: Pick<CompanyRecord, "displayName">) {
@@ -85,10 +85,10 @@ export function getLoginCopy(
   client: Pick<CompanyRecord, "shortName" | "accessMode">,
 ) {
   if (client.accessMode === "signup_link") {
-    return `Si ya te registraste, entra con tu DNI y la clave que creaste. Si todavia no tenes cuenta, pedi el link de alta a ${client.shortName}.`;
+    return `Si ya te registraste, entra con tu DNI y la clave que creaste. Si todavia no tenes cuenta, pide el link privado al equipo de ${client.shortName}.`;
   }
 
-  return `${client.shortName} te comparte un email y una contrasena inicial. En tu primer ingreso podes definir la tuya.`;
+  return `${client.shortName} te comparte un email y una contrasena inicial. En tu primer ingreso puedes definir la tuya.`;
 }
 
 export function getLoginIdentifierLabel(
@@ -119,6 +119,6 @@ export function getLoginTitle(
   client: Pick<CompanyRecord, "accessMode">,
 ) {
   return client.accessMode === "signup_link"
-    ? "Entra con tu DNI y tu clave"
+    ? "Entra para seguir tu prode"
     : "Entra con tu acceso temporal";
 }

@@ -16,9 +16,9 @@ interface CorporateHeaderProps {
 type TabId = "inicio" | "partidos" | "liga";
 
 const TABS: Array<{ id: TabId; label: string; href: (slug: string) => string }> = [
-  { id: "inicio", label: "Inicio", href: (slug) => `/c/${slug}` },
-  { id: "partidos", label: "Partidos", href: (slug) => `/c/${slug}/partidos` },
-  { id: "liga", label: "Liga", href: (slug) => `/c/${slug}/liga` },
+  { id: "inicio", label: "Resumen", href: (slug) => `/c/${slug}` },
+  { id: "partidos", label: "Mi Prode", href: (slug) => `/c/${slug}/partidos` },
+  { id: "liga", label: "Ranking", href: (slug) => `/c/${slug}/liga` },
 ];
 
 function activeTabFromPath(pathname: string, slug: string): TabId {
@@ -72,7 +72,7 @@ export function CorporateHeader({ client, participantName }: CorporateHeaderProp
         ) : null}
       </div>
 
-      <nav className={styles.progressSteps} aria-label="Navegacion">
+      <nav className={styles.progressSteps} aria-label="Secciones principales">
         {TABS.map((tab) => (
           <Link
             key={tab.id}
