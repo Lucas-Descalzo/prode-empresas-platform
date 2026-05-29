@@ -2075,10 +2075,68 @@
   flex-wrap: wrap;
 }
 
+.adminParticipantsControlRow {
+  display: grid;
+  gap: 0.8rem;
+}
+
 .adminParticipantsSearch {
   display: grid;
   gap: 0.45rem;
   flex: 1 1 18rem;
+}
+
+.adminParticipantsSelectWrap {
+  display: grid;
+  gap: 0.45rem;
+  max-width: 18rem;
+}
+
+.adminParticipantsSelect {
+  min-height: 2.9rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line-strong);
+  background: var(--brand-surface);
+  color: var(--client-fg);
+  font-size: 0.92rem;
+}
+
+.adminParticipantsSelect:focus {
+  outline: none;
+  border-color: var(--client-primary);
+  box-shadow: 0 0 0 3px var(--brand-focus-ring);
+}
+
+.adminAreaStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.adminAreaStatPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.2rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--client-line);
+  background: var(--brand-surface);
+}
+
+.adminAreaStatPill strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 0.9rem;
+  color: var(--brand-text);
+}
+
+.adminAreaStatPill span {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--client-muted-strong);
 }
 
 .adminParticipantsMeta {
@@ -2164,6 +2222,10 @@
   .adminParticipantsMeta {
     width: 100%;
     text-align: left;
+  }
+
+  .adminParticipantsSelectWrap {
+    max-width: none;
   }
 }
 

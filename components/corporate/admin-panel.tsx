@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  type FormEvent,
   useActionState as useReactActionState,
   useDeferredValue,
   useMemo,
@@ -40,6 +41,7 @@ interface AdminPanelProps {
 type Filter = "pending" | "loaded" | "all";
 type TabId = "results" | "access" | "participants";
 type ParticipantStatusFilter = "all" | "active" | "invited" | "disabled";
+type ParticipantAreaFilter = "all" | string;
 
 const STAGE_LABELS: Record<string, string> = {
   groups: "Fase de grupos",
@@ -138,6 +140,14 @@ function formatLastLogin(value: string | null) {
     dateStyle: "short",
     timeStyle: "short",
   });
+}
+
+function formatAreaLabel(areaLabel: string, value: string | null) {
+  if (!value) {
+    return `Sin ${areaLabel.toLocaleLowerCase("es-AR")}`;
+  }
+
+  return `${areaLabel} ${value}`;
 }
 
 export function AdminPanel({
@@ -510,12 +520,34 @@ function ParticipantsPanel({
 }) {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<ParticipantStatusFilter>("all");
+  const [areaFilter, setAreaFilter] = useState<ParticipantAreaFilter>("all");
   const deferredQuery = useDeferredValue(query);
   const normalizedQuery = normalizeSearchValue(deferredQuery);
+  const usersWithTemporaryPassword = useMemo(
+    () => users.filter((user) => user.mustChangePassword).length,
+    [users],
+  );
+  const areaSummaries = useMemo(() => {
+    const counts = new Map<string, number>();
+
+    for (const user of users) {
+      const area = user.area?.trim();
+      if (!area) continue;
+      counts.set(area, (counts.get(area) ?? 0) + 1);
+    }
+
+    return Array.from(counts.entries())
+      .map(([value, count]) => ({ value, count }))
+      .sort((left, right) => left.value.localeCompare(right.value, "es-AR"));
+  }, [users]);
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
       if (statusFilter !== "all" && user.status !== statusFilter) {
+        return false;
+      }
+
+      if (areaFilter !== "all" && user.area !== areaFilter) {
         return false;
       }
 
@@ -524,11 +556,11 @@ function ParticipantsPanel({
       }
 
       const searchable = normalizeSearchValue(
-        `${user.fullName} ${user.documentId ?? ""}`,
+        `${user.fullName} ${user.documentId ?? ""} ${user.area ?? ""}`,
       );
       return searchable.includes(normalizedQuery);
     });
-  }, [normalizedQuery, statusFilter, users]);
+  }, [areaFilter, normalizedQuery, statusFilter, users]);
 
   if (users.length === 0) {
     return (
@@ -557,6 +589,10 @@ function ParticipantsPanel({
           <span>Baja</span>
           <strong>{disabledUsers}</strong>
         </article>
+        <article className={styles.adminSummaryCard}>
+          <span>Clave pendiente</span>
+          <strong>{usersWithTemporaryPassword}</strong>
+        </article>
       </div>
 
       <div className={styles.adminParticipantsToolbar}>
@@ -576,11 +612,40 @@ function ParticipantsPanel({
         <div className={styles.adminParticipantsMeta}>
           <strong>{filteredUsers.length}</strong>
           <span>
-            {normalizedQuery || statusFilter !== "all"
+            {normalizedQuery || statusFilter !== "all" || areaFilter !== "all"
               ? `de ${users.length} visibles`
               : "participantes cargados"}
           </span>
         </div>
+      </div>
+
+      <div className={styles.adminParticipantsControlRow}>
+        <label className={styles.adminParticipantsSelectWrap}>
+          <span className={styles.leaderboardSearchLabel}>{client.areaLabel}</span>
+          <select
+            value={areaFilter}
+            onChange={(event) => setAreaFilter(event.target.value)}
+            className={styles.adminParticipantsSelect}
+          >
+            <option value="all">Todas las sedes</option>
+            {areaSummaries.map((area) => (
+              <option key={area.value} value={area.value}>
+                {area.value} ({area.count})
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {areaSummaries.length > 0 ? (
+          <div className={styles.adminAreaStats}>
+            {areaSummaries.map((area) => (
+              <span key={area.value} className={styles.adminAreaStatPill}>
+                <strong>{area.count}</strong>
+                <span>{area.value}</span>
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
 
       <div className={styles.adminFilters}>
@@ -606,7 +671,12 @@ function ParticipantsPanel({
       ) : (
         <div className={styles.adminParticipantsList}>
           {filteredUsers.map((user) => (
-            <ParticipantRow key={user.id} client={client} user={user} />
+            <ParticipantRow
+              key={user.id}
+              client={client}
+              user={user}
+              areaLabel={client.areaLabel}
+            />
           ))}
         </div>
       )}
@@ -617,9 +687,11 @@ function ParticipantsPanel({
 function ParticipantRow({
   client,
   user,
+  areaLabel,
 }: {
   client: CorporateClient;
   user: CompanyUserRecord;
+  areaLabel: string;
 }) {
   const [resetState, resetAction, isResetPending] =
     useReactActionState<ParticipantAdminState, FormData>(
@@ -641,6 +713,18 @@ function ParticipantRow({
         ? "Todavia no entro"
         : "Sin ingreso registrado"
       : formatLastLogin(user.lastLoginAt);
+  const areaMetaLabel = formatAreaLabel(areaLabel, user.area);
+
+  function handleStatusSubmit(event: FormEvent<HTMLFormElement>) {
+    const actionLabel = user.status === "disabled" ? "reactivar" : "dar de baja";
+    const approved = window.confirm(
+      `Confirma que quieres ${actionLabel} a ${user.fullName}.`,
+    );
+
+    if (!approved) {
+      event.preventDefault();
+    }
+  }
 
   return (
     <article className={styles.adminParticipantCard}>
@@ -648,10 +732,14 @@ function ParticipantRow({
         <div>
           <strong>{user.fullName}</strong>
           <div className={styles.adminParticipantMetaList}>
+            <span className={styles.adminParticipantMetaItem}>{areaMetaLabel}</span>
             <span className={styles.adminParticipantMetaItem}>
               DNI {user.documentId ?? "Sin DNI"}
             </span>
             <span className={styles.adminParticipantMetaItem}>{lastLoginLabel}</span>
+            {user.mustChangePassword ? (
+              <span className={styles.adminParticipantMetaItem}>Clave temporal pendiente</span>
+            ) : null}
           </div>
         </div>
         <span
@@ -681,7 +769,7 @@ function ParticipantRow({
           </button>
         </form>
 
-        <form action={statusAction}>
+        <form action={statusAction} onSubmit={handleStatusSubmit}>
           <input type="hidden" name="slug" value={client.slug} />
           <input type="hidden" name="userId" value={user.id} />
           <input type="hidden" name="fullName" value={user.fullName} />
