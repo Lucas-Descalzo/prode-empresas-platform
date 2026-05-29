@@ -62,7 +62,7 @@ function getEditedGroupsCount(state: FixtureState) {
 function getStepGuide(currentStep: Step) {
   if (currentStep === 1) {
     return {
-      kicker: "Paso 1",
+      kicker: "Empezá por acá",
       title: "Ordená cada grupo",
       description:
         "Definí el orden final de cada grupo del 1° al 4° puesto. Podés usar el simulador de partidos o hacerlo manualmente — lo que se evalúa es el orden final, no el método.",
@@ -72,7 +72,7 @@ function getStepGuide(currentStep: Step) {
 
   if (currentStep === 2) {
     return {
-      kicker: "Paso 2",
+      kicker: "Seguí",
       title: "Elegí los 8 mejores terceros",
       description:
         "En el Mundial 2026 avanzan los 8 mejores terceros de los 12 grupos. FIFA los selecciona por puntos, diferencia de gol y goles a favor. Elegí cuáles creés que van a clasificar — el sistema los ubica en el cuadro automáticamente según su grupo de origen.",
@@ -82,7 +82,7 @@ function getStepGuide(currentStep: Step) {
 
   if (currentStep === 3) {
     return {
-      kicker: "Paso 3",
+      kicker: "Definición",
       title: "Completá el cuadro",
       description:
         "En cada cruce elegís qué selección avanza. No importa por qué lado llegó — importa hasta qué ronda la bancaste.",
@@ -91,7 +91,7 @@ function getStepGuide(currentStep: Step) {
   }
 
   return {
-    kicker: "Paso 4",
+    kicker: "Listo",
     title: "Revisión final",
     description: null,
     foot: null,
