@@ -513,6 +513,230 @@
   color: var(--brand-watermark);
 }
 
+.dashboardHero {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.45rem, 3vw, 2rem);
+  border-radius: 1.6rem;
+  border: 1px solid var(--client-line);
+  background:
+    radial-gradient(circle at top right, var(--brand-primary-muted), transparent 34%),
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-surface) 64%, transparent), transparent 68%),
+    var(--client-card-bg);
+  box-shadow: var(--client-card-shadow);
+}
+
+.dashboardHeroCopy {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 42rem;
+}
+
+.dashboardHeroTitle {
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(1.85rem, 4.2vw, 2.6rem);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: var(--brand-text);
+}
+
+.dashboardHeroText {
+  margin: 0;
+  max-width: 42ch;
+  color: var(--brand-text-muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.dashboardHeroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.2rem;
+}
+
+.dashboardStack {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.dashboardGrid {
+  display: grid;
+  gap: 0.95rem;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.95fr);
+}
+
+.dashboardCard {
+  display: grid;
+  gap: 1rem;
+  padding: 1.2rem 1.25rem;
+  border-radius: 1.35rem;
+  border: 1px solid var(--client-line);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-surface) 44%, transparent), transparent 58%),
+    var(--client-card-bg);
+  box-shadow: var(--client-card-shadow);
+}
+
+.dashboardCardPrimary {
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--brand-primary-muted) 80%, transparent), transparent 42%),
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-surface) 44%, transparent), transparent 58%),
+    var(--client-card-bg);
+}
+
+.dashboardCardSecondary {
+  align-content: start;
+}
+
+.dashboardQuickCard {
+  gap: 0.9rem;
+}
+
+.dashboardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.dashboardTitle {
+  margin: 0.3rem 0 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(1.2rem, 2.1vw, 1.55rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--client-fg);
+}
+
+.dashboardPill,
+.dashboardScorePill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.1rem;
+  padding: 0.42rem 0.78rem;
+  border-radius: 999px;
+  border: 1px solid var(--client-line);
+  background: var(--brand-surface);
+  color: var(--client-muted-strong);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dashboardScorePill {
+  border-color: var(--brand-primary-border);
+  background: color-mix(in srgb, var(--brand-primary-muted) 56%, transparent);
+  color: var(--brand-text);
+}
+
+.dashboardStatusRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.dashboardStatusBlock {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line);
+  background: color-mix(in srgb, var(--brand-surface) 74%, transparent);
+}
+
+.dashboardStatusBlock span,
+.dashboardMetric span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--client-eyebrow);
+}
+
+.dashboardStatusBlock strong,
+.dashboardMetric strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1rem;
+  line-height: 1.08;
+  text-transform: uppercase;
+  color: var(--brand-text);
+}
+
+.dashboardStatusBlock p,
+.dashboardMetric p,
+.dashboardSupportText {
+  margin: 0;
+  color: var(--client-muted-strong);
+  font-size: 0.86rem;
+  line-height: 1.52;
+}
+
+.dashboardSupportText {
+  font-size: 0.82rem;
+  color: var(--client-muted);
+}
+
+.dashboardMetricGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.dashboardMetric {
+  display: grid;
+  gap: 0.28rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line);
+  background: color-mix(in srgb, var(--brand-surface) 74%, transparent);
+}
+
+.dashboardActionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.dashboardActionTile {
+  display: grid;
+  gap: 0.28rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line);
+  background: color-mix(in srgb, var(--brand-surface) 74%, transparent);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s, background 0.15s;
+}
+
+.dashboardActionTile:hover {
+  transform: translateY(-1px);
+  border-color: var(--brand-border-strong);
+  background: color-mix(in srgb, var(--brand-surface) 88%, transparent);
+}
+
+.dashboardActionTile span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--client-eyebrow);
+}
+
+.dashboardActionTile strong {
+  font-size: 0.96rem;
+  line-height: 1.35;
+  color: var(--client-fg);
+}
+
 @media (max-width: 920px) {
   .landingHeroInner {
     grid-template-columns: 1fr;
@@ -532,6 +756,12 @@
   .landingWatermarkText {
     right: 0.6rem;
     bottom: 0.4rem;
+  }
+
+  .dashboardGrid,
+  .dashboardMetricGrid,
+  .dashboardActionGrid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -566,6 +796,25 @@
   .landingWatermarkImage,
   .landingWatermarkText {
     display: none;
+  }
+
+  .dashboardHero {
+    padding: 1.15rem 1rem;
+    box-shadow: none;
+  }
+
+  .dashboardHeroActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboardCard {
+    padding: 1rem;
+    box-shadow: none;
+  }
+
+  .dashboardStatusRow {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -765,27 +1014,27 @@
 
 .simpleModeRuleCallout {
   display: grid;
-  gap: 0.45rem;
-  padding: 1rem 1.1rem;
-  border-radius: 1.2rem;
-  border: 1px solid var(--state-warning-border);
+  gap: 0.3rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line);
   background:
-    radial-gradient(circle at top right, rgba(242, 182, 70, 0.08), transparent 42%),
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-surface) 44%, transparent), transparent 72%),
     var(--brand-surface-2);
 }
 
 .simpleModeRuleCallout strong {
   font-family: var(--font-heading), sans-serif;
-  font-size: 0.88rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--state-warning);
+  letter-spacing: 0.1em;
+  color: var(--client-fg);
 }
 
 .simpleModeRuleCallout p {
-  color: var(--client-muted-strong);
-  font-size: 0.88rem;
-  line-height: 1.55;
+  color: var(--client-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
 }
 
 .simpleModeFaqGrid {

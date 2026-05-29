@@ -10,8 +10,8 @@ export function SimpleModeGuide({ client }: { client: CompanyRecord }) {
   return (
     <section className={styles.sectionBlock}>
       <div>
-        <span className={styles.sectionEyebrow}>Como se juega</span>
-        <h2 className={styles.sectionTitle}>Sistema de puntos y reglas claras</h2>
+        <span className={styles.sectionEyebrow}>Sistema de puntos</span>
+        <h2 className={styles.sectionTitle}>Como se gana el ranking</h2>
         <p className={styles.simpleModeDeadline}>
           Cierre de carga: {formatSimpleModeCutoffLabel()}
         </p>
@@ -43,15 +43,11 @@ export function SimpleModeGuide({ client }: { client: CompanyRecord }) {
       </div>
 
       <div className={styles.simpleModeRuleCallout}>
-        <strong>Dos reglas que vale la pena tener presentes</strong>
+        <strong>Reglas importantes</strong>
         <p>
-          Importa hasta qué ronda bancaste a cada equipo, no por qué lado del cuadro
-          llegó. Si lo pusiste en semifinales y termina en semifinales, cobrás esos
-          escalones aunque haya llegado por otra llave.
-        </p>
-        <p>
-          En {client.shortName}, si dos personas empatan al final, desempata quien
-          tenga más puntos del pre-Mundial. Si siguen empatadas, comparten posición.
+          Importa hasta que ronda bancaste a cada equipo, no por que lado del cuadro
+          llego. En {client.shortName}, si dos personas empatan al final, primero
+          desempata quien tenga mas puntos del pre-Mundial.
         </p>
       </div>
 

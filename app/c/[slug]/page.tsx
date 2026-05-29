@@ -1,32 +1,46 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import styles from "@/components/corporate/corporate-shell.module.css";
 import { SimpleModeGuide } from "@/components/corporate/simple-mode-guide";
+import { getCorporateClient } from "@/lib/corporate/clients";
 import {
-  getCorporateClient,
-  listCorporateClients,
-} from "@/lib/corporate/clients";
+  getFixturePredictionForUser,
+  getInteractivePredictionsForUser,
+  getLeaderboardForCompany,
+} from "@/lib/corporate/db";
+import { allMatches } from "@/lib/corporate/match-registry";
 import { getCurrentParticipant } from "@/lib/corporate/session";
 import {
-  getAccessCopy,
-  getGameModeCopy,
-  getLandingHeroCopy,
-  getLandingHeroTitle,
-  getRankingCopy,
-} from "@/lib/corporate/copy";
-import { isDatabaseConfigured } from "@/lib/db";
+  formatSimpleModeCutoffLabel,
+  isSimpleModePredictionComplete,
+} from "@/lib/simple-mode-rules";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
-export async function generateStaticParams() {
-  if (!isDatabaseConfigured()) {
-    return [];
-  }
+function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat("es-AR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(new Date(value));
+}
 
-  const clients = await listCorporateClients();
-  return clients.map((client) => ({ slug: client.slug }));
+function formatLockedAt(value: Date) {
+  return new Intl.DateTimeFormat("es-AR", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "America/Argentina/Buenos_Aires",
+  }).format(value);
+}
+
+function getNextUnlockedMatch() {
+  const currentTimestamp = Date.now();
+
+  return allMatches
+    .filter((match) => match.lockedAt.getTime() > currentTimestamp)
+    .sort((left, right) => left.lockedAt.getTime() - right.lockedAt.getTime())[0];
 }
 
 export default async function CorporateLandingPage({
@@ -42,145 +56,204 @@ export default async function CorporateLandingPage({
   }
 
   const participant = await getCurrentParticipant(client.id);
-
-  const accessCopy = getAccessCopy(client);
-  const modeCopy = getGameModeCopy(client);
-  const rankingCopy = getRankingCopy(client);
-  const heroTitle = getLandingHeroTitle(client);
-  const heroCopy = getLandingHeroCopy(client);
-  const heroBadge = client.gameMode === "simple" ? "Modo simple" : "Modo interactivo";
-  const heroSupport =
-    client.gameMode === "simple"
-      ? "Acceso privado, una sola carga antes del Mundial y ranking interno para la comunidad."
-      : "Acceso privado, seguimiento partido a partido y ranking interno durante todo el torneo.";
   const primaryCtaLabel = participant ? "Ir a mi prode" : "Entrar para jugar";
-  const secondaryCtaLabel = "Ver ranking";
-  const welcomeNote = participant
-    ? `Tu cuenta ya esta activa. Desde aqui puedes retomar tu prode y revisar como va la tabla.`
-    : client.accessMode === "signup_link"
-      ? "Si el gimnasio te compartio el link privado, primero crea tu cuenta y despues entra a completar tu prode."
-      : "Entra con tu acceso privado para completar tu prode y seguir el ranking interno.";
+
+  let personalState:
+    | {
+        progressLabel: string;
+        progressDetail: string;
+        deadlineLabel: string;
+        nextAction: string;
+        lastSavedLabel: string;
+      }
+    | null = null;
+  let rankingState:
+    | {
+        rank: number;
+        totalParticipants: number;
+        totalPoints: number;
+        gapValue: string;
+        gapLabel: string;
+      }
+    | null = null;
+
+  if (participant) {
+    const rows = await getLeaderboardForCompany(client.id, client.gameMode);
+    const currentRowIndex = rows.findIndex((row) => row.id === participant.id);
+    const currentRow = currentRowIndex >= 0 ? rows[currentRowIndex] : null;
+    const rowAbove = currentRowIndex > 0 ? rows[currentRowIndex - 1] : null;
+
+    if (currentRow) {
+      const gap = rowAbove ? rowAbove.totalPoints - currentRow.totalPoints : 0;
+
+      rankingState = {
+        rank: currentRowIndex + 1,
+        totalParticipants: rows.length,
+        totalPoints: currentRow.totalPoints,
+        gapValue: rowAbove ? `${gap} pts` : "1ro",
+        gapLabel: rowAbove
+          ? gap === 0
+            ? "Empatas con el puesto superior."
+            : `Te faltan ${gap} pts para subir una posicion.`
+          : "Vas primero en el ranking.",
+      };
+    }
+
+    if (client.gameMode === "simple") {
+      const fixturePrediction = await getFixturePredictionForUser(client.id, participant.id);
+      const isComplete = fixturePrediction
+        ? isSimpleModePredictionComplete(fixturePrediction.fixtureState)
+        : false;
+
+      personalState = {
+        progressLabel: isComplete ? "Prode completo" : "Prode pendiente",
+        progressDetail: isComplete
+          ? "Tu prode ya esta cargado y entra en competencia."
+          : "Todavia te faltan selecciones antes del cierre.",
+        deadlineLabel: formatSimpleModeCutoffLabel(),
+        nextAction: participant.mustChangePassword
+          ? "Cambia tu clave temporal para seguir."
+          : isComplete
+            ? "Revisa el ranking o vuelve a editar antes del cierre."
+            : "Entra en Mi Prode para completar grupos, terceros y cuadro final.",
+        lastSavedLabel: fixturePrediction
+          ? `Ultimo guardado ${formatDateTime(fixturePrediction.updatedAt)}`
+          : "Aun no guardaste una version completa.",
+      };
+    } else {
+      const predictions = await getInteractivePredictionsForUser(client.id, participant.id);
+      const predictedMatches = Object.keys(predictions).length;
+      const totalMatches = allMatches.length;
+      const nextUnlockedMatch = getNextUnlockedMatch();
+
+      personalState = {
+        progressLabel:
+          predictedMatches === totalMatches ? "Prode completo" : "Prode en progreso",
+        progressDetail: `${predictedMatches}/${totalMatches} partidos cargados.`,
+        deadlineLabel: nextUnlockedMatch
+          ? `Proximo cierre ${formatLockedAt(nextUnlockedMatch.lockedAt)}`
+          : "Ya no quedan partidos abiertos.",
+        nextAction: participant.mustChangePassword
+          ? "Cambia tu clave temporal para seguir."
+          : predictedMatches === totalMatches
+            ? "Revisa el ranking o ajusta las selecciones abiertas."
+            : "Vuelve a Mi Prode para cargar los partidos que faltan.",
+        lastSavedLabel:
+          predictedMatches > 0
+            ? "Tus cambios se guardan a medida que avanzas."
+            : "Todavia no cargaste ningun partido.",
+      };
+    }
+  }
 
   return (
     <>
-      <section className={styles.landingHero}>
-        <div className={styles.landingHeroInner}>
-          <div className={styles.landingHeroContent}>
-            <div className={styles.landingMetaRow}>
-              <span className={styles.landingEyebrow}>{client.tagline}</span>
-              <span className={styles.landingMetaBadge}>{heroBadge}</span>
-            </div>
+      <section className={styles.dashboardHero}>
+        <div className={styles.dashboardHeroCopy}>
+          <h1 className={styles.dashboardHeroTitle}>Tu tablero del Mundial 2026</h1>
+          <p className={styles.dashboardHeroText}>
+            Revisa tu prode, sigue tu posicion y vuelve rapido a lo importante.
+          </p>
 
-            <h1 className={styles.landingTitle}>{heroTitle}</h1>
-            <p className={styles.landingCopy}>{heroCopy}</p>
-
-            <div className={styles.landingCtaRow}>
-              <Link
-                href={`/c/${client.slug}/partidos`}
-                prefetch={true}
-                className={styles.landingCta}
-              >
-                {primaryCtaLabel}
-              </Link>
-              <Link
-                href={`/c/${client.slug}/liga`}
-                className={styles.landingSecondaryCta}
-              >
-                {secondaryCtaLabel}
-              </Link>
-            </div>
-
-            <p className={styles.landingSupportCopy}>{heroSupport}</p>
-            <p className={styles.landingSupportNote}>{welcomeNote}</p>
-          </div>
-
-          <div className={styles.landingHeroArt} aria-hidden="true">
-            {client.branding.logoUrl ? (
-              <div className={styles.landingHeroLogoFrame}>
-                <img
-                  src={client.branding.logoUrl}
-                  alt=""
-                  className={styles.landingHeroLogo}
-                />
-              </div>
-            ) : (
-              <div className={styles.landingHeroTextMark}>
-                {client.branding.logoText?.trim() || client.shortName}
-              </div>
-            )}
-
-            <div className={styles.landingHeroStat}>
-              <strong>{client.shortName}</strong>
-              <span>
-                {client.gameMode === "simple"
-                  ? "Prode privado para alumnos, staff y comunidad."
-                  : "Seguimiento privado para la comunidad durante todo el torneo."}
-              </span>
-            </div>
+          <div className={styles.dashboardHeroActions}>
+            <Link
+              href={`/c/${client.slug}/partidos`}
+              prefetch={true}
+              className={styles.landingCta}
+            >
+              {primaryCtaLabel}
+            </Link>
+            <Link href={`/c/${client.slug}/liga`} className={styles.landingSecondaryCta}>
+              Ver ranking
+            </Link>
           </div>
         </div>
-
-        {client.branding.logoUrl ? (
-          <img
-            src={client.branding.logoUrl}
-            alt=""
-            className={styles.landingWatermarkImage}
-            aria-hidden="true"
-          />
-        ) : (
-          <span className={styles.landingWatermarkText} aria-hidden="true">
-            {client.branding.logoText?.trim() || client.shortName}
-          </span>
-        )}
       </section>
 
-      <section className={styles.featureGrid}>
-        <article className={styles.featureCard}>
-          <span className={styles.featureNumber}>1</span>
-          <h2 className={styles.featureTitle}>Como entras</h2>
-          <p className={styles.featureCopy}>{accessCopy}</p>
-        </article>
+      {participant && personalState ? (
+        <section className={styles.dashboardStack}>
+          <div className={styles.dashboardGrid}>
+            <article className={`${styles.dashboardCard} ${styles.dashboardCardPrimary}`}>
+              <div className={styles.dashboardHeader}>
+                <div>
+                  <span className={styles.sectionEyebrow}>Estado personal</span>
+                  <h2 className={styles.dashboardTitle}>{personalState.progressLabel}</h2>
+                </div>
+                <span className={styles.dashboardPill}>{participant.firstName}</span>
+              </div>
 
-        <article className={styles.featureCard}>
-          <span className={styles.featureNumber}>2</span>
-          <h2 className={styles.featureTitle}>Tu prode</h2>
-          <p className={styles.featureCopy}>{modeCopy}</p>
-        </article>
+              <div className={styles.dashboardStatusRow}>
+                <div className={styles.dashboardStatusBlock}>
+                  <span>Situacion</span>
+                  <strong>{personalState.progressLabel}</strong>
+                  <p>{personalState.progressDetail}</p>
+                </div>
+                <div className={styles.dashboardStatusBlock}>
+                  <span>Fecha limite</span>
+                  <strong>{personalState.deadlineLabel}</strong>
+                  <p>{personalState.nextAction}</p>
+                </div>
+              </div>
 
-        <article className={styles.featureCard}>
-          <span className={styles.featureNumber}>3</span>
-          <h2 className={styles.featureTitle}>Tu posicion</h2>
-          <p className={styles.featureCopy}>{rankingCopy}</p>
-        </article>
-      </section>
+              <p className={styles.dashboardSupportText}>{personalState.lastSavedLabel}</p>
+            </article>
 
-      <section className={styles.journeyGrid}>
-        <article className={styles.journeyCard}>
-          <span className={styles.sectionEyebrow}>Paso 1</span>
-          <h2 className={styles.journeyTitle}>Entra o crea tu cuenta</h2>
-          <p className={styles.journeyCopy}>
-            {client.accessMode === "signup_link"
-              ? "El gimnasio comparte el link privado. Con eso creas tu usuario una sola vez y ya quedas listo para jugar."
-              : "Usa el acceso privado que te compartieron para entrar a tu espacio y empezar el prode."}
-          </p>
-        </article>
+            {rankingState ? (
+              <article className={`${styles.dashboardCard} ${styles.dashboardCardSecondary}`}>
+                <div className={styles.dashboardHeader}>
+                  <div>
+                    <span className={styles.sectionEyebrow}>Resumen de ranking</span>
+                    <h2 className={styles.dashboardTitle}>
+                      Puesto {rankingState.rank} de {rankingState.totalParticipants}
+                    </h2>
+                  </div>
+                  <span className={styles.dashboardScorePill}>
+                    {rankingState.totalPoints} pts
+                  </span>
+                </div>
 
-        <article className={styles.journeyCard}>
-          <span className={styles.sectionEyebrow}>Paso 2</span>
-          <h2 className={styles.journeyTitle}>Completa tu prode</h2>
-          <p className={styles.journeyCopy}>
-            Carga grupos, terceros y cuadro final desde Mi Prode. El sistema te va guiando paso a paso.
-          </p>
-        </article>
+                <div className={styles.dashboardMetricGrid}>
+                  <div className={styles.dashboardMetric}>
+                    <span>Posicion</span>
+                    <strong>#{rankingState.rank}</strong>
+                    <p>Tu lugar actual en la tabla general.</p>
+                  </div>
+                  <div className={styles.dashboardMetric}>
+                    <span>Participantes</span>
+                    <strong>{rankingState.totalParticipants}</strong>
+                    <p>Personas activas en competencia.</p>
+                  </div>
+                  <div className={styles.dashboardMetric}>
+                    <span>Diferencia</span>
+                    <strong>{rankingState.gapValue}</strong>
+                    <p>{rankingState.gapLabel}</p>
+                  </div>
+                </div>
+              </article>
+            ) : null}
+          </div>
 
-        <article className={styles.journeyCard}>
-          <span className={styles.sectionEyebrow}>Paso 3</span>
-          <h2 className={styles.journeyTitle}>Sigue el ranking</h2>
-          <p className={styles.journeyCopy}>
-            Mira como quedas frente al resto de la comunidad a medida que el gimnasio carga resultados oficiales.
-          </p>
-        </article>
-      </section>
+          <article className={`${styles.dashboardCard} ${styles.dashboardQuickCard}`}>
+            <div className={styles.dashboardHeader}>
+              <div>
+                <span className={styles.sectionEyebrow}>Accesos rapidos</span>
+                <h2 className={styles.dashboardTitle}>Sigue desde aqui</h2>
+              </div>
+            </div>
+
+            <div className={styles.dashboardActionGrid}>
+              <Link href={`/c/${client.slug}/partidos`} className={styles.dashboardActionTile}>
+                <span>Mi Prode</span>
+                <strong>Completar o revisar tu carga</strong>
+              </Link>
+              <Link href={`/c/${client.slug}/liga`} className={styles.dashboardActionTile}>
+                <span>Ranking</span>
+                <strong>Ver posiciones y puntos del torneo</strong>
+              </Link>
+            </div>
+          </article>
+        </section>
+      ) : null}
 
       {client.gameMode === "simple" ? <SimpleModeGuide client={client} /> : null}
     </>
