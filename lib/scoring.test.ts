@@ -104,4 +104,60 @@ describe("fixture scoring", () => {
     expect(score.total).toBe(228);
     expect(score.pendingUnits).toBe(0);
   });
+
+  it("does not award pre-Mundial points until the official group phase is fully defined", () => {
+    const predictionState = createReadyBaseState();
+    const incompleteOfficialState = normalizeFixtureState(createInitialFixtureState());
+
+    const score = scoreFixture(predictionState, incompleteOfficialState);
+
+    expect(score.groupExactPoints).toBe(0);
+    expect(score.topTwoPartialPoints).toBe(0);
+    expect(score.bestThirdPoints).toBe(0);
+    expect(score.preWorldCupPoints).toBe(0);
+    expect(score.scoredUnits).toBe(0);
+  });
+
+  it("awards cumulative knockout points on a valid partial knockout tree", () => {
+    const baseState = createReadyBaseState();
+    const completedPrediction = completeWithFirstAvailableWinner(baseState);
+
+    const semifinalOfficialState = normalizeFixtureState({
+      ...baseState,
+      knockoutWinners: {
+        M73: completedPrediction.knockoutWinners.M73,
+        M74: completedPrediction.knockoutWinners.M74,
+        M75: completedPrediction.knockoutWinners.M75,
+        M77: completedPrediction.knockoutWinners.M77,
+        M89: completedPrediction.knockoutWinners.M89,
+        M90: completedPrediction.knockoutWinners.M90,
+        M97: completedPrediction.knockoutWinners.M97,
+      },
+    });
+
+    const score = scoreFixture(completedPrediction, semifinalOfficialState);
+
+    expect(score.roundOf16Points).toBe(8);
+    expect(score.quarterFinalPoints).toBe(8);
+    expect(score.semiFinalPoints).toBe(6);
+    expect(score.finalPoints).toBe(0);
+    expect(score.championPoints).toBe(0);
+    expect(score.knockoutPoints).toBe(22);
+  });
+
+  it("keeps finalist points separate from champion points", () => {
+    const completedState = completeWithFirstAvailableWinner(createReadyBaseState());
+    const officialState = normalizeFixtureState({
+      ...completedState,
+      knockoutWinners: {
+        ...completedState.knockoutWinners,
+        M104: completedState.knockoutWinners.M103,
+      },
+    });
+
+    const score = scoreFixture(completedState, officialState);
+
+    expect(score.finalPoints).toBe(16);
+    expect(score.championPoints).toBe(0);
+  });
 });
