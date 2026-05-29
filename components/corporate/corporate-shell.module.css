@@ -671,6 +671,15 @@
   color: var(--client-muted-strong);
 }
 
+.journeyMeta {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-text);
+}
+
 .simpleModeGuideGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));

@@ -110,12 +110,12 @@ export function GroupMatchGrid({
     <section className={styles.sectionBlock}>
       <div className={styles.sectionHeader}>
         <div>
-          <span className={styles.sectionEyebrow}>Fase de grupos</span>
-          <h2 className={styles.sectionTitle}>Predecí cada partido</h2>
+          <span className={styles.sectionEyebrow}>Mi Prode · Grupos</span>
+          <h2 className={styles.sectionTitle}>Completa la fase de grupos</h2>
         </div>
         <p className={styles.sectionHint}>
-          Tocá un grupo para abrir sus 6 partidos. Argentina pide resultado exacto;
-          los demás partidos de grupos elegís ganador o empate.
+          Abre un grupo para cargar sus 6 partidos. Argentina pide resultado exacto;
+          en los demás eliges ganador o empate.
         </p>
       </div>
 

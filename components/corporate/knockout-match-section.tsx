@@ -125,13 +125,13 @@ export function KnockoutMatchSection({
     <section className={styles.sectionBlock}>
       <div className={styles.sectionHeader}>
         <div>
-          <span className={styles.sectionEyebrow}>Eliminación directa</span>
-          <h2 className={styles.sectionTitle}>32 partidos hasta la final</h2>
+          <span className={styles.sectionEyebrow}>Mi Prode · Cuadro final</span>
+          <h2 className={styles.sectionTitle}>Define quién avanza en cada cruce</h2>
         </div>
         <p className={styles.sectionHint}>
-          Resultado exacto en todas las eliminatorias ({totalPredicted}/
-          {totalKnockout} predichos). Los partidos sin equipos definidos se
-          desbloquean al cargar resultados de fases anteriores.
+          Carga resultado exacto en cada eliminatoria ({totalPredicted}/
+          {totalKnockout} cruces cargados). Los partidos sin equipos definidos se
+          activan cuando queda resuelta la fase anterior.
         </p>
       </div>
 
