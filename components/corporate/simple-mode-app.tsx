@@ -325,36 +325,6 @@ export function SimpleModeApp({
                 </p>
                 <p className={styles.simpleModeGuidanceFoot}>{currentStepGuide.foot}</p>
               </div>
-
-              <div className={styles.simpleModeMetricGrid}>
-                <article className={styles.simpleModeMetricCard}>
-                  <strong>Paso {currentStep}</strong>
-                  <span>Etapa actual</span>
-                </article>
-                <article className={styles.simpleModeMetricCard}>
-                  <strong>
-                    {currentStep === 1
-                      ? `${editedGroupsCount}/${TOTAL_GROUPS}`
-                      : currentStep === 2
-                        ? `${fixtureState.qualifiedThirdPlaces.length}/8`
-                        : currentStep === 3
-                          ? `${completedKnockoutMatches}/${TOTAL_KNOCKOUT_MATCHES}`
-                          : remainingKnockout === 0 &&
-                              fixtureState.qualifiedThirdPlaces.length === 8
-                            ? "Listo"
-                            : "Pendiente"}
-                  </strong>
-                  <span>
-                    {currentStep === 1
-                      ? "Grupos revisados"
-                      : currentStep === 2
-                        ? "Terceros elegidos"
-                        : currentStep === 3
-                          ? "Cruces definidos"
-                          : "Estado del cierre"}
-                  </span>
-                </article>
-              </div>
             </div>
 
             <nav className={styles.simpleModeSteps} aria-label="Pasos del fixture">

@@ -233,25 +233,6 @@ export default async function CorporateLandingPage({
             ) : null}
           </div>
 
-          <article className={`${styles.dashboardCard} ${styles.dashboardQuickCard}`}>
-            <div className={styles.dashboardHeader}>
-              <div>
-                <span className={styles.sectionEyebrow}>Accesos rápidos</span>
-                <h2 className={styles.dashboardTitle}>Seguí desde acá</h2>
-              </div>
-            </div>
-
-            <div className={styles.dashboardActionGrid}>
-              <Link href={`/c/${client.slug}/partidos`} className={styles.dashboardActionTile}>
-                <span>Mi Prode</span>
-                <strong>Completar o revisar tu carga</strong>
-              </Link>
-              <Link href={`/c/${client.slug}/liga`} className={styles.dashboardActionTile}>
-                <span>Ranking</span>
-                <strong>Ver posiciones y puntos del torneo</strong>
-              </Link>
-            </div>
-          </article>
         </section>
       ) : null}
 
