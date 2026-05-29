@@ -62,43 +62,39 @@ function getEditedGroupsCount(state: FixtureState) {
 function getStepGuide(currentStep: Step) {
   if (currentStep === 1) {
     return {
-      kicker: "Ahora",
-      title: "Ordená cada grupo antes de seguir",
+      kicker: "Paso 1",
+      title: "Ordená cada grupo",
       description:
-        "Abrí un grupo, definí si lo cargás por partidos o manualmente y dejalo cerrado del 1° al 4° puesto.",
-      foot:
-        "Cuando cerrés los grupos, pasás a elegir los 8 mejores terceros que avanzan.",
+        "Definí el orden final de cada grupo del 1° al 4° puesto. Podés usar el simulador de partidos o hacerlo manualmente — lo que se evalúa es el orden final, no el método.",
+      foot: null,
     };
   }
 
   if (currentStep === 2) {
     return {
-      kicker: "Seguí",
+      kicker: "Paso 2",
       title: "Elegí los 8 mejores terceros",
       description:
-        "Seleccioná solo ocho. Esos equipos completan los cruces de 16avos y cada acierto suma puntos.",
-      foot:
-        "No hace falta pensar la llave todavía, primero definí quiénes avanzan.",
+        "En el Mundial 2026 avanzan los 8 mejores terceros de los 12 grupos. FIFA los selecciona por puntos, diferencia de gol y goles a favor. Elegí cuáles creés que van a clasificar — el sistema los ubica en el cuadro automáticamente según su grupo de origen.",
+      foot: null,
     };
   }
 
   if (currentStep === 3) {
     return {
-      kicker: "Definición",
-      title: "Completá el cuadro hasta la final",
+      kicker: "Paso 3",
+      title: "Completá el cuadro",
       description:
-        "En cada cruce elegís qué selección avanza. No importa por qué lado llegó, importa hasta qué ronda la bancaste.",
-      foot:
-        "Cuando cerrés todos los cruces, se habilita el resumen final para revisar y compartir.",
+        "En cada cruce elegís qué selección avanza. No importa por qué lado llegó — importa hasta qué ronda la bancaste.",
+      foot: null,
     };
   }
 
   return {
-    kicker: "Revisión final",
-    title: "Chequeá tu pronóstico completo",
-    description:
-      "Repasá campeón, subcampeón y tercer puesto. Desde acá podés exportar la imagen y guardar la versión final.",
-    foot: "Si volvés a tocar un resultado, el guardado se reactiva automáticamente.",
+    kicker: "Paso 4",
+    title: "Revisión final",
+    description: null,
+    foot: null,
   };
 }
 
@@ -287,10 +283,6 @@ export function SimpleModeApp({
             <div className={styles.simpleModeIntro}>
               <div className={styles.simpleModeStatus}>
                 <span className={styles.sectionEyebrow}>Tu predicción</span>
-                <p className={styles.simpleModeSummary}>
-                  Completá grupos, mejores terceros y cuadro final. La última versión
-                  guardada antes del arranque es la que entra en competencia.
-                </p>
                 <p className={styles.simpleModeDeadline}>
                   Cierre: {formatSimpleModeCutoffLabel()} · {getSimpleModeCountdownLabel(now)}
                 </p>
@@ -320,10 +312,14 @@ export function SimpleModeApp({
                 <strong className={styles.simpleModeGuidanceTitle}>
                   {currentStepGuide.title}
                 </strong>
-                <p className={styles.simpleModeGuidanceText}>
-                  {currentStepGuide.description}
-                </p>
-                <p className={styles.simpleModeGuidanceFoot}>{currentStepGuide.foot}</p>
+                {currentStepGuide.description ? (
+                  <p className={styles.simpleModeGuidanceText}>
+                    {currentStepGuide.description}
+                  </p>
+                ) : null}
+                {currentStepGuide.foot ? (
+                  <p className={styles.simpleModeGuidanceFoot}>{currentStepGuide.foot}</p>
+                ) : null}
               </div>
             </div>
 
