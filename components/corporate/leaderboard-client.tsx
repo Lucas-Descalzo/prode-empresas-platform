@@ -85,7 +85,7 @@ export function LeaderboardClient({
                 <th>#</th>
                 <th>Nombre</th>
                 {collectsArea ? <th>{areaLabel}</th> : null}
-                <th>Predicciones</th>
+                <th>Aciertos</th>
                 <th>Puntos</th>
               </tr>
             </thead>
@@ -97,7 +97,7 @@ export function LeaderboardClient({
                   <tr key={row.id} className={isSelf ? styles.leaderboardSelf : ""}>
                     <td
                       className={`${styles.leaderboardRank} ${styles.leaderboardRankCell}`}
-                      data-label="Posicion"
+                      data-label="Posición"
                     >
                       <span className={styles.leaderboardRankValue}>#{rank}</span>
                     </td>
@@ -115,7 +115,7 @@ export function LeaderboardClient({
                             </span>
                           ) : null}
                           <span className={styles.leaderboardMetaPill}>
-                            <span>Predicciones</span>
+                            <span>Aciertos</span>
                             <strong>{row.predictionCount}</strong>
                           </span>
                         </div>
@@ -131,7 +131,7 @@ export function LeaderboardClient({
                         {row.area ?? emptyAreaLabel}
                       </td>
                     ) : null}
-                    <td className={styles.leaderboardPredictionCell} data-label="Predicciones">
+                    <td className={styles.leaderboardPredictionCell} data-label="Aciertos">
                       {row.predictionCount}
                     </td>
                     <td
