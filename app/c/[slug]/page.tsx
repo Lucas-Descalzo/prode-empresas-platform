@@ -94,7 +94,7 @@ export default async function CorporateLandingPage({
         gapLabel: rowAbove
           ? gap === 0
             ? "Empatas con el puesto superior."
-            : `Te faltan ${gap} pts para subir una posicion.`
+            : `Te faltan ${gap} pts para subir una posición.`
           : "Vas primero en el ranking.",
       };
     }
@@ -108,17 +108,17 @@ export default async function CorporateLandingPage({
       personalState = {
         progressLabel: isComplete ? "Prode completo" : "Prode pendiente",
         progressDetail: isComplete
-          ? "Tu prode ya esta cargado y entra en competencia."
-          : "Todavia te faltan selecciones antes del cierre.",
+          ? "Tu prode ya está cargado y entra en competencia."
+          : "Todavía te faltan selecciones antes del cierre.",
         deadlineLabel: formatSimpleModeCutoffLabel(),
         nextAction: participant.mustChangePassword
-          ? "Cambia tu clave temporal para seguir."
+          ? "Cambiá tu clave temporal para seguir."
           : isComplete
-            ? "Revisa el ranking o vuelve a editar antes del cierre."
-            : "Entra en Mi Prode para completar grupos, terceros y cuadro final.",
+            ? "Revisá el ranking o volvé a editar antes del cierre."
+            : "Entrá en Mi Prode para completar grupos, terceros y cuadro final.",
         lastSavedLabel: fixturePrediction
-          ? `Ultimo guardado ${formatDateTime(fixturePrediction.updatedAt)}`
-          : "Aun no guardaste una version completa.",
+          ? `Último guardado ${formatDateTime(fixturePrediction.updatedAt)}`
+          : "Aún no guardaste una versión completa.",
       };
     } else {
       const predictions = await getInteractivePredictionsForUser(client.id, participant.id);
@@ -141,7 +141,7 @@ export default async function CorporateLandingPage({
         lastSavedLabel:
           predictedMatches > 0
             ? "Tus cambios se guardan a medida que avanzas."
-            : "Todavia no cargaste ningun partido.",
+            : "Todavía no cargaste ningún partido.",
       };
     }
   }
@@ -152,7 +152,7 @@ export default async function CorporateLandingPage({
         <div className={styles.dashboardHeroCopy}>
           <h1 className={styles.dashboardHeroTitle}>Tu tablero del Mundial 2026</h1>
           <p className={styles.dashboardHeroText}>
-            Revisa tu prode, sigue tu posicion y vuelve rapido a lo importante.
+            Revisá tu prode, seguí tu posición y volvé rápido a lo importante.
           </p>
 
           <div className={styles.dashboardHeroActions}>
@@ -184,12 +184,12 @@ export default async function CorporateLandingPage({
 
               <div className={styles.dashboardStatusRow}>
                 <div className={styles.dashboardStatusBlock}>
-                  <span>Situacion</span>
+                  <span>Situación</span>
                   <strong>{personalState.progressLabel}</strong>
                   <p>{personalState.progressDetail}</p>
                 </div>
                 <div className={styles.dashboardStatusBlock}>
-                  <span>Fecha limite</span>
+                  <span>Fecha límite</span>
                   <strong>{personalState.deadlineLabel}</strong>
                   <p>{personalState.nextAction}</p>
                 </div>
@@ -236,8 +236,8 @@ export default async function CorporateLandingPage({
           <article className={`${styles.dashboardCard} ${styles.dashboardQuickCard}`}>
             <div className={styles.dashboardHeader}>
               <div>
-                <span className={styles.sectionEyebrow}>Accesos rapidos</span>
-                <h2 className={styles.dashboardTitle}>Sigue desde aqui</h2>
+                <span className={styles.sectionEyebrow}>Accesos rápidos</span>
+                <h2 className={styles.dashboardTitle}>Seguí desde acá</h2>
               </div>
             </div>
 

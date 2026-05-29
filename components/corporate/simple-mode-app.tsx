@@ -63,42 +63,42 @@ function getStepGuide(currentStep: Step) {
   if (currentStep === 1) {
     return {
       kicker: "Ahora",
-      title: "Ordena cada grupo antes de seguir",
+      title: "Ordená cada grupo antes de seguir",
       description:
-        "Abri un grupo, defini si lo cargas por partidos o manualmente y dejalo cerrado del 1ro al 4to puesto.",
+        "Abrí un grupo, definí si lo cargás por partidos o manualmente y dejalo cerrado del 1° al 4° puesto.",
       foot:
-        "Cuando cierres los grupos, pasas a elegir los 8 mejores terceros que avanzan.",
+        "Cuando cerrés los grupos, pasás a elegir los 8 mejores terceros que avanzan.",
     };
   }
 
   if (currentStep === 2) {
     return {
-      kicker: "Sigue",
-      title: "Elegi los 8 mejores terceros",
+      kicker: "Seguí",
+      title: "Elegí los 8 mejores terceros",
       description:
-        "Selecciona solo ocho. Esos equipos completan los cruces de 16avos y cada acierto suma puntos.",
+        "Seleccioná solo ocho. Esos equipos completan los cruces de 16avos y cada acierto suma puntos.",
       foot:
-        "No hace falta pensar la llave todavia, primero defini quienes avanzan.",
+        "No hace falta pensar la llave todavía, primero definí quiénes avanzan.",
     };
   }
 
   if (currentStep === 3) {
     return {
-      kicker: "Definicion",
-      title: "Completa el cuadro hasta la final",
+      kicker: "Definición",
+      title: "Completá el cuadro hasta la final",
       description:
-        "En cada cruce elegis que seleccion avanza. No importa por que lado llego, importa hasta que ronda la bancaste.",
+        "En cada cruce elegís qué selección avanza. No importa por qué lado llegó, importa hasta qué ronda la bancaste.",
       foot:
-        "Cuando cierres todos los cruces, se habilita el resumen final para revisar y compartir.",
+        "Cuando cerrés todos los cruces, se habilita el resumen final para revisar y compartir.",
     };
   }
 
   return {
-    kicker: "Revision final",
-    title: "Chequea tu pronostico completo",
+    kicker: "Revisión final",
+    title: "Chequeá tu pronóstico completo",
     description:
-      "Repasa campeon, subcampeon y tercer puesto. Desde aca podes exportar la imagen y guardar la version final.",
-    foot: "Si volves a tocar un resultado, el guardado se reactiva automaticamente.",
+      "Repasá campeón, subcampeón y tercer puesto. Desde acá podés exportar la imagen y guardar la versión final.",
+    foot: "Si volvés a tocar un resultado, el guardado se reactiva automáticamente.",
   };
 }
 
@@ -256,18 +256,18 @@ export function SimpleModeApp({
         : "Guardar fixture";
 
   const statusLabel = locked
-    ? "La prediccion ya quedo cerrada. Compite la ultima version completa guardada antes del arranque."
+    ? "La predicción ya quedó cerrada. Compite la última versión completa guardada antes del arranque."
     : saveState === "saving"
-      ? "Estamos guardando tu prediccion."
+      ? "Estamos guardando tu predicción."
       : saveState === "saved"
         ? lastSavedAt
-          ? `Ultimo guardado a las ${lastSavedAt}.`
-          : "Tu fixture ya quedo guardado."
+          ? `Último guardado a las ${lastSavedAt}.`
+          : "Tu fixture ya quedó guardado."
         : saveState === "error"
-          ? "No pudimos guardar. Reintenta antes de seguir."
+          ? "No pudimos guardar. Reintentá antes de seguir."
           : saveState === "dirty"
             ? "Hay cambios sin guardar."
-            : "Completa los pasos y guarda cuando quieras confirmar avances.";
+            : "Completá los pasos y guardá cuando quieras confirmar avances.";
 
   return (
     <>
@@ -286,9 +286,9 @@ export function SimpleModeApp({
           <section className={styles.sectionBlock}>
             <div className={styles.simpleModeIntro}>
               <div className={styles.simpleModeStatus}>
-                <span className={styles.sectionEyebrow}>Tu prediccion</span>
+                <span className={styles.sectionEyebrow}>Tu predicción</span>
                 <p className={styles.simpleModeSummary}>
-                  Completa grupos, mejores terceros y cuadro final. La ultima version
+                  Completá grupos, mejores terceros y cuadro final. La última versión
                   guardada antes del arranque es la que entra en competencia.
                 </p>
                 <p className={styles.simpleModeDeadline}>
@@ -353,10 +353,6 @@ export function SimpleModeApp({
                           ? "Cruces definidos"
                           : "Estado del cierre"}
                   </span>
-                </article>
-                <article className={styles.simpleModeMetricCard}>
-                  <strong>228 pts</strong>
-                  <span>Maximo total</span>
                 </article>
               </div>
             </div>

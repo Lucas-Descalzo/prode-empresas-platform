@@ -1037,6 +1037,41 @@
   line-height: 1.5;
 }
 
+.simpleModeFaqSection {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.simpleModeFaqToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--client-line);
+  background: var(--client-card-soft);
+  color: var(--client-fg);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: left;
+}
+
+.simpleModeFaqToggle:hover {
+  border-color: var(--client-line-strong);
+  background: var(--client-hover-soft);
+}
+
+.simpleModeFaqToggleIcon {
+  font-size: 1.1rem;
+  color: var(--client-muted);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
 .simpleModeFaqGrid {
   display: grid;
   gap: 0.65rem;

@@ -4,6 +4,7 @@ import {
   SIMPLE_MODE_FAQS,
   SIMPLE_MODE_POINT_BLOCKS,
 } from "@/lib/simple-mode-rules";
+import { SimpleModeFaq } from "./simple-mode-faq";
 import styles from "./corporate-shell.module.css";
 
 export function SimpleModeGuide({ client }: { client: CompanyRecord }) {
@@ -45,24 +46,13 @@ export function SimpleModeGuide({ client }: { client: CompanyRecord }) {
       <div className={styles.simpleModeRuleCallout}>
         <strong>Reglas importantes</strong>
         <p>
-          Importa hasta que ronda bancaste a cada equipo, no por que lado del cuadro
-          llego. En {client.shortName}, si dos personas empatan al final, primero
-          desempata quien tenga mas puntos del pre-Mundial.
+          Importa hasta qué ronda bancaste a cada equipo, no por qué lado del cuadro
+          llegó. En {client.shortName}, si dos personas empatan al final, primero
+          desempata quien tenga más puntos del pre-Mundial.
         </p>
       </div>
 
-      <div className={styles.simpleModeFaqGrid}>
-        {SIMPLE_MODE_FAQS.map((item) => (
-          <details key={item.question} className={styles.simpleModeFaqItem}>
-            <summary>{item.question}</summary>
-            <div className={styles.simpleModeFaqBody}>
-              {item.answer.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
-          </details>
-        ))}
-      </div>
+      <SimpleModeFaq faqs={SIMPLE_MODE_FAQS} />
     </section>
   );
 }

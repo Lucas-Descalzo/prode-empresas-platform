@@ -16,7 +16,7 @@ interface CorporateHeaderProps {
 type TabId = "inicio" | "partidos" | "liga";
 
 const TABS: Array<{ id: TabId; label: string; href: (slug: string) => string }> = [
-  { id: "inicio", label: "Resumen", href: (slug) => `/c/${slug}` },
+  { id: "inicio", label: "Inicio", href: (slug) => `/c/${slug}` },
   { id: "partidos", label: "Mi Prode", href: (slug) => `/c/${slug}/partidos` },
   { id: "liga", label: "Ranking", href: (slug) => `/c/${slug}/liga` },
 ];
