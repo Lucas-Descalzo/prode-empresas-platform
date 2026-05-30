@@ -1340,7 +1340,10 @@ async function getInteractiveLeaderboardForCompany(companyId: string) {
   }));
 }
 
-async function getSimpleLeaderboardForCompany(companyId: string) {
+async function getSimpleLeaderboardForCompany(
+  companyId: string,
+  prefetchedOfficialResults?: Record<string, OfficialResultRow>,
+) {
   const sql = getSql();
   const [users, predictions, officialResults] = await Promise.all([
     sql`
@@ -1365,7 +1368,9 @@ async function getSimpleLeaderboardForCompany(companyId: string) {
         AND game_mode = 'simple'
         AND scope_key = 'full-fixture'
     ` as Promise<Array<{ user_id: string; prediction_json: unknown }>>,
-    getOfficialResultsForCompany(companyId),
+    prefetchedOfficialResults !== undefined
+      ? Promise.resolve(prefetchedOfficialResults)
+      : getOfficialResultsForCompany(companyId),
   ]);
 
   const officialState = buildSimpleModeOfficialFixtureState(officialResults);
@@ -1410,11 +1415,12 @@ async function getSimpleLeaderboardForCompany(companyId: string) {
 export async function getLeaderboardForCompany(
   companyId: string,
   gameMode: CompanyGameMode,
+  officialResults?: Record<string, OfficialResultRow>,
 ): Promise<LeaderboardRow[]> {
   await ensureDatabaseSchema();
 
   if (gameMode === "simple") {
-    return getSimpleLeaderboardForCompany(companyId);
+    return getSimpleLeaderboardForCompany(companyId, officialResults);
   }
 
   return getInteractiveLeaderboardForCompany(companyId);

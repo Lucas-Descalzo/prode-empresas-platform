@@ -30,9 +30,8 @@ export default async function LigaPage({
     notFound();
   }
 
-  const [currentParticipant, rows, officialResults] = await Promise.all([
+  const [currentParticipant, officialResults] = await Promise.all([
     getCurrentParticipant(client.id),
-    getLeaderboardForCompany(client.id, client.gameMode),
     getOfficialResultsForCompany(client.id),
   ]);
 
@@ -43,6 +42,8 @@ export default async function LigaPage({
   if (currentParticipant.mustChangePassword) {
     return <ChangePasswordForm client={client} participant={currentParticipant} />;
   }
+
+  const rows = await getLeaderboardForCompany(client.id, client.gameMode, officialResults);
 
   const totalResults = Object.keys(officialResults).length;
   const participantsWithPredictions = rows.filter(

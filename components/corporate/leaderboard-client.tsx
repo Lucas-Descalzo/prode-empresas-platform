@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeferredValue, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 
 import styles from "@/components/corporate/corporate-shell.module.css";
 import type { LeaderboardRow } from "@/lib/corporate/db";
@@ -35,14 +35,20 @@ export function LeaderboardClient({
   const deferredQuery = useDeferredValue(query);
   const normalizedQuery = normalizeSearchValue(deferredQuery);
 
-  const indexedRows = rows.map((row, index) => ({
-    rank: index + 1,
-    row,
-  }));
+  const indexedRows = useMemo(
+    () => rows.map((row, index) => ({ rank: index + 1, row })),
+    [rows],
+  );
 
-  const filteredRows = normalizedQuery
-    ? indexedRows.filter(({ row }) => normalizeSearchValue(row.fullName).includes(normalizedQuery))
-    : indexedRows;
+  const filteredRows = useMemo(
+    () =>
+      normalizedQuery
+        ? indexedRows.filter(({ row }) =>
+            normalizeSearchValue(row.fullName).includes(normalizedQuery),
+          )
+        : indexedRows,
+    [indexedRows, normalizedQuery],
+  );
   const emptyAreaLabel = `Sin ${areaLabel.toLocaleLowerCase("es-AR")}`;
 
   return (
@@ -63,7 +69,11 @@ export function LeaderboardClient({
           />
         </label>
 
-        <div className={styles.leaderboardSearchMeta}>
+        <div
+          className={styles.leaderboardSearchMeta}
+          aria-live="polite"
+          aria-atomic="true"
+        >
           <strong>{filteredRows.length}</strong>
           <span>
             {normalizedQuery ? `de ${rows.length} visibles` : "participantes en ranking"}

@@ -47,7 +47,7 @@ export function CorporateHeader({ client, participantName }: CorporateHeaderProp
             <span className={styles.brandLogoFrame}>
               <img
                 src={logoUrl!}
-                alt={client.displayName}
+                alt=""
                 className={styles.brandLogoImage}
                 onError={() => setFailedLogoUrl(logoUrl)}
               />

@@ -19,13 +19,14 @@ export function SimpleModeFaq({ faqs }: SimpleModeFaqProps) {
         className={styles.simpleModeFaqToggle}
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
+        aria-controls="faq-region"
       >
         <span>Preguntas frecuentes</span>
         <span className={styles.simpleModeFaqToggleIcon}>{open ? "−" : "+"}</span>
       </button>
 
       {open && (
-        <div className={styles.simpleModeFaqGrid}>
+        <div id="faq-region" className={styles.simpleModeFaqGrid}>
           {faqs.map((item) => (
             <details key={item.question} className={styles.simpleModeFaqItem}>
               <summary>{item.question}</summary>
