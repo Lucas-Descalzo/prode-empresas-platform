@@ -256,7 +256,7 @@ export function WorldCupApp() {
         </nav>
 
         {(loadSource === "url" || (loadSource === "storage" && currentStep === 1) || returnTo || shareFeedback) ? (
-          <div className={styles.statusRow}>
+          <div className={styles.statusRow} aria-live="polite" aria-atomic="true">
             {loadSource === "url" ? (
               <p className={styles.statusPill}>Abriste una predicción compartida.</p>
             ) : null}

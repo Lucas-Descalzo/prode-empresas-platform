@@ -169,6 +169,36 @@ export const SIMPLE_MODE_FAQS: SimpleModeFaqItem[] = [
   },
 ];
 
+const TM_BOXING_FAQS: SimpleModeFaqItem[] = [
+  {
+    question: "¿Cómo me registro en el prode de TM Boxing?",
+    answer: [
+      "Usá el link privado que recibiste de TM Boxing. Ingresás con tu DNI y creás tu propia clave.",
+      "Si no tenés el link o perdiste el acceso, consultá con el equipo de TM Boxing.",
+    ],
+  },
+  {
+    question: "¿Puedo participar si entreno en otra sede?",
+    answer: [
+      "Sí. El ranking es único para toda la comunidad de TM Boxing, sin importar si entrenás en Centro o Funes.",
+      "En la tabla vas a ver de qué sede es cada participante.",
+    ],
+  },
+  {
+    question: "¿Hay premios para el ganador?",
+    answer: [
+      "Los premios los define TM Boxing. Consultá con el equipo del gym para saber qué hay en juego.",
+    ],
+  },
+];
+
+export function getSimpleModeFaqs(slug: string): SimpleModeFaqItem[] {
+  if (slug === "tm-boxing") {
+    return [...SIMPLE_MODE_FAQS, ...TM_BOXING_FAQS];
+  }
+  return SIMPLE_MODE_FAQS;
+}
+
 export function getSimpleModeCutoffDate() {
   return new Date(SIMPLE_MODE_CUTOFF_AT);
 }

@@ -282,11 +282,11 @@ export function SimpleModeApp({
           <section className={styles.sectionBlock}>
             <div className={styles.simpleModeIntro}>
               <div className={styles.simpleModeStatus}>
-                <span className={styles.sectionEyebrow}>Tu predicción</span>
+                <span className={styles.sectionEyebrow}>Tu prode en {client.shortName}</span>
                 <p className={styles.simpleModeDeadline}>
                   Cierre: {formatSimpleModeCutoffLabel()} · {getSimpleModeCountdownLabel(now)}
                 </p>
-                <p className={styles.predictionStatus}>{statusLabel}</p>
+                <p className={styles.predictionStatus} aria-live="polite" aria-atomic="true">{statusLabel}</p>
               </div>
 
               <button
@@ -323,31 +323,33 @@ export function SimpleModeApp({
               </div>
             </div>
 
-            <nav className={styles.simpleModeSteps} aria-label="Pasos del fixture">
-              {steps.map((step) => (
-                <button
-                  key={step.id}
-                  type="button"
-                  className={`${styles.simpleModeStep} ${
-                    currentStep === step.id ? styles.simpleModeStepActive : ""
-                  }`}
-                  disabled={step.disabled}
-                  aria-current={currentStep === step.id ? "step" : undefined}
-                  onClick={() => handleStepChange(step.id)}
-                >
-                  <strong>
-                    Paso {step.id}: {step.label}
-                  </strong>
-                  <span>{step.meta}</span>
-                </button>
-              ))}
-            </nav>
+            <div className={styles.simpleModeStepsWrap}>
+              <nav className={styles.simpleModeSteps} aria-label="Pasos del fixture">
+                {steps.map((step) => (
+                  <button
+                    key={step.id}
+                    type="button"
+                    className={`${styles.simpleModeStep} ${
+                      currentStep === step.id ? styles.simpleModeStepActive : ""
+                    }`}
+                    disabled={step.disabled}
+                    aria-current={currentStep === step.id ? "step" : undefined}
+                    onClick={() => handleStepChange(step.id)}
+                  >
+                    <strong>
+                      Paso {step.id}: {step.label}
+                    </strong>
+                    <span>{step.meta}</span>
+                  </button>
+                ))}
+              </nav>
+            </div>
           </section>
         }
       />
 
       {feedback ? (
-        <section className={styles.sectionBlock}>
+        <section className={styles.sectionBlock} aria-live="polite" aria-atomic="true">
           <p className={styles.predictionStatus}>{feedback}</p>
         </section>
       ) : null}

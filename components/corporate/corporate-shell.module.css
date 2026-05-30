@@ -53,7 +53,7 @@
   position: absolute;
   inset: 0 0 auto 0;
   block-size: 0.18rem;
-  background: linear-gradient(90deg, var(--brand-primary), transparent 38%);
+  background: linear-gradient(90deg, var(--client-primary), transparent 38%);
   opacity: 0.8;
   pointer-events: none;
 }
@@ -200,20 +200,16 @@
   flex: 1 0 max-content;
 }
 
-.progressStep:hover {
+.progressStep:not(.stepActive):hover {
   color: var(--brand-text);
   background: var(--client-hover-soft);
 }
 
 .stepActive {
-  background: var(--brand-primary) !important;
-  color: var(--brand-bg) !important;
-  border-color: var(--brand-primary) !important;
+  background: var(--client-primary);
+  color: var(--brand-bg);
+  border-color: var(--client-primary);
   box-shadow: 0 8px 18px var(--brand-primary-muted);
-}
-
-.stepActive:hover {
-  color: var(--brand-bg) !important;
 }
 
 @media (max-width: 480px) {
@@ -1103,12 +1099,12 @@
   width: 1.55rem;
   height: 1.55rem;
   border-radius: 999px;
-  border: 1px solid var(--brand-border);
+  border: 1px solid var(--client-line-strong);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--brand-text-muted);
-  background: var(--brand-surface);
+  color: var(--client-primary);
+  background: var(--client-card-soft);
   flex-shrink: 0;
   transition: transform 0.2s ease;
 }
@@ -1613,7 +1609,7 @@
 }
 
 .predictionStatusSaved {
-  color: #1a8359;
+  color: var(--state-success);
   font-weight: 600;
 }
 
@@ -1761,8 +1757,13 @@
 }
 
 .leaderboardSelf td {
-  background: color-mix(in srgb, var(--brand-surface-2) 92%, transparent) !important;
+  background: color-mix(in srgb, var(--brand-primary-muted) 80%, transparent) !important;
   font-weight: 600;
+}
+
+.leaderboardTable tr.leaderboardSelf {
+  outline: 1px solid var(--brand-primary-border);
+  outline-offset: -1px;
 }
 
 .leaderboardEmpty {
@@ -2178,7 +2179,7 @@
 
 .adminSavedFlag {
   font-size: 0.7rem;
-  color: #1a8359;
+  color: var(--state-success);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -2772,6 +2773,10 @@
   box-shadow: none;
 }
 
+.simpleModeStepsWrap {
+  position: relative;
+}
+
 .simpleModeSteps {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2814,14 +2819,14 @@
 }
 
 .simpleModeStepActive {
-  border-color: var(--brand-primary-border);
+  border-color: var(--client-primary);
   background: var(--brand-primary-muted);
-  color: var(--brand-text);
+  color: var(--client-fg);
   box-shadow: inset 0 0 0 1px var(--brand-primary-border);
 }
 
 .simpleModeStepActive span {
-  color: var(--brand-text-muted);
+  color: var(--client-muted);
 }
 
 @media (max-width: 600px) {
@@ -2864,6 +2869,17 @@
 
   .simpleModeMetricCard {
     min-width: 9.5rem;
+  }
+
+  .simpleModeStepsWrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0.15rem;
+    width: 3rem;
+    background: linear-gradient(to right, transparent, var(--client-card-bg, #101113));
+    pointer-events: none;
   }
 
   .simpleModeSteps {

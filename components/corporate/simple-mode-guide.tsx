@@ -1,7 +1,7 @@
 import type { CompanyRecord } from "@/lib/corporate/types";
 import {
   formatSimpleModeCutoffLabel,
-  SIMPLE_MODE_FAQS,
+  getSimpleModeFaqs,
   SIMPLE_MODE_POINT_BLOCKS,
 } from "@/lib/simple-mode-rules";
 import { SimpleModeFaq } from "./simple-mode-faq";
@@ -52,7 +52,7 @@ export function SimpleModeGuide({ client }: { client: CompanyRecord }) {
         </p>
       </div>
 
-      <SimpleModeFaq faqs={SIMPLE_MODE_FAQS} />
+      <SimpleModeFaq faqs={getSimpleModeFaqs(client.slug)} />
     </section>
   );
 }

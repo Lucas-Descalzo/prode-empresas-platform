@@ -150,9 +150,9 @@ export default async function CorporateLandingPage({
     <>
       <section className={styles.dashboardHero}>
         <div className={styles.dashboardHeroCopy}>
-          <h1 className={styles.dashboardHeroTitle}>Tu tablero del Mundial 2026</h1>
+          <h1 className={styles.dashboardHeroTitle}>{client.shortName} · Mundial 2026</h1>
           <p className={styles.dashboardHeroText}>
-            Revisá tu prode, seguí tu posición y volvé rápido a lo importante.
+            Revisá tu prode, seguí tu posición en el ranking de {client.shortName} y volvé rápido a lo importante.
           </p>
 
           <div className={styles.dashboardHeroActions}>
