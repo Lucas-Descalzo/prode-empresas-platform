@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { FixtureBuilder } from "@/components/fixture-builder";
 import type { CompanyRecord } from "@/lib/corporate/types";
@@ -112,6 +112,10 @@ export function SimpleModeApp({
   const [now, setNow] = useState(() => new Date());
   const stateVersionRef = useRef(0);
   const saveRequestRef = useRef(0);
+  const fixtureStateRef = useRef(fixtureState);
+  fixtureStateRef.current = fixtureState;
+  const saveStateRef = useRef(saveState);
+  saveStateRef.current = saveState;
   const locked = isSimpleModeLocked(now);
 
   useEffect(() => {
@@ -179,7 +183,8 @@ export function SimpleModeApp({
     ],
   );
 
-  async function saveFixtureState(nextFixtureState = fixtureState) {
+  const saveFixtureState = useCallback(async (nextFixtureState?: FixtureState) => {
+    const stateToSave = nextFixtureState ?? fixtureStateRef.current;
     if (locked) {
       setSaveState("error");
       return false;
@@ -196,7 +201,7 @@ export function SimpleModeApp({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ fixtureState: nextFixtureState }),
+        body: JSON.stringify({ fixtureState: stateToSave }),
       });
 
       if (!response.ok) {
@@ -226,23 +231,23 @@ export function SimpleModeApp({
       }
       return false;
     }
-  }
+  }, [locked, client.slug]);
 
-  function handleStepChange(step: number) {
+  const handleStepChange = useCallback((step: number) => {
     setCurrentStep(step as Step);
     const prefersInstantScroll = window.matchMedia("(max-width: 759px)").matches;
     window.scrollTo({ top: 0, behavior: prefersInstantScroll ? "auto" : "smooth" });
 
-    if (saveState === "dirty") {
+    if (saveStateRef.current === "dirty") {
       void saveFixtureState();
     }
-  }
+  }, [saveFixtureState]);
 
-  function handleFixtureStateChange(nextState: FixtureState) {
+  const handleFixtureStateChange = useCallback((nextState: FixtureState) => {
     stateVersionRef.current += 1;
     setFixtureState(nextState);
     setSaveState("dirty");
-  }
+  }, []);
 
   const saveLabel =
     saveState === "saving"

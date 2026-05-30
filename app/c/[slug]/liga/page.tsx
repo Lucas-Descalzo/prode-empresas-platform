@@ -38,7 +38,6 @@ export default async function LigaPage({
   if (!currentParticipant) {
     return <LoginForm client={client} />;
   }
-
   if (currentParticipant.mustChangePassword) {
     return <ChangePasswordForm client={client} participant={currentParticipant} />;
   }

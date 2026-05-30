@@ -33,7 +33,6 @@ export default async function PartidosPage({
   if (!participant) {
     return <LoginForm client={client} />;
   }
-
   if (participant.mustChangePassword) {
     return <ChangePasswordForm client={client} participant={participant} />;
   }
