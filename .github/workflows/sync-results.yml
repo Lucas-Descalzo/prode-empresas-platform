@@ -1,0 +1,24 @@
+name: Sync Match Results
+
+on:
+  schedule:
+    # Runs every 15 minutes during tournament hours (UTC)
+    # Tournament: 11 Jun – 19 Jul 2026
+    # Matches run roughly 18:00–03:00 UTC; this covers the full day to be safe
+    - cron: "*/15 * * * *"
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call sync endpoint
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/sync-results")
+          echo "Response: $response"
+          if [ "$response" != "200" ]; then
+            echo "Sync failed with status $response"
+            exit 1
+          fi
