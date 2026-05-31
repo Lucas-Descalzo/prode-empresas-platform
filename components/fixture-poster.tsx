@@ -21,6 +21,7 @@ interface FixturePosterProps {
   brandPrimary?: string | null;
   brandBg?: string | null;
   brandOnPrimary?: string | null;
+  participantName?: string | null;
 }
 
 interface PosterMatchCardProps {
@@ -244,6 +245,7 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
     brandPrimary,
     brandBg,
     brandOnPrimary,
+    participantName,
   },
   ref,
 ) {
@@ -259,7 +261,9 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
     ...(brandOnPrimary ? { "--poster-on-primary": brandOnPrimary } : {}),
   } as CSSProperties;
 
-  const eyebrowText = companyLabel ? `Prode de ${companyLabel}` : "Prode Mundial 2026";
+  const eyebrowText = companyLabel
+    ? `PRODE · ${companyLabel.toUpperCase()}`
+    : "PRODE MUNDIAL 2026";
 
   return (
     <div ref={ref} className={styles.posterRoot} style={brandStyle}>
@@ -296,13 +300,20 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
         </div>
 
         <div className={styles.metaStack}>
-          <div className={styles.metaCard}>
-            <span>Generado</span>
-            <strong>{generatedAtLabel}</strong>
-          </div>
+          {participantName ? (
+            <div className={styles.metaCardParticipant}>
+              <span>Pronóstico de</span>
+              <strong>{participantName}</strong>
+            </div>
+          ) : null}
           <div className={styles.metaCardChampion}>
-            <span>Campeón proyectado</span>
-            <strong>{championName}</strong>
+            <div className={styles.championInner}>
+              <span className={styles.championTrophyIcon}>🏆</span>
+              <div className={styles.championContent}>
+                <span>CAMPEÓN</span>
+                <strong>{championName}</strong>
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -371,8 +382,14 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
       </main>
 
       <footer className={styles.posterFooter}>
-        <span>{companyLabel ? `Prode organizado por ${companyLabel}` : "proyecto-mundial-2026.vercel.app"}</span>
-        <span>Fixture basado en el formato oficial del torneo · Mundial 2026</span>
+        {participantName ? (
+          <span className={styles.footerSignature}>
+            {participantName} · {companyLabel ?? "Mundial 2026"}
+          </span>
+        ) : (
+          <span className={styles.footerSignature}>{companyLabel ?? "Mundial 2026"}</span>
+        )}
+        <span className={styles.footerMuted}>mundial2026.app</span>
       </footer>
     </div>
   );

@@ -151,6 +151,7 @@ interface FixtureBuilderProps {
   posterBrandPrimary?: string | null;
   posterBrandBg?: string | null;
   posterBrandOnPrimary?: string | null;
+  posterParticipantName?: string | null;
 }
 
 export function FixtureBuilder({
@@ -169,6 +170,7 @@ export function FixtureBuilder({
   posterBrandPrimary,
   posterBrandBg,
   posterBrandOnPrimary,
+  posterParticipantName,
 }: FixtureBuilderProps) {
   const [confirmingStepReset, setConfirmingStepReset] = useState<number | null>(null);
   const [confirmingFullReset, setConfirmingFullReset] = useState(false);
@@ -1266,6 +1268,7 @@ export function FixtureBuilder({
               brandPrimary={posterBrandPrimary ?? undefined}
               brandBg={posterBrandBg ?? undefined}
               brandOnPrimary={posterBrandOnPrimary ?? undefined}
+              participantName={posterParticipantName ?? undefined}
             />
           </div>
         ) : null}

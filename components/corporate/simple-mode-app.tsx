@@ -20,6 +20,7 @@ import styles from "./corporate-shell.module.css";
 interface SimpleModeAppProps {
   client: CompanyRecord;
   initialFixtureState: FixtureState | null;
+  participantName?: string | null;
 }
 
 type SaveState = "idle" | "dirty" | "saving" | "saved" | "error";
@@ -101,6 +102,7 @@ function getStepGuide(currentStep: Step) {
 export function SimpleModeApp({
   client,
   initialFixtureState,
+  participantName,
 }: SimpleModeAppProps) {
   const [fixtureState, setFixtureState] = useState<FixtureState>(() =>
     normalizeFixtureState(initialFixtureState ?? createInitialFixtureState()),
@@ -286,6 +288,7 @@ export function SimpleModeApp({
         posterBrandPrimary={client.branding.primary}
         posterBrandBg={client.branding.background}
         posterBrandOnPrimary={client.branding.contrastOnPrimary}
+        posterParticipantName={participantName}
         beforeBuilder={
           <section className={styles.sectionBlock}>
             <div className={styles.simpleModeIntro}>
