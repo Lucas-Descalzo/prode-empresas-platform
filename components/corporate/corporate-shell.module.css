@@ -1952,8 +1952,8 @@
     gap: 0.45rem;
   }
 
-  .leaderboardAreaCell,
-  .leaderboardPredictionCell {
+  .leaderboardTable .leaderboardAreaCell,
+  .leaderboardTable .leaderboardPredictionCell {
     display: none;
   }
 
@@ -2839,6 +2839,11 @@
   .shell {
     gap: 1rem;
     padding-inline: 0.75rem;
+  }
+
+  .simpleModeRuleCallout,
+  .simpleModeFaqSection {
+    display: none;
   }
 
   .unifiedHeader {
