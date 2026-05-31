@@ -1865,6 +1865,11 @@
     box-shadow: none;
   }
 
+  .leaderboardInfo {
+    padding: 0.65rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
   .leaderboardToolbar {
     align-items: stretch;
   }
@@ -2892,8 +2897,8 @@
     top: 0;
     right: 0;
     bottom: 0.15rem;
-    width: 3rem;
-    background: linear-gradient(to right, transparent, var(--client-card-bg, #101113));
+    width: 4rem;
+    background: linear-gradient(to right, transparent 10%, var(--client-card-bg, #101113) 88%);
     pointer-events: none;
   }
 
