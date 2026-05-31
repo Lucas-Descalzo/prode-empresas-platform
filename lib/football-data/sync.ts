@@ -19,9 +19,14 @@ const API_STAGE_MAP: Record<string, string> = {
   FINAL: "final",
 };
 
-// football-data.org TLA codes match our TeamIds exactly (just lowercase)
+// football-data.org TLA → our internal TeamId.
+// Almost all TLAs are identical (just lowercase), except a handful of discrepancies.
+const TLA_OVERRIDES: Record<string, TeamId> = {
+  URY: "uru", // football-data uses URY, FIFA/our data uses URU
+};
+
 function tlaToTeamId(tla: string): TeamId {
-  return tla.toLowerCase() as TeamId;
+  return (TLA_OVERRIDES[tla] ?? tla.toLowerCase()) as TeamId;
 }
 
 // Index group matches by "homeTeamId|awayTeamId" → our match ID
