@@ -65,7 +65,7 @@ function getStepGuide(currentStep: Step) {
       kicker: "Empezá por acá",
       title: "Ordená cada grupo",
       description:
-        "Definí el orden final de cada grupo del 1° al 4° puesto. Podés usar el simulador de partidos o hacerlo manualmente — lo que se evalúa es el orden final, no el método.",
+        "Definí quién queda del 1° al 4° en cada grupo. Podés usar el simulador de partidos o hacerlo directo — lo que cuenta es el orden final.",
       foot: null,
     };
   }

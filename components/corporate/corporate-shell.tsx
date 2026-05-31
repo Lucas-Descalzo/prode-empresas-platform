@@ -93,7 +93,7 @@ export function CorporateShell({
     "--brand-shadow-soft": darkBackground
       ? "0 8px 22px rgba(0, 0, 0, 0.18)"
       : "0 6px 18px rgba(0, 0, 0, 0.08)",
-    "--brand-focus-ring": withAlpha(brandPrimary, 0.26),
+    "--brand-focus-ring": withAlpha(brandPrimary, darkBackground ? 0.42 : 0.26),
     "--brand-focus-surface": darkBackground ? "#111317" : "#ffffff",
     "--brand-hero-panel": darkBackground
       ? "linear-gradient(145deg, rgba(16,17,19,0.98), rgba(7,7,7,0.98))"
