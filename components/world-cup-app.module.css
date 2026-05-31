@@ -1038,6 +1038,19 @@
   justify-items: end;
 }
 
+.exportActions .primaryAction {
+  background: transparent;
+  color: var(--brand-text);
+  border: 1px solid var(--brand-border-strong);
+  box-shadow: none;
+}
+
+.exportActions .primaryAction:hover {
+  background: var(--brand-primary-muted);
+  border-color: var(--brand-primary-border);
+  box-shadow: none;
+}
+
 .exportFeedback {
   margin: 0;
   color: var(--brand-text-muted);

@@ -2846,6 +2846,10 @@
     display: none;
   }
 
+  .dashboardSupportText {
+    font-size: 0.875rem;
+  }
+
   .unifiedHeader {
     top: 0.4rem;
     backdrop-filter: none;
@@ -2914,7 +2918,7 @@
   }
 
   .simpleModeStep {
-    flex: 0 0 11.25rem;
+    flex: 0 0 10rem;
     min-height: 5.6rem;
     padding: 0.85rem 0.9rem;
     scroll-snap-align: start;
