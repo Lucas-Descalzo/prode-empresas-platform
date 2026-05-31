@@ -5,7 +5,8 @@
 
 import { NextResponse } from "next/server";
 
-import { listCompanies } from "@/lib/corporate/db";
+import { deleteOfficialResult, listCompanies } from "@/lib/corporate/db";
+import { groupMatchSchedule } from "@/lib/corporate/group-schedule";
 import type { ApiMatch } from "@/lib/football-data/client";
 import { syncMatchResults } from "@/lib/football-data/sync";
 
@@ -75,6 +76,22 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
+  const action = searchParams.get("action");
+
+  // Cleanup: delete all simulated group results from DB
+  if (action === "cleanup") {
+    const companies = await listCompanies();
+    const simpleCompanies = companies.filter((c) => c.gameMode === "simple" && c.status === "active");
+    let deleted = 0;
+    for (const company of simpleCompanies) {
+      for (const match of groupMatchSchedule) {
+        await deleteOfficialResult({ companyId: company.id, matchId: match.id });
+        deleted++;
+      }
+    }
+    return NextResponse.json({ ok: true, action: "cleanup", deleted });
+  }
+
   const rounds = searchParams.get("rounds") ?? "groups";
   const isDryRun = searchParams.get("dry") !== "0";
 
