@@ -1979,7 +1979,7 @@
     background:
       linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 92%, white 8%), var(--client-primary-hover));
     color: var(--client-on-primary);
-    box-shadow: 0 14px 24px color-mix(in srgb, var(--brand-primary-shadow) 56%, transparent);
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--brand-primary-shadow) 38%, transparent);
   }
 
   .leaderboardPointsBadge strong {

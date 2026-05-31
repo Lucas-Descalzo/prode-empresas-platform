@@ -61,9 +61,9 @@ export function CorporateHeader({ client, participantName }: CorporateHeaderProp
           <span className={styles.brandCopy}>
             <span className={styles.brandTitleStrong}>Mundial 2026</span>
             <strong className={styles.brandClientName}>{client.displayName}</strong>
-            <span className={styles.brandTagline}>
-              {client.tagline || `Prode interno ${client.shortName}`}
-            </span>
+            {client.tagline ? (
+              <span className={styles.brandTagline}>{client.tagline}</span>
+            ) : null}
           </span>
         </Link>
 
