@@ -283,6 +283,9 @@ export function SimpleModeApp({
           client.branding.logoUrl ? `/c/${client.slug}/assets/logo` : null
         }
         posterBrandName={client.shortName}
+        posterBrandPrimary={client.branding.primary}
+        posterBrandBg={client.branding.background}
+        posterBrandOnPrimary={client.branding.contrastOnPrimary}
         beforeBuilder={
           <section className={styles.sectionBlock}>
             <div className={styles.simpleModeIntro}>

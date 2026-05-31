@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { forwardRef } from "react";
 
 import { knockoutSlots, stageLabels } from "@/data/world-cup-2026";
@@ -17,6 +18,9 @@ interface FixturePosterProps {
   title?: string;
   companyLogoUrl?: string | null;
   companyLabel?: string;
+  brandPrimary?: string | null;
+  brandBg?: string | null;
+  brandOnPrimary?: string | null;
 }
 
 interface PosterMatchCardProps {
@@ -237,14 +241,44 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
     title = "Tu fixture Mundial 2026",
     companyLogoUrl,
     companyLabel,
+    brandPrimary,
+    brandBg,
+    brandOnPrimary,
   },
   ref,
 ) {
+  const brandStyle = {
+    ...(brandPrimary ? { "--poster-primary": brandPrimary } : {}),
+    ...(brandPrimary
+      ? {
+          "--poster-primary-soft": `color-mix(in srgb, ${brandPrimary} 16%, transparent)`,
+          "--poster-primary-border": `color-mix(in srgb, ${brandPrimary} 48%, transparent)`,
+        }
+      : {}),
+    ...(brandBg ? { "--poster-bg": brandBg } : {}),
+    ...(brandOnPrimary ? { "--poster-on-primary": brandOnPrimary } : {}),
+  } as CSSProperties;
+
+  const eyebrowText = companyLabel ? `Prode de ${companyLabel}` : "Prode Mundial 2026";
+
   return (
-    <div ref={ref} className={styles.posterRoot}>
+    <div ref={ref} className={styles.posterRoot} style={brandStyle}>
       <header className={styles.posterHeader}>
         <div className={styles.brandBlock}>
           <div className={styles.brandLogos}>
+            {companyLogoUrl ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <div className={styles.brandClientLogoFrame}>
+                  <img
+                    src={companyLogoUrl}
+                    alt={companyLabel ?? "Logo empresa"}
+                    className={styles.brandClientLogo}
+                  />
+                </div>
+                <span className={styles.brandSeparator} aria-hidden />
+              </>
+            ) : null}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/official/wc26-logo.png" alt="World Cup 26" className={styles.brandLogo} />
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -256,7 +290,7 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
           </div>
 
           <div className={styles.brandCopy}>
-            <p className={styles.eyebrow}>Proyecto hecho por Lucas Descalzo</p>
+            <p className={styles.eyebrow}>{eyebrowText}</p>
             <h1>{title}</h1>
           </div>
         </div>
@@ -305,19 +339,12 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
         </div>
 
         <div className={styles.finalColumn}>
+          {/* Invisible spacer balances the bronzeWrapper below, keeping finalRow centered */}
+          <div className={styles.finalColumnSpacer} aria-hidden />
+
           <div className={styles.finalRow}>
             <span className={styles.finalConnector} aria-hidden />
             <div className={styles.posterFinalStack}>
-              {companyLogoUrl ? (
-                <div className={styles.posterCompanyMark} aria-hidden>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={companyLogoUrl}
-                    alt={companyLabel ?? "Logo empresa"}
-                    className={styles.posterCompanyLogo}
-                  />
-                </div>
-              ) : null}
               {matchesById.M104.winnerId ? (
                 <div className={styles.posterTrophyWrap} aria-hidden>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -333,7 +360,7 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
             <span className={styles.finalConnector} aria-hidden />
           </div>
 
-          <div className={styles.bronzeColumn}>
+          <div className={styles.bronzeWrapper}>
             <PosterMatchCard match={matchesById.M103} side="center" compact />
           </div>
         </div>
@@ -344,8 +371,8 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
       </main>
 
       <footer className={styles.posterFooter}>
-        <span>proyecto-mundial-2026.vercel.app</span>
-        <span>Lucas Descalzo · Fixture basado en el formato del torneo</span>
+        <span>{companyLabel ? `Prode organizado por ${companyLabel}` : "proyecto-mundial-2026.vercel.app"}</span>
+        <span>Fixture basado en el formato oficial del torneo · Mundial 2026</span>
       </footer>
     </div>
   );

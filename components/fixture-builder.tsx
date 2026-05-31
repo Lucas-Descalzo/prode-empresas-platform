@@ -148,6 +148,9 @@ interface FixtureBuilderProps {
   onFeedback?: (message: string) => void;
   posterBrandLogoUrl?: string | null;
   posterBrandName?: string | null;
+  posterBrandPrimary?: string | null;
+  posterBrandBg?: string | null;
+  posterBrandOnPrimary?: string | null;
 }
 
 export function FixtureBuilder({
@@ -163,6 +166,9 @@ export function FixtureBuilder({
   onFeedback,
   posterBrandLogoUrl,
   posterBrandName,
+  posterBrandPrimary,
+  posterBrandBg,
+  posterBrandOnPrimary,
 }: FixtureBuilderProps) {
   const [confirmingStepReset, setConfirmingStepReset] = useState<number | null>(null);
   const [confirmingFullReset, setConfirmingFullReset] = useState(false);
@@ -407,29 +413,33 @@ export function FixtureBuilder({
       }
 
       await waitForPosterImages(posterElement);
-      const { toBlob } = await import("html-to-image");
+      const { toCanvas } = await import("html-to-image");
 
-      const blob = await toBlob(posterElement, {
+      const canvas = await toCanvas(posterElement, {
         cacheBust: true,
-        backgroundColor: "#08101d",
-        pixelRatio: 2,
+        backgroundColor: posterBrandBg ?? "#08101d",
+        pixelRatio: 1.5,
         width: posterElement.scrollWidth,
         height: posterElement.scrollHeight,
       });
+
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, "image/jpeg", 0.88),
+      );
 
       if (!blob) {
         throw new Error("image-export-failed");
       }
 
-      const fileName = `fixture-mundial-2026-${new Date().toISOString().slice(0, 10)}.png`;
-      const objectUrl = URL.createObjectURL(blob);
+      const fileName = `fixture-mundial-2026-${new Date().toISOString().slice(0, 10)}.jpg`;
+      const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = objectUrl;
+      link.href = blobUrl;
       link.download = fileName;
       document.body.appendChild(link);
       link.click();
       link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1200);
+      window.setTimeout(() => URL.revokeObjectURL(blobUrl), 1200);
       setExportFeedback("Imagen descargada.");
     } catch (error) {
       console.error(error);
@@ -1253,6 +1263,9 @@ export function FixtureBuilder({
               title={readOnly ? "Fixture guardado Mundial 2026" : "Tu fixture Mundial 2026"}
               companyLogoUrl={posterBrandLogoUrl}
               companyLabel={posterBrandName ?? undefined}
+              brandPrimary={posterBrandPrimary ?? undefined}
+              brandBg={posterBrandBg ?? undefined}
+              brandOnPrimary={posterBrandOnPrimary ?? undefined}
             />
           </div>
         ) : null}
