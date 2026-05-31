@@ -10,7 +10,11 @@ import {
   listUsersForCompany,
 } from "@/lib/corporate/db";
 import { allMatches } from "@/lib/corporate/match-registry";
+import { buildSimpleModeOfficialFixtureState } from "@/lib/corporate/simple-mode-official";
 import { ADMIN_SESSION_COOKIE, isValidAdminSession } from "@/lib/admin-auth";
+import { knockoutMatchOrder } from "@/data/world-cup-2026";
+import { deriveMatches } from "@/lib/world-cup-fixture";
+import type { TeamId } from "@/lib/world-cup-types";
 
 export const dynamic = "force-dynamic";
 
@@ -50,11 +54,25 @@ export default async function CorporateAdminPage({
       : Promise.resolve(null),
   ]);
 
+  // Derive resolved team IDs for knockout matches from the current official state.
+  // This lets the admin panel show real team names instead of structural refs like "1.o Grupo A".
+  const officialState = buildSimpleModeOfficialFixtureState(officialResults);
+  const { matchesById: derivedMatchesById } = deriveMatches(officialState);
+  const resolvedKnockoutTeams: Record<string, { homeId: TeamId; awayId: TeamId }> =
+    Object.fromEntries(
+      knockoutMatchOrder.flatMap((matchId) => {
+        const match = derivedMatchesById[matchId];
+        if (!match?.sideA?.id || !match?.sideB?.id) return [];
+        return [[matchId, { homeId: match.sideA.id as TeamId, awayId: match.sideB.id as TeamId }]];
+      }),
+    );
+
   return (
     <AdminPanel
       client={client}
       matches={allMatches}
       officialResults={officialResults}
+      resolvedKnockoutTeams={resolvedKnockoutTeams}
       users={users}
       signupLink={signupLink}
       initialTab={initialTab}

@@ -27,12 +27,16 @@ import type {
 } from "@/lib/corporate/types";
 import type { UnifiedMatch } from "@/lib/corporate/match-registry";
 import { inferAdvancingTeamFromResult } from "@/lib/corporate/simple-mode-official";
+import type { TeamId } from "@/lib/world-cup-types";
 import styles from "./corporate-shell.module.css";
+
+type ResolvedKnockoutTeams = Record<string, { homeId: TeamId; awayId: TeamId }>;
 
 interface AdminPanelProps {
   client: CorporateClient;
   matches: UnifiedMatch[];
   officialResults: Record<string, OfficialResultRow>;
+  resolvedKnockoutTeams: ResolvedKnockoutTeams;
   users: CompanyUserRecord[];
   signupLink: CompanySignupLinkRecord | null;
   initialTab?: TabId;
@@ -101,7 +105,18 @@ function normalizeSearchValue(value: string) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function teamLabel(match: UnifiedMatch, side: "home" | "away"): string {
+function teamLabel(
+  match: UnifiedMatch,
+  side: "home" | "away",
+  resolvedKnockoutTeams?: ResolvedKnockoutTeams,
+): string {
+  // Use resolved team from official state if available (knockout phase with known bracket)
+  const resolved = resolvedKnockoutTeams?.[match.id];
+  if (resolved) {
+    const teamId = side === "home" ? resolved.homeId : resolved.awayId;
+    return teamMap[teamId]?.shortName ?? teamId;
+  }
+
   const teamId = side === "home" ? match.homeTeamId : match.awayTeamId;
   if (teamId) {
     return teamMap[teamId].shortName;
@@ -154,6 +169,7 @@ export function AdminPanel({
   client,
   matches,
   officialResults,
+  resolvedKnockoutTeams,
   users,
   signupLink,
   initialTab = "results",
@@ -170,12 +186,8 @@ export function AdminPanel({
     if (filter === "loaded") {
       return matches.filter((match) => officialResults[match.id]);
     }
-    return matches.filter(
-      (match) =>
-        !officialResults[match.id] &&
-        Boolean(match.homeTeamId) &&
-        Boolean(match.awayTeamId),
-    );
+    // "Pendientes": todo match sin resultado cargado, incluyendo knockout
+    return matches.filter((match) => !officialResults[match.id]);
   }, [filter, matches, officialResults]);
 
   const groupedByStage = useMemo(() => {
@@ -189,9 +201,7 @@ export function AdminPanel({
   }, [filteredMatches]);
 
   const totalLoaded = Object.keys(officialResults).length;
-  const totalPlayable = matches.filter(
-    (match) => Boolean(match.homeTeamId) && Boolean(match.awayTeamId),
-  ).length;
+  const totalPlayable = matches.length;
   const activeUsers = participantUsers.filter((user) => user.status === "active").length;
   const invitedUsers = participantUsers.filter((user) => user.status === "invited").length;
   const disabledUsers = participantUsers.filter((user) => user.status === "disabled").length;
@@ -308,6 +318,7 @@ export function AdminPanel({
                           client={client}
                           match={match}
                           initial={officialResults[match.id] ?? null}
+                          resolvedKnockoutTeams={resolvedKnockoutTeams}
                         />
                       ))}
                     </div>
@@ -813,16 +824,21 @@ function ResultRow({
   client,
   match,
   initial,
+  resolvedKnockoutTeams,
 }: {
   client: CorporateClient;
   match: UnifiedMatch;
   initial: OfficialResultRow | null;
+  resolvedKnockoutTeams: ResolvedKnockoutTeams;
 }) {
-  const slotUndefined = !match.homeTeamId || !match.awayTeamId;
+  const resolved = resolvedKnockoutTeams[match.id];
+  const effectiveHomeId = match.homeTeamId ?? resolved?.homeId;
+  const effectiveAwayId = match.awayTeamId ?? resolved?.awayId;
+  const slotUndefined = !effectiveHomeId || !effectiveAwayId;
   const isKnockout = match.stage !== "groups";
   const initialAdvancingTeamId = inferAdvancingTeamFromResult(
-    match.homeTeamId,
-    match.awayTeamId,
+    effectiveHomeId,
+    effectiveAwayId,
     initial,
   );
 
@@ -843,8 +859,8 @@ function ResultRow({
     <div className={styles.adminMatchRow}>
       <div className={styles.adminMatchInfo}>
         <span className={styles.adminMatchTeams}>
-          {teamLabel(match, "home")} <span style={{ opacity: 0.5 }}>vs</span>{" "}
-          {teamLabel(match, "away")}
+          {teamLabel(match, "home", resolvedKnockoutTeams)} <span style={{ opacity: 0.5 }}>vs</span>{" "}
+          {teamLabel(match, "away", resolvedKnockoutTeams)}
         </span>
         <span className={styles.adminMatchMeta}>
           {match.id} · {formatDate(match.date)}
@@ -884,7 +900,7 @@ function ResultRow({
         >
           {isPending ? "..." : "Guardar"}
         </button>
-        {isKnockout && match.homeTeamId && match.awayTeamId ? (
+        {isKnockout && effectiveHomeId && effectiveAwayId ? (
           <select
             name="advancingTeamId"
             defaultValue={initialAdvancingTeamId ?? ""}
@@ -893,8 +909,8 @@ function ResultRow({
             disabled={slotUndefined || isPending}
           >
             <option value="">Avanza...</option>
-            <option value={match.homeTeamId}>{teamMap[match.homeTeamId].shortName}</option>
-            <option value={match.awayTeamId}>{teamMap[match.awayTeamId].shortName}</option>
+            <option value={effectiveHomeId}>{teamMap[effectiveHomeId]?.shortName ?? effectiveHomeId}</option>
+            <option value={effectiveAwayId}>{teamMap[effectiveAwayId]?.shortName ?? effectiveAwayId}</option>
           </select>
         ) : null}
       </form>

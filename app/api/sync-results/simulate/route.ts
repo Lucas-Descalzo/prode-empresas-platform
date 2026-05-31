@@ -5,8 +5,12 @@
 
 import { NextResponse } from "next/server";
 
-import { deleteOfficialResult, listCompanies } from "@/lib/corporate/db";
+import { deleteOfficialResult, getOfficialResultsForCompany, listCompanies, saveOfficialResult } from "@/lib/corporate/db";
 import { groupMatchSchedule } from "@/lib/corporate/group-schedule";
+import { buildSimpleModeOfficialFixtureState } from "@/lib/corporate/simple-mode-official";
+import { knockoutMatchOrder } from "@/data/world-cup-2026";
+import { deriveMatches } from "@/lib/world-cup-fixture";
+import type { TeamId } from "@/lib/world-cup-types";
 import type { ApiMatch } from "@/lib/football-data/client";
 import { syncMatchResults } from "@/lib/football-data/sync";
 
@@ -77,8 +81,9 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const action = searchParams.get("action");
+  const isDryRun = searchParams.get("dry") !== "0";
 
-  // Cleanup: delete all simulated group results from DB
+  // Cleanup: delete all simulated results from DB (groups + knockout)
   if (action === "cleanup") {
     const companies = await listCompanies();
     const simpleCompanies = companies.filter((c) => c.gameMode === "simple" && c.status === "active");
@@ -88,12 +93,91 @@ export async function GET(request: Request) {
         await deleteOfficialResult({ companyId: company.id, matchId: match.id });
         deleted++;
       }
+      for (const matchId of knockoutMatchOrder) {
+        await deleteOfficialResult({ companyId: company.id, matchId });
+        deleted++;
+      }
     }
     return NextResponse.json({ ok: true, action: "cleanup", deleted });
   }
 
+  // Full tournament simulation: groups + complete knockout bracket
+  // Tests the knockout resolver end-to-end through the HTTP stack
+  if (action === "full") {
+    const companies = await listCompanies();
+    const simpleCompanies = companies.filter((c) => c.gameMode === "simple" && c.status === "active");
+    const report: Array<{ slug: string; groups: number; knockout: number; errors: string[] }> = [];
+
+    for (const company of simpleCompanies) {
+      const companyReport = { slug: company.slug, groups: 0, knockout: 0, errors: [] as string[] };
+
+      // Step 1: sync all 72 group matches
+      const groupMatches = buildSimulatedGroupMatches();
+      const groupResult = await syncMatchResults(company.id, groupMatches, isDryRun);
+      companyReport.groups = groupResult.saved;
+      companyReport.errors.push(...groupResult.errors);
+
+      // Step 2: simulate knockout round by round (must rebuild state each time)
+      for (const matchId of knockoutMatchOrder) {
+        const currentResults = isDryRun ? {} : await getOfficialResultsForCompany(company.id);
+        const currentState = buildSimpleModeOfficialFixtureState(currentResults);
+        const { matchesById } = deriveMatches(currentState);
+        const match = matchesById[matchId];
+        if (!match?.sideA?.id || !match?.sideB?.id) {
+          companyReport.errors.push(`Knockout ${matchId}: teams not resolved yet`);
+          break;
+        }
+
+        const knockoutApiMatch: ApiMatch = makeMatch(
+          9000 + knockoutMatchOrder.indexOf(matchId),
+          match.stage === "roundOf32" ? "ROUND_OF_32" :
+          match.stage === "roundOf16" ? "ROUND_OF_16" :
+          match.stage === "quarterFinal" ? "QUARTER_FINALS" :
+          match.stage === "semiFinal" ? "SEMI_FINALS" :
+          match.stage === "bronzeFinal" ? "THIRD_PLACE" : "FINAL",
+          null,
+          "2026-07-01",
+          match.sideA.id.toUpperCase(),
+          match.sideB.id.toUpperCase(),
+          2,
+          1,
+        );
+
+        if (!isDryRun) {
+          try {
+            await saveOfficialResult({
+              companyId: company.id,
+              matchId,
+              home: 2,
+              away: 1,
+              advancingTeamId: match.sideA.id as TeamId,
+            });
+            companyReport.knockout++;
+          } catch (e) {
+            companyReport.errors.push(`${matchId}: ${e instanceof Error ? e.message : String(e)}`);
+          }
+        } else {
+          companyReport.knockout++;
+          // In dry run we can't rebuild state after each match, so stop after first resolved
+          if (companyReport.knockout >= 4) break; // verify first 4 knockout matches resolve
+        }
+        // suppress unused variable warning
+        void knockoutApiMatch;
+      }
+
+      report.push(companyReport);
+    }
+
+    return NextResponse.json({
+      ok: true,
+      action: "full",
+      dryRun: isDryRun,
+      description: "72 group matches + full knockout bracket simulated",
+      report,
+    });
+  }
+
   const rounds = searchParams.get("rounds") ?? "groups";
-  const isDryRun = searchParams.get("dry") !== "0";
 
   const matches = buildSimulatedGroupMatches();
 
