@@ -2,8 +2,8 @@
   --card-width: 12rem;
   --featured-card-width: 17rem;
   --compact-card-width: 12.4rem;
-  --connector-gap: 1.6rem;
-  --branch-gap: 1.2rem;
+  --connector-gap: 2.2rem;
+  --branch-gap: 1.8rem;
   --canvas-gap: 3.6rem;
 
   /* Client brand overrides — set via inline style */
@@ -245,10 +245,15 @@
   color: var(--poster-primary);
 }
 
+.posterMain {
+  /* block wrapper — no layout needed */
+}
+
 .posterCanvas {
   display: grid;
   grid-template-columns: max-content max-content max-content;
-  align-items: center;
+  /* stretch so finalColumn fills the full branch height for correct centering */
+  align-items: stretch;
   justify-content: center;
   column-gap: 0;
   width: max-content;
@@ -260,38 +265,40 @@
   align-items: center;
 }
 
-.posterMain {
+/*
+ * finalColumn fills the full branch height (from align-items: stretch on posterCanvas).
+ * justify-content: center places finalAnchor at the exact vertical midpoint,
+ * which aligns with the semi-final connector lines.
+ * position: relative is the containing block for the absolutely-positioned bronzeWrapper.
+ */
+.finalColumn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/*
+ * finalAnchor is position: relative so the trophy can be positioned absolute above it.
+ * Its height = finalRow height only (trophy doesn't affect it).
+ */
+.finalAnchor {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.finalColumn {
-  display: flex;
-  align-items: center;
-}
-
-.bronzeWrapper {
-  margin-block-start: 28px;
-  display: flex;
-  justify-content: center;
-}
-
-.finalRow {
-  display: flex;
-  align-items: center;
-}
-
-.posterFinalStack {
-  display: grid;
-  justify-items: center;
-  align-content: center;
-}
-
+/* Trophy sits absolutely above the final card, not affecting its vertical center */
 .posterTrophyWrap {
-  inline-size: 240px;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-block-end: 16px;
+  inline-size: 210px;
   aspect-ratio: 1;
-  margin-block-end: -14px;
   filter:
     drop-shadow(0 0 28px color-mix(in srgb, var(--poster-primary) 36%, transparent))
     drop-shadow(0 28px 40px rgba(0, 0, 0, 0.32));
@@ -302,6 +309,22 @@
   inline-size: 100%;
   block-size: 100%;
   object-fit: contain;
+}
+
+.finalRow {
+  display: flex;
+  align-items: center;
+}
+
+/*
+ * bronzeWrapper is absolute within finalColumn (which fills the full branch height).
+ * 87.5% from the top = center of the bottom roundOf16 in a symmetric 4-level binary tree.
+ */
+.bronzeWrapper {
+  position: absolute;
+  top: 87.5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .posterCompanyMark {

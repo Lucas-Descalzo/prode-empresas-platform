@@ -343,32 +343,34 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
           </div>
 
           <div className={styles.finalColumn}>
-            <div className={styles.finalRow}>
-              <span className={styles.finalConnector} aria-hidden />
-              <div className={styles.posterFinalStack}>
-                {matchesById.M104.winnerId ? (
-                  <div className={styles.posterTrophyWrap} aria-hidden>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/official/world-cup-trophy.png"
-                      alt=""
-                      className={styles.posterTrophy}
-                    />
-                  </div>
-                ) : null}
+            {/* finalAnchor is relative so the trophy can be absolutely positioned above the card */}
+            <div className={styles.finalAnchor}>
+              {matchesById.M104.winnerId ? (
+                <div className={styles.posterTrophyWrap} aria-hidden>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/official/world-cup-trophy.png"
+                    alt=""
+                    className={styles.posterTrophy}
+                  />
+                </div>
+              ) : null}
+              <div className={styles.finalRow}>
+                <span className={styles.finalConnector} aria-hidden />
                 <PosterMatchCard match={matchesById.M104} side="center" featured />
+                <span className={styles.finalConnector} aria-hidden />
               </div>
-              <span className={styles.finalConnector} aria-hidden />
+            </div>
+
+            {/* bronzeWrapper is absolute so it doesn't affect the vertical center of finalAnchor */}
+            <div className={styles.bronzeWrapper}>
+              <PosterMatchCard match={matchesById.M103} side="center" compact />
             </div>
           </div>
 
           <div className={cn(styles.branchColumn, styles.branchColumnRight)}>
             <PosterMatchTree matchId="M102" side="right" matchesById={matchesById} />
           </div>
-        </div>
-
-        <div className={styles.bronzeWrapper}>
-          <PosterMatchCard match={matchesById.M103} side="center" compact />
         </div>
       </main>
 
