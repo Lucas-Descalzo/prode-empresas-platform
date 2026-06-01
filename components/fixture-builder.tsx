@@ -178,6 +178,9 @@ export function FixtureBuilder({
   const [exportFeedback, setExportFeedback] = useState("");
   const [isPosterMounted, setIsPosterMounted] = useState(false);
   const exportPosterRef = useRef<HTMLDivElement | null>(null);
+  const [previewBlobUrl, setPreviewBlobUrl] = useState<string | null>(null);
+  const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
+  const [previewFileName, setPreviewFileName] = useState("");
   const [expandedGroup, setExpandedGroup] = useState<GroupId | null>(null);
   const [groupFilter, setGroupFilter] = useState<"all" | "A-D" | "E-H" | "I-L">("all");
   const groupGridRef = useRef<HTMLDivElement | null>(null);
@@ -398,6 +401,37 @@ export function FixtureBuilder({
     });
   };
 
+  const closePreview = () => {
+    if (previewBlobUrl) URL.revokeObjectURL(previewBlobUrl);
+    setPreviewBlobUrl(null);
+    setPreviewBlob(null);
+    setPreviewFileName("");
+  };
+
+  const handleDownload = () => {
+    if (!previewBlobUrl || !previewFileName) return;
+    const link = document.createElement("a");
+    link.href = previewBlobUrl;
+    link.download = previewFileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    closePreview();
+  };
+
+  const handleShare = async () => {
+    if (!previewBlob || !previewFileName) return;
+    const file = new File([previewBlob], previewFileName, { type: "image/jpeg" });
+    try {
+      await navigator.share({ files: [file], title: "Mi fixture Mundial 2026" });
+      closePreview();
+    } catch (err) {
+      if (err instanceof Error && err.name !== "AbortError") {
+        console.error(err);
+      }
+    }
+  };
+
   const exportFixtureImage = async () => {
     if (!isComplete) {
       return;
@@ -435,15 +469,9 @@ export function FixtureBuilder({
       }
 
       const fileName = `fixture-mundial-2026-${new Date().toISOString().slice(0, 10)}.jpg`;
-      const blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(blobUrl), 1200);
-      setExportFeedback("Imagen descargada.");
+      setPreviewBlob(blob);
+      setPreviewBlobUrl(URL.createObjectURL(blob));
+      setPreviewFileName(fileName);
     } catch (error) {
       console.error(error);
       setExportFeedback("No pude generar la imagen. Probá hacer una captura de pantalla.");
@@ -1293,7 +1321,7 @@ export function FixtureBuilder({
                 : !isKnockoutReady
                   ? "Elegí los 8 terceros para exportar"
                   : isComplete
-                    ? "Descargar imagen PNG"
+                    ? "Ver y descargar imagen"
                     : "Completá el cuadro para exportar tu imagen"}
             </button>
             {exportFeedback ? <p className={styles.exportFeedback}>{exportFeedback}</p> : null}
@@ -1321,6 +1349,51 @@ export function FixtureBuilder({
         ) : null}
       </section>
       ) : null}
+
+      {previewBlobUrl ? (() => {
+        const canShare = !!previewBlob &&
+          typeof navigator !== "undefined" &&
+          typeof navigator.share === "function" &&
+          typeof navigator.canShare === "function" &&
+          (() => { try { return navigator.canShare({ files: [new File([previewBlob], previewFileName, { type: "image/jpeg" })] }); } catch { return false; } })();
+
+        return (
+          <div className={styles.previewOverlay} onClick={closePreview}>
+            <div className={styles.previewModal} onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                className={styles.previewClose}
+                onClick={closePreview}
+                aria-label="Cerrar"
+              >
+                ✕
+              </button>
+              <div className={styles.previewImageWrap}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={previewBlobUrl}
+                  alt="Preview del fixture"
+                  className={styles.previewImage}
+                />
+              </div>
+              <div className={styles.previewActions}>
+                {canShare ? (
+                  <button type="button" className={styles.primaryAction} onClick={handleShare}>
+                    Compartir
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  className={canShare ? styles.secondaryAction : styles.primaryAction}
+                  onClick={handleDownload}
+                >
+                  Descargar
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })() : null}
 
       {!readOnly && onResetAll ? (
         <footer className={styles.fullResetFooter}>
