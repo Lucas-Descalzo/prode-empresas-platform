@@ -40,6 +40,13 @@
   min-inline-size: 0;
 }
 
+.brandBlockCompany {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 32px;
+}
+
 .brandLogos {
   display: flex;
   align-items: center;
@@ -57,24 +64,22 @@
   opacity: 0.78;
 }
 
-.brandClientLogoFrame {
-  display: grid;
-  place-items: center;
-  padding: 12px 18px;
-  border-radius: 18px;
-  border: 1.5px solid color-mix(in srgb, var(--poster-primary) 52%, transparent);
-  background:
-    radial-gradient(circle at top, color-mix(in srgb, var(--poster-primary) 18%, transparent), transparent 60%),
-    rgba(12, 17, 30, 0.92);
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.3),
-    0 0 0 1px color-mix(in srgb, var(--poster-primary) 14%, transparent);
+.brandClientLogo {
+  max-inline-size: 320px;
+  max-block-size: 110px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
-.brandClientLogo {
-  max-inline-size: 300px;
-  max-block-size: 120px;
-  object-fit: contain;
+.brandCompanyTitle {
+  margin: 0;
+  color: var(--poster-primary);
+  font-family: var(--font-heading);
+  font-size: 54px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
 

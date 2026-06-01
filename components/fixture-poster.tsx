@@ -258,34 +258,36 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
   return (
     <div ref={ref} className={styles.posterRoot} style={brandStyle}>
       <header className={styles.posterHeader}>
-        <div className={styles.brandBlock}>
-          <div className={styles.brandLogos}>
-            {companyLogoUrl ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <div className={styles.brandClientLogoFrame}>
-                <img
-                  src={companyLogoUrl}
-                  alt={companyLabel ?? "Logo empresa"}
-                  className={styles.brandClientLogo}
-                />
-              </div>
-            ) : (
-              <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/official/wc26-logo.png" alt="World Cup 26" className={styles.brandLogo} />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/official/fifa-logo-white.png"
-                  alt="FIFA"
-                  className={styles.brandFifa}
-                />
-              </>
-            )}
-          </div>
+        <div className={cn(styles.brandBlock, companyLogoUrl && styles.brandBlockCompany)}>
+          {companyLogoUrl ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={companyLogoUrl}
+              alt={companyLabel ?? "Logo empresa"}
+              className={styles.brandClientLogo}
+            />
+          ) : (
+            <div className={styles.brandLogos}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/official/wc26-logo.png" alt="World Cup 26" className={styles.brandLogo} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/official/fifa-logo-white.png"
+                alt="FIFA"
+                className={styles.brandFifa}
+              />
+            </div>
+          )}
 
           <div className={styles.brandCopy}>
-            <p className={styles.eyebrow}>{eyebrowText}</p>
-            <h1>{title}</h1>
+            {companyLogoUrl ? (
+              <p className={styles.brandCompanyTitle}>{eyebrowText}</p>
+            ) : (
+              <>
+                <p className={styles.eyebrow}>{eyebrowText}</p>
+                <h1>{title}</h1>
+              </>
+            )}
           </div>
         </div>
 
