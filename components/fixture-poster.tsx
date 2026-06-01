@@ -258,7 +258,7 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
   return (
     <div ref={ref} className={styles.posterRoot} style={brandStyle}>
       <header className={styles.posterHeader}>
-        <div className={cn(styles.brandBlock, companyLogoUrl && styles.brandBlockCompany)}>
+        <div className={cn(styles.brandBlock, !!companyLogoUrl && styles.brandBlockCompany)}>
           {companyLogoUrl ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
