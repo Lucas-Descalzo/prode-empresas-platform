@@ -130,10 +130,6 @@ function PosterMatchCard({
         compact && styles.matchCardCompact,
       )}
     >
-      <header className={styles.matchHeader}>
-        <span>{match.meta.city}</span>
-      </header>
-
       <div className={styles.countryStack}>
         <PosterTeamRow
           teamId={match.sideA?.id}

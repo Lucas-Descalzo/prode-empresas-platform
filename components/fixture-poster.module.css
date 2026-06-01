@@ -513,15 +513,6 @@
   text-align: center;
 }
 
-.matchHeader {
-  display: grid;
-  gap: 6px;
-}
-
-.matchHeader span {
-  color: rgba(233, 238, 255, 0.62);
-  font-size: 15px;
-}
 
 .countryStack {
   display: grid;
