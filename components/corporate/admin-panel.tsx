@@ -169,9 +169,10 @@ function SignupLinkBar({ signupLink }: { signupLink: CompanySignupLinkRecord | n
   const [copyFeedback, setCopyFeedback] = useState("");
 
   if (!signupLink) return null;
+  const signupPath = signupLink.path;
 
   async function handleCopy() {
-    const fullUrl = new URL(signupLink.path, window.location.origin).toString();
+    const fullUrl = new URL(signupPath, window.location.origin).toString();
     await navigator.clipboard.writeText(fullUrl);
     setCopyFeedback("Copiado");
     window.setTimeout(() => setCopyFeedback(""), 1800);
@@ -186,7 +187,7 @@ function SignupLinkBar({ signupLink }: { signupLink: CompanySignupLinkRecord | n
       >
         {signupLink.status === "active" ? "Alta activa" : "Alta inactiva"}
       </span>
-      <code className={styles.adminSignupBarPath}>{signupLink.path}</code>
+      <code className={styles.adminSignupBarPath}>{signupPath}</code>
       <button
         type="button"
         className={styles.adminSaveBtn}
