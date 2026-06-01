@@ -165,6 +165,39 @@ function formatAreaLabel(areaLabel: string, value: string | null) {
   return `${areaLabel} ${value}`;
 }
 
+function SignupLinkBar({ signupLink }: { signupLink: CompanySignupLinkRecord | null }) {
+  const [copyFeedback, setCopyFeedback] = useState("");
+
+  if (!signupLink) return null;
+
+  async function handleCopy() {
+    const fullUrl = new URL(signupLink!.path, window.location.origin).toString();
+    await navigator.clipboard.writeText(fullUrl);
+    setCopyFeedback("Copiado");
+    window.setTimeout(() => setCopyFeedback(""), 1800);
+  }
+
+  return (
+    <div className={styles.adminSignupBar}>
+      <span
+        className={`${styles.adminStatusPill} ${
+          signupLink.status === "active" ? styles.adminStatusPillActive : styles.adminStatusPillMuted
+        }`}
+      >
+        {signupLink.status === "active" ? "Alta activa" : "Alta inactiva"}
+      </span>
+      <code className={styles.adminSignupBarPath}>{signupLink.path}</code>
+      <button
+        type="button"
+        className={styles.adminSaveBtn}
+        onClick={() => void handleCopy()}
+      >
+        {copyFeedback || "Copiar link"}
+      </button>
+    </div>
+  );
+}
+
 export function AdminPanel({
   client,
   matches,
@@ -217,6 +250,8 @@ export function AdminPanel({
           mismo acceso administrador.
         </p>
       </div>
+
+      <SignupLinkBar signupLink={signupLink} />
 
       <div className={styles.adminCard}>
         <div className={styles.adminTopBar}>

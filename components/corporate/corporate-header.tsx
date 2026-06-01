@@ -30,43 +30,58 @@ function activeTabFromPath(pathname: string, slug: string): TabId {
 export function CorporateHeader({ client, participantName }: CorporateHeaderProps) {
   const pathname = usePathname() ?? "";
   const activeTab = activeTabFromPath(pathname, client.slug);
+  const isAdmin = pathname.startsWith(`/c/${client.slug}/admin`);
   const logoText = client.branding.logoText?.trim() || client.shortName;
   const logoUrl = client.branding.logoUrl ?? null;
   const [failedLogoUrl, setFailedLogoUrl] = useState<string | null>(null);
   const canShowLogo = Boolean(logoUrl) && failedLogoUrl !== logoUrl;
 
+  const logoBrand = (
+    <Link
+      href={`/c/${client.slug}`}
+      className={styles.brandWrap}
+      aria-label={client.displayName}
+    >
+      {canShowLogo ? (
+        <span className={styles.brandLogoFrame}>
+          <img
+            src={logoUrl!}
+            alt=""
+            className={styles.brandLogoImage}
+            onError={() => setFailedLogoUrl(logoUrl)}
+          />
+        </span>
+      ) : (
+        <span className={`${styles.brandLogoFrame} ${styles.brandTextLogo}`}>
+          {logoText}
+        </span>
+      )}
+
+      <span className={styles.brandCopy}>
+        <span className={styles.brandTitleStrong}>Mundial 2026</span>
+        <strong className={styles.brandClientName}>{client.displayName}</strong>
+        {client.tagline ? (
+          <span className={styles.brandTagline}>{client.tagline}</span>
+        ) : null}
+      </span>
+    </Link>
+  );
+
+  if (isAdmin) {
+    return (
+      <header className={styles.unifiedHeader}>
+        <div className={styles.headerTopRow}>
+          {logoBrand}
+          <span className={styles.participantBadge}>Panel admin</span>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className={styles.unifiedHeader}>
       <div className={styles.headerTopRow}>
-        <Link
-          href={`/c/${client.slug}`}
-          className={styles.brandWrap}
-          aria-label={client.displayName}
-        >
-          {canShowLogo ? (
-            <span className={styles.brandLogoFrame}>
-              <img
-                src={logoUrl!}
-                alt=""
-                className={styles.brandLogoImage}
-                onError={() => setFailedLogoUrl(logoUrl)}
-              />
-            </span>
-          ) : (
-            <span className={`${styles.brandLogoFrame} ${styles.brandTextLogo}`}>
-              {logoText}
-            </span>
-          )}
-
-          <span className={styles.brandCopy}>
-            <span className={styles.brandTitleStrong}>Mundial 2026</span>
-            <strong className={styles.brandClientName}>{client.displayName}</strong>
-            {client.tagline ? (
-              <span className={styles.brandTagline}>{client.tagline}</span>
-            ) : null}
-          </span>
-        </Link>
-
+        {logoBrand}
         {participantName ? (
           <span className={styles.participantBadge}>Hola, {participantName}</span>
         ) : null}
