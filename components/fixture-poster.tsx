@@ -46,15 +46,6 @@ function cn(...classNames: Array<string | false | undefined>) {
   return classNames.filter(Boolean).join(" ");
 }
 
-function formatPosterDate(date: string) {
-  return new Intl.DateTimeFormat("es-AR", {
-    weekday: "short",
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(`${date}T12:00:00Z`));
-}
 
 function getChildMatchIds(matchId: MatchId): [MatchId, MatchId] | null {
   const slot = knockoutSlotMap[matchId];
@@ -140,7 +131,6 @@ function PosterMatchCard({
       )}
     >
       <header className={styles.matchHeader}>
-        <strong>{formatPosterDate(match.meta.date)}</strong>
         <span>{match.meta.city}</span>
       </header>
 
@@ -271,26 +261,26 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
         <div className={styles.brandBlock}>
           <div className={styles.brandLogos}>
             {companyLogoUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <div className={styles.brandClientLogoFrame}>
+                <img
+                  src={companyLogoUrl}
+                  alt={companyLabel ?? "Logo empresa"}
+                  className={styles.brandClientLogo}
+                />
+              </div>
+            ) : (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <div className={styles.brandClientLogoFrame}>
-                  <img
-                    src={companyLogoUrl}
-                    alt={companyLabel ?? "Logo empresa"}
-                    className={styles.brandClientLogo}
-                  />
-                </div>
-                <span className={styles.brandSeparator} aria-hidden />
+                <img src="/official/wc26-logo.png" alt="World Cup 26" className={styles.brandLogo} />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/official/fifa-logo-white.png"
+                  alt="FIFA"
+                  className={styles.brandFifa}
+                />
               </>
-            ) : null}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/official/wc26-logo.png" alt="World Cup 26" className={styles.brandLogo} />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/official/fifa-logo-white.png"
-              alt="FIFA"
-              className={styles.brandFifa}
-            />
+            )}
           </div>
 
           <div className={styles.brandCopy}>
@@ -344,52 +334,46 @@ export const FixturePoster = forwardRef<HTMLDivElement, FixturePosterProps>(func
         ))}
       </div>
 
-      <main className={styles.posterCanvas}>
-        <div className={cn(styles.branchColumn, styles.branchColumnLeft)}>
-          <PosterMatchTree matchId="M101" side="left" matchesById={matchesById} />
-        </div>
+      <main className={styles.posterMain}>
+        <div className={styles.posterCanvas}>
+          <div className={cn(styles.branchColumn, styles.branchColumnLeft)}>
+            <PosterMatchTree matchId="M101" side="left" matchesById={matchesById} />
+          </div>
 
-        <div className={styles.finalColumn}>
-          {/* Invisible spacer balances the bronzeWrapper below, keeping finalRow centered */}
-          <div className={styles.finalColumnSpacer} aria-hidden />
-
-          <div className={styles.finalRow}>
-            <span className={styles.finalConnector} aria-hidden />
-            <div className={styles.posterFinalStack}>
-              {matchesById.M104.winnerId ? (
-                <div className={styles.posterTrophyWrap} aria-hidden>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/official/world-cup-trophy.png"
-                    alt=""
-                    className={styles.posterTrophy}
-                  />
-                </div>
-              ) : null}
-              <PosterMatchCard match={matchesById.M104} side="center" featured />
+          <div className={styles.finalColumn}>
+            <div className={styles.finalRow}>
+              <span className={styles.finalConnector} aria-hidden />
+              <div className={styles.posterFinalStack}>
+                {matchesById.M104.winnerId ? (
+                  <div className={styles.posterTrophyWrap} aria-hidden>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/official/world-cup-trophy.png"
+                      alt=""
+                      className={styles.posterTrophy}
+                    />
+                  </div>
+                ) : null}
+                <PosterMatchCard match={matchesById.M104} side="center" featured />
+              </div>
+              <span className={styles.finalConnector} aria-hidden />
             </div>
-            <span className={styles.finalConnector} aria-hidden />
           </div>
 
-          <div className={styles.bronzeWrapper}>
-            <PosterMatchCard match={matchesById.M103} side="center" compact />
+          <div className={cn(styles.branchColumn, styles.branchColumnRight)}>
+            <PosterMatchTree matchId="M102" side="right" matchesById={matchesById} />
           </div>
         </div>
 
-        <div className={cn(styles.branchColumn, styles.branchColumnRight)}>
-          <PosterMatchTree matchId="M102" side="right" matchesById={matchesById} />
+        <div className={styles.bronzeWrapper}>
+          <PosterMatchCard match={matchesById.M103} side="center" compact />
         </div>
       </main>
 
       <footer className={styles.posterFooter}>
-        {participantName ? (
-          <span className={styles.footerSignature}>
-            {participantName} · {companyLabel ?? "Mundial 2026"}
-          </span>
-        ) : (
-          <span className={styles.footerSignature}>{companyLabel ?? "Mundial 2026"}</span>
-        )}
-        <span className={styles.footerMuted}>mundial2026.app</span>
+        {companyLabel ? (
+          <span className={styles.footerBrand}>{companyLabel}</span>
+        ) : null}
       </footer>
     </div>
   );

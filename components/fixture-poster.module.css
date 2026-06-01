@@ -72,16 +72,11 @@
 }
 
 .brandClientLogo {
-  max-inline-size: 200px;
-  max-block-size: 80px;
+  max-inline-size: 300px;
+  max-block-size: 120px;
   object-fit: contain;
 }
 
-.brandSeparator {
-  inline-size: 1px;
-  block-size: 40px;
-  background: rgba(150, 169, 211, 0.22);
-}
 
 .brandCopy {
   display: grid;
@@ -260,23 +255,15 @@
   align-items: center;
 }
 
-/*
- * finalColumn is now a regular grid item (not display:contents).
- * It stacks finalRow and bronzeWrapper vertically.
- * A hidden spacer at the top (equal to bronzeWrapper height + gap) keeps
- * the finalRow vertically centered within finalColumn, which ensures the
- * horizontal connectors align with the semi-final cards in the branches.
- */
-.finalColumn {
+.posterMain {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.finalColumnSpacer {
-  flex-shrink: 0;
-  block-size: 280px;
-  visibility: hidden;
+.finalColumn {
+  display: flex;
+  align-items: center;
 }
 
 .bronzeWrapper {
@@ -503,12 +490,6 @@
   gap: 6px;
 }
 
-.matchHeader strong {
-  font-size: 20px;
-  line-height: 1.12;
-  text-transform: capitalize;
-}
-
 .matchHeader span {
   color: rgba(233, 238, 255, 0.62);
   font-size: 15px;
@@ -633,23 +614,17 @@
 
 .posterFooter {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  gap: 12px;
   margin-top: 20px;
   padding-top: 14px;
   border-top: 1px solid rgba(150, 169, 211, 0.08);
 }
 
-.footerSignature {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--poster-primary);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.footerMuted {
+.footerBrand {
   font-size: 13px;
+  font-weight: 600;
   color: rgba(233, 238, 255, 0.3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }

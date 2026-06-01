@@ -43,7 +43,7 @@ export default async function PartidosPage({
       <SimpleModeApp
         client={client}
         initialFixtureState={fixturePrediction?.fixtureState ?? null}
-        participantName={participant.firstName || null}
+        participantName={participant.fullName || null}
       />
     );
   }
