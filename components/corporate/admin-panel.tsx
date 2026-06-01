@@ -72,7 +72,7 @@ const TAB_COPY: Record<TabId, { title: string; description: string }> = {
   access: {
     title: "Acceso privado del gimnasio",
     description:
-      "Comparte el link correcto, controla si sigue abierto y revisa rapidamente el estado general de la comunidad.",
+      "Comparte el link correcto, controla si sigue abierto y revisa rápidamente el estado general de la comunidad.",
   },
   participants: {
     title: "Base de participantes",
@@ -210,8 +210,8 @@ export function AdminPanel({
   return (
     <>
       <div className={styles.gameHeader}>
-        <span className={styles.gameEyebrow}>Panel TM Boxing</span>
-        <h1 className={styles.gameTitle}>Operacion del tenant</h1>
+        <span className={styles.gameEyebrow}>Panel {client.shortName}</span>
+        <h1 className={styles.gameTitle}>{client.displayName}</h1>
         <p className={styles.gameStatus}>
           Gestiona resultados, el link de alta y la base de participantes desde el
           mismo acceso administrador.
@@ -437,8 +437,8 @@ function AccessPanel({
             </div>
 
             <p className={styles.adminAccessCopy}>
-              Comparte este link solo con personas que pagaron la cuota de junio. Quien
-              entre podra crear su cuenta con DNI y clave propia.
+              Comparte este link solo con socios habilitados para participar. Quien
+              entre podrá crear su cuenta con DNI y clave propia.
             </p>
 
             <code className={styles.adminAccessPath}>{signupLink.path}</code>
@@ -482,8 +482,8 @@ function AccessPanel({
             <div className={styles.adminGuideBlock}>
               <span className={styles.sectionEyebrow}>Uso recomendado</span>
               <ul className={styles.adminGuideList}>
-                <li>Envia este link solo a socios habilitados para jugar.</li>
-                <li>Si necesitan pausar nuevas altas, desactiven el link y vuelvan a abrirlo despues.</li>
+                <li>Envía este link solo a socios habilitados para jugar.</li>
+                <li>Si necesitan pausar nuevas altas, desactiven el link y vuelvan a abrirlo después.</li>
                 <li>Si alguien no corresponde, denlo de baja desde Participantes.</li>
               </ul>
             </div>
@@ -850,10 +850,13 @@ function ResultRow({
     clearResultAction,
     INITIAL_STATE,
   );
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const showSavedFlag = state.matchId === match.id && state.message ? state.message : "";
   const showClearedFlag =
     clearState.matchId === match.id && clearState.message ? clearState.message : "";
+
+  const showAdvanceSelect = isKnockout && effectiveHomeId && effectiveAwayId;
 
   return (
     <div className={styles.adminMatchRow}>
@@ -900,13 +903,14 @@ function ResultRow({
         >
           {isPending ? "..." : "Guardar"}
         </button>
-        {isKnockout && effectiveHomeId && effectiveAwayId ? (
+        {showAdvanceSelect ? (
           <select
             name="advancingTeamId"
             defaultValue={initialAdvancingTeamId ?? ""}
             className={styles.adminAdvanceSelect}
             aria-label="Equipo que avanza"
             disabled={slotUndefined || isPending}
+            style={showAdvanced ? undefined : { display: "none" }}
           >
             <option value="">Avanza...</option>
             <option value={effectiveHomeId}>{teamMap[effectiveHomeId]?.shortName ?? effectiveHomeId}</option>
@@ -916,6 +920,18 @@ function ResultRow({
       </form>
 
       <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+        {showAdvanceSelect ? (
+          <button
+            type="button"
+            className={styles.adminFilterTab}
+            onClick={() => setShowAdvanced((v) => !v)}
+            title="Corrección manual del equipo que avanza"
+            style={{ minHeight: "2.4rem", opacity: showAdvanced ? 1 : 0.5 }}
+          >
+            ⚙
+          </button>
+        ) : null}
+
         {initial ? (
           <form action={clearAction}>
             <input type="hidden" name="slug" value={client.slug} />
