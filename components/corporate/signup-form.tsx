@@ -66,17 +66,17 @@ export function SignupForm({
       </div>
 
       <p className={styles.formHint}>
-        Completa tus datos para entrar con tu propio DNI y clave. El ranking mostrara
+        Completa tus datos para entrar con tu propio DNI y clave. El ranking mostrará
         solo tu nombre y apellido.
       </p>
 
       <div className={styles.signupIntroGrid}>
         <section className={styles.signupInfoCard}>
-          <span className={styles.formEyebrow}>Como funciona</span>
+          <span className={styles.formEyebrow}>Cómo funciona</span>
           <ul className={styles.signupChecklist}>
-            <li>Recibes este link privado desde el gimnasio.</li>
+            <li>Recibís este link privado desde el gimnasio.</li>
             <li>Creas tu cuenta una sola vez con DNI y clave propia.</li>
-            <li>Despues entras directo a completar tu prode y seguir el ranking.</li>
+            <li>Después entrás directo a completar tu prode y seguir el ranking.</li>
           </ul>
         </section>
 
@@ -84,8 +84,8 @@ export function SignupForm({
           <span className={styles.formEyebrow}>Antes de empezar</span>
           <ul className={styles.signupChecklist}>
             <li>No hace falta email.</li>
-            <li>El DNI se usa solo para ingresar y para administracion interna.</li>
-            <li>El alta te deberia llevar menos de dos minutos.</li>
+            <li>El DNI se usa solo para ingresar y para administración interna.</li>
+            <li>El alta te debería llevar menos de dos minutos.</li>
           </ul>
         </section>
       </div>
@@ -147,7 +147,7 @@ export function SignupForm({
             required
           />
           <span className={styles.formFieldNote}>
-            Solo numeros, 7 u 8 digitos. No se muestra en el ranking.
+            Solo números, 7 u 8 dígitos. No se muestra en el ranking.
           </span>
         </div>
 
@@ -161,7 +161,7 @@ export function SignupForm({
             autoComplete="new-password"
             required
           />
-          <span className={styles.formFieldNote}>Minimo 8 caracteres.</span>
+          <span className={styles.formFieldNote}>Mínimo 8 caracteres.</span>
         </div>
 
         <div className={styles.formField}>
@@ -185,7 +185,7 @@ export function SignupForm({
       </button>
 
       <p className={styles.signupSupportNote}>
-        Si ya te registraste antes, entra con tu DNI y tu clave actual para retomar tu prode.
+        Si ya te registraste antes, entrá con tu DNI y tu clave actual para retomar tu prode.
       </p>
 
       <Link href={`/c/${client.slug}/partidos`} className={styles.formSecondaryLink}>

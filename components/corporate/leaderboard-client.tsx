@@ -82,10 +82,10 @@ export function LeaderboardClient({
       </div>
 
       {rows.length === 0 ? (
-        <p className={styles.leaderboardEmpty}>Todavia no hay participantes dados de alta.</p>
+        <p className={styles.leaderboardEmpty}>Todavía no hay participantes dados de alta.</p>
       ) : filteredRows.length === 0 ? (
         <p className={styles.leaderboardEmpty}>
-          No encontramos a nadie con ese nombre. Prueba con otro apellido o borra la busqueda.
+          No encontramos a nadie con ese nombre. Prueba con otro apellido o borra la búsqueda.
         </p>
       ) : (
         <div className={styles.leaderboardTableWrap}>

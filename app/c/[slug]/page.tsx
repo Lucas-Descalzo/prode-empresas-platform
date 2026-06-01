@@ -93,7 +93,7 @@ export default async function CorporateLandingPage({
         gapValue: rowAbove ? `${gap} pts` : "1ro",
         gapLabel: rowAbove
           ? gap === 0
-            ? "Empatas con el puesto superior."
+            ? "Empatás con el puesto superior."
             : `Te faltan ${gap} pts para subir una posición.`
           : "Vas primero en el ranking.",
       };
@@ -131,12 +131,12 @@ export default async function CorporateLandingPage({
           predictedMatches === totalMatches ? "Prode completo" : "Prode en progreso",
         progressDetail: `${predictedMatches}/${totalMatches} partidos cargados.`,
         deadlineLabel: nextUnlockedMatch
-          ? `Proximo cierre ${formatLockedAt(nextUnlockedMatch.lockedAt)}`
+          ? `Próximo cierre ${formatLockedAt(nextUnlockedMatch.lockedAt)}`
           : "Ya no quedan partidos abiertos.",
         nextAction: participant.mustChangePassword
-          ? "Cambia tu clave temporal para seguir."
+          ? "Cambiá tu clave temporal para seguir."
           : predictedMatches === totalMatches
-            ? "Revisa el ranking o ajusta las selecciones abiertas."
+            ? "Revisá el ranking o ajustá las selecciones abiertas."
             : "Vuelve a Mi Prode para cargar los partidos que faltan.",
         lastSavedLabel:
           predictedMatches > 0
@@ -152,7 +152,8 @@ export default async function CorporateLandingPage({
         <div className={styles.dashboardHeroCopy}>
           <h1 className={styles.dashboardHeroTitle}>{client.shortName} · Mundial 2026</h1>
           <p className={styles.dashboardHeroText}>
-            Revisá tu prode, seguí tu posición en el ranking de {client.shortName} y volvé rápido a lo importante.
+            Revisá tu prode, seguí tu posición en el ranking de {client.shortName} y volvé
+            rápido a lo importante.
           </p>
 
           <div className={styles.dashboardHeroActions}>
@@ -214,7 +215,7 @@ export default async function CorporateLandingPage({
 
                 <div className={styles.dashboardMetricGrid}>
                   <div className={styles.dashboardMetric}>
-                    <span>Posicion</span>
+                    <span>Posición</span>
                     <strong>#{rankingState.rank}</strong>
                     <p>Tu lugar actual en la tabla general.</p>
                   </div>
@@ -232,7 +233,6 @@ export default async function CorporateLandingPage({
               </article>
             ) : null}
           </div>
-
         </section>
       ) : null}
 

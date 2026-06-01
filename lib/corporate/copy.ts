@@ -27,13 +27,13 @@ export function getLandingHeroCopy(
 ) {
   if (client.gameMode === "simple") {
     return usesCommunityVoice(client)
-      ? `Un prode privado para la comunidad de ${client.shortName}. Arma tu prediccion antes del Mundial y segui tu posicion en el ranking interno durante todo el torneo.`
-      : `Un prode privado para ${client.shortName}. Arma tu prediccion antes del Mundial y segui tu posicion en el ranking interno durante todo el torneo.`;
+      ? `Un prode privado para la comunidad de ${client.shortName}. Armá tu predicción antes del Mundial y seguí tu posición en el ranking interno durante todo el torneo.`
+      : `Un prode privado para ${client.shortName}. Armá tu predicción antes del Mundial y seguí tu posición en el ranking interno durante todo el torneo.`;
   }
 
   return usesCommunityVoice(client)
-    ? "Segui el Mundial partido a partido junto a tu comunidad y pelea por el primer puesto del ranking interno."
-    : `Segui el Mundial partido a partido y compite en el ranking interno de ${client.shortName}.`;
+    ? "Seguí el Mundial partido a partido junto a tu comunidad y peleá por el primer puesto del ranking interno."
+    : `Seguí el Mundial partido a partido y competí en el ranking interno de ${client.shortName}.`;
 }
 
 export function getAccessCopy(
@@ -52,7 +52,7 @@ export function getAccessCopy(
       : "Cada persona activa su cuenta privada con su mail corporativo.";
   }
 
-  return `Solo participan personas invitadas por ${client.shortName}. Cada usuario recibe su acceso para cargar la prediccion.`;
+  return `Solo participan personas invitadas por ${client.shortName}. Cada usuario recibe su acceso para cargar la predicción.`;
 }
 
 export function getGameModeCopy(
@@ -74,7 +74,7 @@ export function getRankingCopy(
     "displayName" | "shortName" | "tagline" | "collectsArea"
   >,
 ) {
-  return `Cada participante sigue su posicion en el ranking interno de ${client.shortName}, con nombre y puntaje actualizados durante el torneo.`;
+  return `Cada participante sigue su posición en el ranking interno de ${client.shortName}, con nombre y puntaje actualizados durante el torneo.`;
 }
 
 export function getFooterAttribution(client: Pick<CompanyRecord, "displayName">) {
@@ -85,10 +85,10 @@ export function getLoginCopy(
   client: Pick<CompanyRecord, "shortName" | "accessMode">,
 ) {
   if (client.accessMode === "signup_link") {
-    return `Si ya te registraste, entra con tu DNI y la clave que creaste. Si todavia no tenes cuenta, pide el link privado al equipo de ${client.shortName}.`;
+    return `Si ya te registraste, entrá con tu DNI y la clave que creaste. Si todavía no tenés cuenta, pedí el link privado al equipo de ${client.shortName}.`;
   }
 
-  return `${client.shortName} te comparte un email y una contrasena inicial. En tu primer ingreso puedes definir la tuya.`;
+  return `${client.shortName} te comparte un email y una contraseña inicial. En tu primer ingreso podés definir la tuya.`;
 }
 
 export function getLoginIdentifierLabel(
@@ -112,13 +112,13 @@ export function getLoginIdentifierPlaceholder(
 export function getLoginPasswordLabel(
   client: Pick<CompanyRecord, "accessMode">,
 ) {
-  return client.accessMode === "signup_link" ? "Clave" : "Contrasena temporal";
+  return client.accessMode === "signup_link" ? "Clave" : "Contraseña temporal";
 }
 
 export function getLoginTitle(
   client: Pick<CompanyRecord, "accessMode">,
 ) {
   return client.accessMode === "signup_link"
-    ? "Entra para seguir tu prode"
-    : "Entra con tu acceso temporal";
+    ? "Entrá para seguir tu prode"
+    : "Entrá con tu acceso temporal";
 }

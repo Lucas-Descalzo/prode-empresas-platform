@@ -28,13 +28,13 @@ export function AdminLogin({
       </div>
 
       <p className={styles.formHint}>
-        Este acceso usa la misma clave global del panel operador. Desde aqui puedes
+        Este acceso usa la misma clave global del panel operador. Desde aquí podés
         cargar resultados, gestionar el link de alta y asistir a participantes.
       </p>
 
       <div className={styles.formGrid}>
         <div className={styles.formField}>
-          <label htmlFor="admin-pw">Contrasena operador</label>
+          <label htmlFor="admin-pw">Contraseña operador</label>
           <input
             id="admin-pw"
             name="password"

@@ -51,7 +51,7 @@ export async function adminLoginAction(
   }
 
   if (!verifyAdminPassword(password)) {
-    return { error: "Contrasena incorrecta." };
+    return { error: "Contraseña incorrecta." };
   }
 
   const jar = await cookies();

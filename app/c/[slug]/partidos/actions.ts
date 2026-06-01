@@ -34,7 +34,7 @@ export async function loginAction(
       error:
         client.accessMode === "signup_link"
           ? "Ingresa tu DNI y tu clave."
-          : "Ingresa tu email y tu contrasena.",
+          : "Ingresá tu email y tu contraseña.",
     };
   }
 
@@ -50,7 +50,7 @@ export async function loginAction(
       error:
         client.accessMode === "signup_link"
           ? "DNI o clave incorrectos."
-          : "Email o contrasena incorrectos.",
+          : "Email o contraseña incorrectos.",
     };
   }
 
@@ -82,11 +82,11 @@ export async function changePasswordAction(
   }
 
   if (password.length < 8) {
-    return { error: "La contrasena debe tener al menos 8 caracteres." };
+    return { error: "La contraseña debe tener al menos 8 caracteres." };
   }
 
   if (password !== confirmPassword) {
-    return { error: "Las contrasenas no coinciden." };
+    return { error: "Las contraseñas no coinciden." };
   }
 
   await changeCompanyUserPassword({

@@ -59,7 +59,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
           {data.globalRanking.length === 0 ? (
             <p className={styles.emptyState}>
               {data.officialFixtureState
-                ? "Todavia no hay predicciones en la tabla general."
+                ? "Todavía no hay predicciones en la tabla general."
                 : "Carga resultados reales para habilitar puntajes."}
             </p>
           ) : (
@@ -85,7 +85,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
           </div>
 
           {data.groupRankings.length === 0 ? (
-            <p className={styles.emptyState}>No hay grupos con ranking activo todavia.</p>
+            <p className={styles.emptyState}>No hay grupos con ranking activo todavía.</p>
           ) : (
             <div className={styles.rankingList}>
               {data.groupRankings.map((group) => (
@@ -115,7 +115,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
 
           <div className={styles.tableLike}>
             {data.latestGroups.length === 0 ? (
-              <p className={styles.emptyState}>Todavia no hay grupos guardados.</p>
+              <p className={styles.emptyState}>Todavía no hay grupos guardados.</p>
             ) : (
               data.latestGroups.map((group) => (
                 <div key={group.id} className={styles.tableRow}>
@@ -128,7 +128,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                     <span>Cierra: {formatArgentinaDateTime(group.deadlineAtUtc)}</span>
                     <span>
                       {group.isPublicPool
-                        ? "Pool publico"
+                        ? "Pool público"
                         : group.scoringEnabled
                           ? "Ranking activo"
                           : "Sin ranking"}
@@ -150,7 +150,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                         <AdminDeleteButton
                           entityLabel={`el grupo ${group.name}`}
                           endpoint={`/api/admin/groups/${group.id}`}
-                          confirmMessage={`Vas a eliminar el grupo "${group.name}" y todos sus fixtures. Esta accion no se puede deshacer.`}
+                          confirmMessage={`Vas a eliminar el grupo "${group.name}" y todos sus fixtures. Esta acción no se puede deshacer.`}
                           idleLabel="Eliminar grupo"
                           pendingLabel="Eliminando..."
                         />
@@ -173,7 +173,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
 
           <div className={styles.tableLike}>
             {data.latestEntries.length === 0 ? (
-              <p className={styles.emptyState}>Todavia no hay fixtures guardados.</p>
+              <p className={styles.emptyState}>Todavía no hay fixtures guardados.</p>
             ) : (
               data.latestEntries.map((entry) => (
                 <div key={entry.id} className={styles.tableRow}>
@@ -194,7 +194,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                     <AdminDeleteButton
                       entityLabel={`el fixture de ${entry.firstName} ${entry.lastName}`}
                       endpoint={`/api/admin/entries/${entry.id}`}
-                      confirmMessage={`Vas a eliminar el fixture de ${entry.firstName} ${entry.lastName}. Esta accion no se puede deshacer.`}
+                      confirmMessage={`Vas a eliminar el fixture de ${entry.firstName} ${entry.lastName}. Esta acción no se puede deshacer.`}
                       idleLabel="Eliminar fixture"
                       pendingLabel="Eliminando..."
                     />

@@ -67,7 +67,7 @@ export function AdminOfficialResultsEditor({
 
       <div className={styles.officialResultsActions}>
         <span>
-          {updatedAt ? `Ultima actualizacion: ${new Date(updatedAt).toLocaleString("es-AR")}` : "Todavia sin resultados guardados."}
+          {updatedAt ? `Última actualización: ${new Date(updatedAt).toLocaleString("es-AR")}` : "Todavía sin resultados guardados."}
         </span>
         <button
           type="button"

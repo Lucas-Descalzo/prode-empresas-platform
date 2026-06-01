@@ -58,7 +58,7 @@ function getStepGuide(currentStep: Step) {
       kicker: "Empezá por acá",
       title: "Ordená cada grupo",
       description:
-        "Definí quién queda del 1° al 4° en cada grupo. Podés usar el simulador de partidos o hacerlo directo — lo que cuenta es el orden final.",
+        "Definí quién queda del 1.º al 4.º en cada grupo. Podés usar el simulador de partidos o hacerlo directo: lo que cuenta es el orden final.",
       foot: null,
     };
   }
@@ -68,7 +68,7 @@ function getStepGuide(currentStep: Step) {
       kicker: "Seguí",
       title: "Elegí los 8 mejores terceros",
       description:
-        "En el Mundial 2026 avanzan los 8 mejores terceros de los 12 grupos. FIFA los selecciona por puntos, diferencia de gol y goles a favor. Elegí cuáles creés que van a clasificar — el sistema los ubica en el cuadro automáticamente según su grupo de origen.",
+        "En el Mundial 2026 avanzan los 8 mejores terceros de los 12 grupos. FIFA los selecciona por puntos, diferencia de gol y goles a favor. Elegí cuáles creés que van a clasificar: el sistema los ubica en el cuadro automáticamente según su grupo de origen.",
       foot: null,
     };
   }
@@ -78,7 +78,7 @@ function getStepGuide(currentStep: Step) {
       kicker: "Definición",
       title: "Completá el cuadro",
       description:
-        "En cada cruce elegís qué selección avanza. No importa por qué lado llegó — importa hasta qué ronda la bancaste.",
+        "En cada cruce elegís qué selección avanza. No importa por qué lado llegó: importa hasta qué ronda la bancaste.",
       foot: null,
     };
   }

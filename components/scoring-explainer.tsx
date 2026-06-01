@@ -14,7 +14,7 @@ export function ScoringExplainer({ compact = false, enabled = true }: ScoringExp
         </span>
         <span>
           {enabled
-            ? "Como funciona el sistema de puntos"
+            ? "Cómo funciona el sistema de puntos"
             : "Sistema de puntos no activo en este grupo"}
         </span>
       </summary>
@@ -30,8 +30,8 @@ export function ScoringExplainer({ compact = false, enabled = true }: ScoringExp
         <div>
           <strong>Pre-Mundial: grupos y mejores terceros</strong>
           <p>
-            Cada equipo en su posicion exacta del grupo suma +2. Si acertaste el
-            top-2 pero invertiste el 1.o y 2.o, recibis +1 por cada uno. Ademas,
+            Cada equipo en su posición exacta del grupo suma +2. Si acertaste el
+            top-2 pero invertiste el 1.º y 2.º, recibís +1 por cada uno. Además,
             cada mejor tercero que efectivamente avanza suma +2.
           </p>
         </div>
@@ -39,7 +39,7 @@ export function ScoringExplainer({ compact = false, enabled = true }: ScoringExp
         <div>
           <strong>Eliminatoria por ronda alcanzada</strong>
           <p>
-            Se compara hasta que ronda bancaste a cada equipo, sin importar la
+            Se compara hasta qué ronda bancaste a cada equipo, sin importar la
             llave exacta: octavos +2, cuartos +4, semifinales +6 y final +8.
           </p>
         </div>
@@ -47,7 +47,7 @@ export function ScoringExplainer({ compact = false, enabled = true }: ScoringExp
         <div>
           <strong>Definiciones</strong>
           <p>
-            Campeon +10 y ganador del tercer puesto +2. El ranking se actualiza
+            Campeón +10 y ganador del tercer puesto +2. El ranking se actualiza
             cuando se cargan resultados reales desde el admin.
           </p>
         </div>

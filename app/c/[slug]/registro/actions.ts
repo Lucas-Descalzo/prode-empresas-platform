@@ -35,7 +35,7 @@ export async function signupAction(
   }
 
   if (!(await isSignupLinkTokenValid({ companyId: client.id, token }))) {
-    return { error: "Este link de alta no esta disponible." };
+    return { error: "Este link de alta no está disponible." };
   }
 
   if (!firstName || !lastName) {
@@ -48,13 +48,13 @@ export async function signupAction(
     }
 
     if (!isValidCompanyArea(client, area)) {
-      return { error: `${client.areaLabel} no valida.` };
+      return { error: `${client.areaLabel} no válida.` };
     }
   }
 
   const documentId = normalizeDocumentId(documentIdRaw);
   if (!documentId) {
-    return { error: "El DNI debe tener 7 u 8 numeros." };
+    return { error: "El DNI debe tener 7 u 8 números." };
   }
 
   if (password.length < 8) {

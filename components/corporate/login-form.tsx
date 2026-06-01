@@ -132,17 +132,17 @@ export function ChangePasswordForm({
 
       <div className={styles.formTitleBlock}>
         <span className={styles.formEyebrow}>Primer ingreso</span>
-        <h2 className={styles.formTitle}>Elige tu contrasena definitiva</h2>
+        <h2 className={styles.formTitle}>Elegí tu contraseña definitiva</h2>
       </div>
 
       <p className={styles.formHint}>
-        Hola, {participant.firstName}. Antes de seguir, cambia la contrasena temporal
+        Hola, {participant.firstName}. Antes de seguir, cambiá la contraseña temporal
         por una propia.
       </p>
 
       <div className={styles.formGrid}>
         <div className={styles.formField}>
-          <label htmlFor="new-password">Nueva contrasena</label>
+          <label htmlFor="new-password">Nueva contraseña</label>
           <input
             id="new-password"
             name="password"
@@ -154,7 +154,7 @@ export function ChangePasswordForm({
         </div>
 
         <div className={styles.formField}>
-          <label htmlFor="confirm-password">Repetir contrasena</label>
+          <label htmlFor="confirm-password">Repetir contraseña</label>
           <input
             id="confirm-password"
             name="confirmPassword"
@@ -169,7 +169,7 @@ export function ChangePasswordForm({
       {state.error ? <p className={styles.formError}>{state.error}</p> : null}
 
       <button type="submit" className={styles.formSubmit} disabled={isPending}>
-        {isPending ? "Guardando..." : "Guardar contrasena"}
+        {isPending ? "Guardando..." : "Guardar contraseña"}
       </button>
     </form>
   );

@@ -68,12 +68,12 @@ const TAB_COPY: Record<TabId, { title: string; description: string }> = {
   access: {
     title: "Alta de usuarios",
     description:
-      "Comparte el link correcto, controla si sigue abierto y revisa rapidamente el estado general de la comunidad.",
+      "Comparte el link correcto, controla si sigue abierto y revisa rápidamente el estado general de la comunidad.",
   },
   results: {
     title: "Resultados partidos",
     description:
-      "La integracion principal corre por API. La carga manual queda disponible solo como respaldo cuando haga falta intervenir.",
+      "La integración principal corre por API. La carga manual queda disponible solo como respaldo cuando haga falta intervenir.",
   },
   participants: {
     title: "Base de participantes",
@@ -384,7 +384,7 @@ export function AdminPanel({
                     {filter === "pending"
                       ? "No hay partidos pendientes de carga."
                       : filter === "loaded"
-                        ? "Todavia no cargaste ningun resultado."
+                        ? "Todavía no cargaste ningún resultado."
                         : "No hay partidos disponibles."}
                   </p>
                 ) : null}
@@ -392,7 +392,7 @@ export function AdminPanel({
             ) : (
               <p className={styles.leaderboardEmpty}>
                 La carga manual de partidos queda oculta por defecto. Usala solo si la API
-                necesita apoyo o correccion puntual.
+                necesita apoyo o corrección puntual.
               </p>
             )}
           </>
@@ -481,7 +481,7 @@ function AccessPanel({
           <section className={styles.adminAccessCard}>
             <div className={styles.adminAccessHeader}>
               <div>
-                <span className={styles.sectionEyebrow}>Link unico</span>
+                <span className={styles.sectionEyebrow}>Link único</span>
                 <h2 className={styles.adminSectionTitle}>Alta de participantes</h2>
               </div>
               <span
@@ -497,7 +497,7 @@ function AccessPanel({
 
             <p className={styles.adminAccessCopy}>
               Comparte este link solo con socios habilitados para participar. Quien
-              entre podra crear su cuenta con DNI y clave propia.
+              entre podrá crear su cuenta con DNI y clave propia.
             </p>
 
             <code className={styles.adminAccessPath}>{signupLink.path}</code>
@@ -541,8 +541,8 @@ function AccessPanel({
             <div className={styles.adminGuideBlock}>
               <span className={styles.sectionEyebrow}>Uso recomendado</span>
               <ul className={styles.adminGuideList}>
-                <li>Envia este link solo a socios habilitados para jugar.</li>
-                <li>Si necesitan pausar nuevas altas, desactiven el link y vuelvan a abrirlo despues.</li>
+                <li>Enviá este link solo a socios habilitados para jugar.</li>
+                <li>Si necesitan pausar nuevas altas, desactiven el link y vuelvan a abrirlo después.</li>
                 <li>Si alguien no corresponde, denlo de baja desde Participantes.</li>
               </ul>
             </div>
@@ -635,7 +635,7 @@ function ParticipantsPanel({
   if (users.length === 0) {
     return (
       <p className={styles.leaderboardEmpty}>
-        Todavia no hay participantes registrados para este tenant.
+        Todavía no hay participantes registrados para este tenant.
       </p>
     );
   }
@@ -735,7 +735,7 @@ function ParticipantsPanel({
 
       {filteredUsers.length === 0 ? (
         <p className={styles.leaderboardEmpty}>
-          No encontramos participantes con ese criterio. Ajusta la busqueda o cambia el
+          No encontramos participantes con ese criterio. Ajustá la búsqueda o cambiá el
           filtro.
         </p>
       ) : (
@@ -780,7 +780,7 @@ function ParticipantRow({
   const lastLoginLabel =
     user.lastLoginAt === null
       ? user.status === "invited"
-        ? "Todavia no entro"
+        ? "Todavía no entró"
         : "Sin ingreso registrado"
       : formatLastLogin(user.lastLoginAt);
   const areaMetaLabel = formatAreaLabel(areaLabel, user.area);
@@ -788,7 +788,7 @@ function ParticipantRow({
   function handleStatusSubmit(event: FormEvent<HTMLFormElement>) {
     const actionLabel = user.status === "disabled" ? "reactivar" : "dar de baja";
     const approved = window.confirm(
-      `Confirma que quieres ${actionLabel} a ${user.fullName}.`,
+      `Confirmá que querés ${actionLabel} a ${user.fullName}.`,
     );
 
     if (!approved) {

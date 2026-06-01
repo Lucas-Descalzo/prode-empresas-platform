@@ -88,7 +88,7 @@ export function AdminDashboard({ companies }: { companies: CompanyWithUsers[] })
         <div className={styles.companyGrid}>
           {companies.length === 0 ? (
             <div className={styles.emptyState}>
-              Todavia no hay empresas creadas. La primera alta desde este panel ya te
+              Todavía no hay empresas creadas. La primera alta desde este panel ya te
               deja un slug listo para su subdominio futuro.
             </div>
           ) : (
@@ -242,7 +242,7 @@ function CompanyCard({ company }: { company: CompanyWithUsers }) {
 
       <div className={styles.userList}>
         {company.users.length === 0 ? (
-          <p className={styles.inlineMuted}>Todavia no hay participantes importados.</p>
+          <p className={styles.inlineMuted}>Todavía no hay participantes importados.</p>
         ) : (
           company.users.map((user) => <UserRow key={user.id} company={company} user={user} />)
         )}
