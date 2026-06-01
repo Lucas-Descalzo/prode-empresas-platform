@@ -57,30 +57,6 @@ const STAGE_LABELS: Record<string, string> = {
   final: "Final",
 };
 
-const TAB_LABELS: Array<{ id: TabId; label: string }> = [
-  { id: "results", label: "Resultados" },
-  { id: "access", label: "Acceso" },
-  { id: "participants", label: "Participantes" },
-];
-
-const TAB_COPY: Record<TabId, { title: string; description: string }> = {
-  results: {
-    title: "Carga oficial del torneo",
-    description:
-      "Actualiza los resultados reales para que las predicciones y la tabla reflejen el estado del Mundial.",
-  },
-  access: {
-    title: "Acceso privado del gimnasio",
-    description:
-      "Comparte el link correcto, controla si sigue abierto y revisa rápidamente el estado general de la comunidad.",
-  },
-  participants: {
-    title: "Base de participantes",
-    description:
-      "Busca personas por nombre o DNI, resetea claves y da de baja usuarios cuando haga falta.",
-  },
-};
-
 const PARTICIPANT_FILTER_LABELS: Array<{
   id: ParticipantStatusFilter;
   label: string;
@@ -110,7 +86,6 @@ function teamLabel(
   side: "home" | "away",
   resolvedKnockoutTeams?: ResolvedKnockoutTeams,
 ): string {
-  // Use resolved team from official state if available (knockout phase with known bracket)
   const resolved = resolvedKnockoutTeams?.[match.id];
   if (resolved) {
     const teamId = side === "home" ? resolved.homeId : resolved.awayId;
@@ -165,39 +140,6 @@ function formatAreaLabel(areaLabel: string, value: string | null) {
   return `${areaLabel} ${value}`;
 }
 
-function SignupLinkBar({ signupLink }: { signupLink: CompanySignupLinkRecord | null }) {
-  const [copyFeedback, setCopyFeedback] = useState("");
-
-  if (!signupLink) return null;
-
-  async function handleCopy() {
-    const fullUrl = new URL(signupLink!.path, window.location.origin).toString();
-    await navigator.clipboard.writeText(fullUrl);
-    setCopyFeedback("Copiado");
-    window.setTimeout(() => setCopyFeedback(""), 1800);
-  }
-
-  return (
-    <div className={styles.adminSignupBar}>
-      <span
-        className={`${styles.adminStatusPill} ${
-          signupLink.status === "active" ? styles.adminStatusPillActive : styles.adminStatusPillMuted
-        }`}
-      >
-        {signupLink.status === "active" ? "Alta activa" : "Alta inactiva"}
-      </span>
-      <code className={styles.adminSignupBarPath}>{signupLink.path}</code>
-      <button
-        type="button"
-        className={styles.adminSaveBtn}
-        onClick={() => void handleCopy()}
-      >
-        {copyFeedback || "Copiar link"}
-      </button>
-    </div>
-  );
-}
-
 export function AdminPanel({
   client,
   matches,
@@ -205,21 +147,137 @@ export function AdminPanel({
   resolvedKnockoutTeams,
   users,
   signupLink,
-  initialTab = "results",
+  initialTab = "access",
 }: AdminPanelProps) {
-  const [activeTab, setActiveTab] = useState<TabId>(initialTab);
-  const [filter, setFilter] = useState<Filter>("pending");
+  const [showResultsPanel, setShowResultsPanel] = useState(initialTab === "results");
   const participantUsers = useMemo(
     () => users.filter((user) => user.role === "participant"),
     [users],
   );
+
+  const totalLoaded = Object.keys(officialResults).length;
+  const totalPlayable = matches.length;
+  const activeUsers = participantUsers.filter((user) => user.status === "active").length;
+  const invitedUsers = participantUsers.filter((user) => user.status === "invited").length;
+  const disabledUsers = participantUsers.filter((user) => user.status === "disabled").length;
+
+  return (
+    <>
+      <div className={styles.gameHeader}>
+        <span className={styles.gameEyebrow}>Panel {client.shortName}</span>
+        <h1 className={styles.gameTitle}>{client.displayName}</h1>
+        <p className={styles.gameStatus}>
+          Gestiona el alta por link y el seguimiento de participantes desde una sola
+          vista. La carga manual de resultados queda aparte para usarla solo si hace
+          falta.
+        </p>
+      </div>
+
+      <div className={styles.adminCard}>
+        <section className={styles.adminTabLead}>
+          <div>
+            <span className={styles.sectionEyebrow}>Vista principal</span>
+            <h2 className={styles.adminSectionTitle}>Acceso y participantes</h2>
+          </div>
+          <p className={styles.adminTabLeadCopy}>
+            El panel muestra primero lo operativo: compartir o pausar el link, revisar
+            el estado del alta y encontrar personas rapido por nombre, DNI o sede.
+          </p>
+        </section>
+
+        <div className={styles.adminSummaryGrid}>
+          <article className={styles.adminSummaryCard}>
+            <span>Link de alta</span>
+            <strong>{signupLink?.status === "active" ? "Activo" : "Inactivo"}</strong>
+          </article>
+          <article className={styles.adminSummaryCard}>
+            <span>Activos</span>
+            <strong>{activeUsers}</strong>
+          </article>
+          <article className={styles.adminSummaryCard}>
+            <span>Pendientes</span>
+            <strong>{invitedUsers}</strong>
+          </article>
+          <article className={styles.adminSummaryCard}>
+            <span>Resultados</span>
+            <strong>
+              {totalLoaded}/{totalPlayable}
+            </strong>
+          </article>
+        </div>
+
+        <AccessPanel
+          client={client}
+          signupLink={signupLink}
+          totalUsers={participantUsers.length}
+          activeUsers={activeUsers}
+          invitedUsers={invitedUsers}
+          disabledUsers={disabledUsers}
+        />
+
+        <ParticipantsPanel
+          client={client}
+          users={participantUsers}
+          activeUsers={activeUsers}
+          invitedUsers={invitedUsers}
+          disabledUsers={disabledUsers}
+        />
+
+        <section className={styles.adminSectionStack}>
+          <section className={styles.adminTabLead}>
+            <div>
+              <span className={styles.sectionEyebrow}>Carga manual</span>
+              <h2 className={styles.adminSectionTitle}>Resultados</h2>
+            </div>
+            <p className={styles.adminTabLeadCopy}>
+              El producto ya usa la API de resultados. Este bloque queda escondido para
+              mantener la pagina liviana y abrirlo solo si necesitan revisar o corregir
+              un partido manualmente.
+            </p>
+          </section>
+
+          <div className={styles.adminAccessActions}>
+            <button
+              type="button"
+              className={styles.adminSecondaryAction}
+              onClick={() => setShowResultsPanel((current) => !current)}
+            >
+              {showResultsPanel ? "Ocultar carga manual" : "Mostrar carga manual"}
+            </button>
+          </div>
+
+          {showResultsPanel ? (
+            <ResultsPanel
+              client={client}
+              matches={matches}
+              officialResults={officialResults}
+              resolvedKnockoutTeams={resolvedKnockoutTeams}
+            />
+          ) : null}
+        </section>
+      </div>
+    </>
+  );
+}
+
+function ResultsPanel({
+  client,
+  matches,
+  officialResults,
+  resolvedKnockoutTeams,
+}: {
+  client: CorporateClient;
+  matches: UnifiedMatch[];
+  officialResults: Record<string, OfficialResultRow>;
+  resolvedKnockoutTeams: ResolvedKnockoutTeams;
+}) {
+  const [filter, setFilter] = useState<Filter>("pending");
 
   const filteredMatches = useMemo(() => {
     if (filter === "all") return matches;
     if (filter === "loaded") {
       return matches.filter((match) => officialResults[match.id]);
     }
-    // "Pendientes": todo match sin resultado cargado, incluyendo knockout
     return matches.filter((match) => !officialResults[match.id]);
   }, [filter, matches, officialResults]);
 
@@ -233,168 +291,77 @@ export function AdminPanel({
     return groups;
   }, [filteredMatches]);
 
-  const totalLoaded = Object.keys(officialResults).length;
-  const totalPlayable = matches.length;
-  const activeUsers = participantUsers.filter((user) => user.status === "active").length;
-  const invitedUsers = participantUsers.filter((user) => user.status === "invited").length;
-  const disabledUsers = participantUsers.filter((user) => user.status === "disabled").length;
-  const activeTabCopy = TAB_COPY[activeTab];
-
   return (
     <>
-      <div className={styles.gameHeader}>
-        <span className={styles.gameEyebrow}>Panel {client.shortName}</span>
-        <h1 className={styles.gameTitle}>{client.displayName}</h1>
-        <p className={styles.gameStatus}>
-          Gestiona resultados, el link de alta y la base de participantes desde el
-          mismo acceso administrador.
+      <div className={styles.adminFilters}>
+        <button
+          type="button"
+          className={`${styles.adminFilterTab} ${
+            filter === "pending" ? styles.adminFilterTabActive : ""
+          }`}
+          onClick={() => setFilter("pending")}
+        >
+          Pendientes
+        </button>
+        <button
+          type="button"
+          className={`${styles.adminFilterTab} ${
+            filter === "loaded" ? styles.adminFilterTabActive : ""
+          }`}
+          onClick={() => setFilter("loaded")}
+        >
+          Cargados
+        </button>
+        <button
+          type="button"
+          className={`${styles.adminFilterTab} ${
+            filter === "all" ? styles.adminFilterTabActive : ""
+          }`}
+          onClick={() => setFilter("all")}
+        >
+          Todos
+        </button>
+      </div>
+
+      {["groups", "roundOf32", "roundOf16", "quarterFinal", "semiFinal", "bronzeFinal", "final"].map(
+        (stage) => {
+          const stageMatches = groupedByStage.get(stage);
+          if (!stageMatches || stageMatches.length === 0) {
+            return null;
+          }
+
+          return (
+            <section key={stage} className={styles.stageGroup}>
+              <header className={styles.stageHead}>
+                <h2 className={styles.stageHeadLabel}>{STAGE_LABELS[stage] ?? stage}</h2>
+                <span className={styles.stageHeadCount}>{stageMatches.length} partidos</span>
+              </header>
+
+              <div style={{ display: "grid", gap: "0.5rem" }}>
+                {stageMatches.map((match) => (
+                  <ResultRow
+                    key={match.id}
+                    client={client}
+                    match={match}
+                    initial={officialResults[match.id] ?? null}
+                    resolvedKnockoutTeams={resolvedKnockoutTeams}
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        },
+      )}
+
+      {filteredMatches.length === 0 ? (
+        <p className={styles.leaderboardEmpty}>
+          {filter === "pending"
+            ? "No hay partidos pendientes de carga manual."
+            : filter === "loaded"
+              ? "Todavia no cargaste ningun resultado manualmente."
+              : "No hay partidos disponibles."}
         </p>
-      </div>
-
-      <SignupLinkBar signupLink={signupLink} />
-
-      <div className={styles.adminCard}>
-        <div className={styles.adminTopBar}>
-          <div className={styles.adminFilters}>
-            {TAB_LABELS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                className={`${styles.adminFilterTab} ${
-                  activeTab === tab.id ? styles.adminFilterTabActive : ""
-                }`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <section className={styles.adminTabLead}>
-          <div>
-            <span className={styles.sectionEyebrow}>Vista actual</span>
-            <h2 className={styles.adminSectionTitle}>{activeTabCopy.title}</h2>
-          </div>
-          <p className={styles.adminTabLeadCopy}>{activeTabCopy.description}</p>
-        </section>
-
-        {activeTab === "results" ? (
-          <>
-            <div className={styles.adminSummaryGrid}>
-              <article className={styles.adminSummaryCard}>
-                <span>Resultados cargados</span>
-                <strong>
-                  {totalLoaded}/{totalPlayable}
-                </strong>
-              </article>
-              <article className={styles.adminSummaryCard}>
-                <span>Participantes activos</span>
-                <strong>{activeUsers}</strong>
-              </article>
-              <article className={styles.adminSummaryCard}>
-                <span>Link de alta</span>
-                <strong>{signupLink?.status === "active" ? "Activo" : "Inactivo"}</strong>
-              </article>
-            </div>
-
-            <div className={styles.adminFilters}>
-              <button
-                type="button"
-                className={`${styles.adminFilterTab} ${
-                  filter === "pending" ? styles.adminFilterTabActive : ""
-                }`}
-                onClick={() => setFilter("pending")}
-              >
-                Pendientes
-              </button>
-              <button
-                type="button"
-                className={`${styles.adminFilterTab} ${
-                  filter === "loaded" ? styles.adminFilterTabActive : ""
-                }`}
-                onClick={() => setFilter("loaded")}
-              >
-                Cargados
-              </button>
-              <button
-                type="button"
-                className={`${styles.adminFilterTab} ${
-                  filter === "all" ? styles.adminFilterTabActive : ""
-                }`}
-                onClick={() => setFilter("all")}
-              >
-                Todos
-              </button>
-            </div>
-
-            {["groups", "roundOf32", "roundOf16", "quarterFinal", "semiFinal", "bronzeFinal", "final"].map(
-              (stage) => {
-                const stageMatches = groupedByStage.get(stage);
-                if (!stageMatches || stageMatches.length === 0) {
-                  return null;
-                }
-
-                return (
-                  <section key={stage} className={styles.stageGroup}>
-                    <header className={styles.stageHead}>
-                      <h2 className={styles.stageHeadLabel}>
-                        {STAGE_LABELS[stage] ?? stage}
-                      </h2>
-                      <span className={styles.stageHeadCount}>
-                        {stageMatches.length} partidos
-                      </span>
-                    </header>
-
-                    <div style={{ display: "grid", gap: "0.5rem" }}>
-                      {stageMatches.map((match) => (
-                        <ResultRow
-                          key={match.id}
-                          client={client}
-                          match={match}
-                          initial={officialResults[match.id] ?? null}
-                          resolvedKnockoutTeams={resolvedKnockoutTeams}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                );
-              },
-            )}
-
-            {filteredMatches.length === 0 ? (
-              <p className={styles.leaderboardEmpty}>
-                {filter === "pending"
-                  ? "No hay partidos pendientes de carga."
-                  : filter === "loaded"
-                    ? "Todavia no cargaste ningun resultado."
-                    : "No hay partidos disponibles."}
-              </p>
-            ) : null}
-          </>
-        ) : null}
-
-        {activeTab === "access" ? (
-          <AccessPanel
-            client={client}
-            signupLink={signupLink}
-            totalUsers={participantUsers.length}
-            activeUsers={activeUsers}
-            invitedUsers={invitedUsers}
-            disabledUsers={disabledUsers}
-          />
-        ) : null}
-
-        {activeTab === "participants" ? (
-          <ParticipantsPanel
-            client={client}
-            users={participantUsers}
-            activeUsers={activeUsers}
-            invitedUsers={invitedUsers}
-            disabledUsers={disabledUsers}
-          />
-        ) : null}
-      </div>
+      ) : null}
     </>
   );
 }
@@ -433,6 +400,17 @@ function AccessPanel({
 
   return (
     <div className={styles.adminSectionStack}>
+      <section className={styles.adminTabLead}>
+        <div>
+          <span className={styles.sectionEyebrow}>Acceso privado</span>
+          <h2 className={styles.adminSectionTitle}>Link de registro</h2>
+        </div>
+        <p className={styles.adminTabLeadCopy}>
+          Desde aqui el equipo puede compartir el link correcto, pausarlo si necesita
+          cerrar nuevas altas y controlar el estado del acceso sin salir del panel.
+        </p>
+      </section>
+
       <div className={styles.adminSummaryGrid}>
         <article className={styles.adminSummaryCard}>
           <span>Total participantes</span>
@@ -473,7 +451,7 @@ function AccessPanel({
 
             <p className={styles.adminAccessCopy}>
               Comparte este link solo con socios habilitados para participar. Quien
-              entre podrá crear su cuenta con DNI y clave propia.
+              entre podra crear su cuenta con DNI y clave propia.
             </p>
 
             <code className={styles.adminAccessPath}>{signupLink.path}</code>
@@ -517,8 +495,8 @@ function AccessPanel({
             <div className={styles.adminGuideBlock}>
               <span className={styles.sectionEyebrow}>Uso recomendado</span>
               <ul className={styles.adminGuideList}>
-                <li>Envía este link solo a socios habilitados para jugar.</li>
-                <li>Si necesitan pausar nuevas altas, desactiven el link y vuelvan a abrirlo después.</li>
+                <li>Envia este link solo a socios habilitados para jugar.</li>
+                <li>Si necesitan pausar nuevas altas, desactiven el link y vuelvan a abrirlo despues.</li>
                 <li>Si alguien no corresponde, denlo de baja desde Participantes.</li>
               </ul>
             </div>
@@ -610,14 +588,38 @@ function ParticipantsPanel({
 
   if (users.length === 0) {
     return (
-      <p className={styles.leaderboardEmpty}>
-        Todavia no hay participantes registrados para este tenant.
-      </p>
+      <div className={styles.adminSectionStack}>
+        <section className={styles.adminTabLead}>
+          <div>
+            <span className={styles.sectionEyebrow}>Participantes</span>
+            <h2 className={styles.adminSectionTitle}>Base de jugadores</h2>
+          </div>
+          <p className={styles.adminTabLeadCopy}>
+            Aqui deberia quedar disponible la lista completa para buscar personas,
+            revisar estados y resolver accesos.
+          </p>
+        </section>
+
+        <p className={styles.leaderboardEmpty}>
+          Todavia no hay participantes registrados para este tenant.
+        </p>
+      </div>
     );
   }
 
   return (
     <div className={styles.adminSectionStack}>
+      <section className={styles.adminTabLead}>
+        <div>
+          <span className={styles.sectionEyebrow}>Participantes</span>
+          <h2 className={styles.adminSectionTitle}>Base de jugadores</h2>
+        </div>
+        <p className={styles.adminTabLeadCopy}>
+          Busca por nombre, apellido o DNI, filtra por sede y resuelve acciones de
+          soporte sin navegar a otra pantalla.
+        </p>
+      </section>
+
       <div className={styles.adminSummaryGrid}>
         <article className={styles.adminSummaryCard}>
           <span>Participantes</span>
@@ -948,8 +950,12 @@ function ResultRow({
             style={showAdvanced ? undefined : { display: "none" }}
           >
             <option value="">Avanza...</option>
-            <option value={effectiveHomeId}>{teamMap[effectiveHomeId]?.shortName ?? effectiveHomeId}</option>
-            <option value={effectiveAwayId}>{teamMap[effectiveAwayId]?.shortName ?? effectiveAwayId}</option>
+            <option value={effectiveHomeId}>
+              {teamMap[effectiveHomeId]?.shortName ?? effectiveHomeId}
+            </option>
+            <option value={effectiveAwayId}>
+              {teamMap[effectiveAwayId]?.shortName ?? effectiveAwayId}
+            </option>
           </select>
         ) : null}
       </form>
@@ -959,11 +965,11 @@ function ResultRow({
           <button
             type="button"
             className={styles.adminFilterTab}
-            onClick={() => setShowAdvanced((v) => !v)}
-            title="Corrección manual del equipo que avanza"
+            onClick={() => setShowAdvanced((value) => !value)}
+            title="Correccion manual del equipo que avanza"
             style={{ minHeight: "2.4rem", opacity: showAdvanced ? 1 : 0.5 }}
           >
-            ⚙
+            Ajuste
           </button>
         ) : null}
 

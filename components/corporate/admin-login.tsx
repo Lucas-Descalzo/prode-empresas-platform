@@ -20,7 +20,7 @@ export function AdminLogin({
   return (
     <form action={formAction} className={styles.formCard}>
       <input type="hidden" name="slug" value={client.slug} />
-      <input type="hidden" name="tab" value={initialTab ?? "results"} />
+      <input type="hidden" name="tab" value={initialTab ?? "access"} />
 
       <div className={styles.formTitleBlock}>
         <span className={styles.formEyebrow}>Panel operador</span>

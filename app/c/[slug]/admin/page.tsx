@@ -34,7 +34,7 @@ export default async function CorporateAdminPage({
     typeof tabValue === "string" &&
     ["results", "access", "participants"].includes(tabValue)
       ? (tabValue as AdminTab)
-      : "results";
+      : "access";
   const client = await getCorporateClient(slug);
   if (!client) {
     notFound();
