@@ -49,15 +49,7 @@ function getAutoStep(state: FixtureState): Step {
 }
 
 function getEditedGroupsCount(state: FixtureState) {
-  return Object.entries(state.groupOrders).filter(([groupId, order]) => {
-    const typedGroupId = groupId as keyof typeof DEFAULT_FIXTURE_STATE.groupOrders;
-    const defaultOrder = DEFAULT_FIXTURE_STATE.groupOrders[typedGroupId];
-
-    return (
-      state.groupPredictionModes[typedGroupId] === "matches" ||
-      order.some((teamId, index) => teamId !== defaultOrder[index])
-    );
-  }).length;
+  return Object.values(state.closedGroups ?? {}).filter(Boolean).length;
 }
 
 function getStepGuide(currentStep: Step) {
@@ -115,10 +107,13 @@ export function SimpleModeApp({
   const stateVersionRef = useRef(0);
   const saveRequestRef = useRef(0);
   const fixtureStateRef = useRef(fixtureState);
-  fixtureStateRef.current = fixtureState;
   const saveStateRef = useRef(saveState);
-  saveStateRef.current = saveState;
   const locked = isSimpleModeLocked(now);
+
+  useEffect(() => {
+    fixtureStateRef.current = fixtureState;
+    saveStateRef.current = saveState;
+  }, [fixtureState, saveState]);
 
   useEffect(() => {
     if (locked) {

@@ -351,6 +351,7 @@ export function FixtureBuilder({
         groupOrders: fresh.groupOrders,
         groupMatchPredictions: {},
         groupPredictionModes: {},
+        closedGroups: {},
         qualifiedThirdPlaces: [],
         thirdPlaceAssignments: {},
         knockoutWinners: {},
@@ -479,6 +480,25 @@ export function FixtureBuilder({
     );
   };
 
+  const isGroupClosed = (groupId: GroupId) => fixtureState.closedGroups[groupId] === true;
+
+  const setGroupClosed = (groupId: GroupId, closed: boolean) => {
+    if (readOnly) {
+      return;
+    }
+
+    const nextClosedGroups = { ...fixtureState.closedGroups };
+    if (closed) {
+      nextClosedGroups[groupId] = true;
+    } else {
+      delete nextClosedGroups[groupId];
+    }
+
+    updateState({
+      closedGroups: nextClosedGroups,
+    });
+  };
+
   useEffect(() => {
     if (!useAccordion || currentStep !== 1) return;
     if (
@@ -517,7 +537,7 @@ export function FixtureBuilder({
           <p className={styles.sectionHint}>
             {readOnly
               ? "Abri cada grupo para revisar el orden final guardado."
-              : `${groups.filter((g) => isGroupEdited(g.id)).length}/${groups.length} grupos cerrados`}
+              : `${groups.filter((g) => isGroupClosed(g.id)).length}/${groups.length} grupos listos`}
           </p>
         </div>
 
@@ -546,6 +566,7 @@ export function FixtureBuilder({
             const isExpanded = !useAccordion || expandedGroup === group.id;
             const shouldComputeGroupStats = !useAccordion || isExpanded;
             const edited = isGroupEdited(group.id);
+            const closed = isGroupClosed(group.id);
             const isMatchMode = fixtureState.groupPredictionModes[group.id] === "matches";
             const shouldComputeGroupMatches = shouldComputeGroupStats || isMatchMode;
             const groupMatches = shouldComputeGroupMatches
@@ -570,7 +591,9 @@ export function FixtureBuilder({
                     groupTableRows.findIndex((other) => other.points === row.points) !== index,
                 )
               : false;
-            const groupStateLabel = isMatchMode
+            const groupStateLabel = closed
+              ? "Listo"
+              : isMatchMode
               ? pendingGroupMatches > 0
                 ? "Partidos pendientes"
                 : hasPointTie
@@ -612,6 +635,8 @@ export function FixtureBuilder({
                               isGroupStatePending
                                 ? styles.groupStatePending
                                 : styles.groupStateEdited
+                            } ${
+                              closed ? styles.groupStateReady : ""
                             }`}
                           >
                             {groupStateLabel}
@@ -672,6 +697,28 @@ export function FixtureBuilder({
                             onClick={() => setGroupPredictionMode(group.id, "matches")}
                           >
                             Predecir por partidos
+                          </button>
+                        </div>
+                      ) : null}
+
+                      {!readOnly ? (
+                        <div className={styles.groupReadyRow}>
+                          <div className={styles.groupReadyCopy}>
+                            <strong>
+                              {closed ? "Grupo marcado como listo" : "Confirma este grupo"}
+                            </strong>
+                            <span>
+                              {closed
+                                ? "Queda contado como cerrado aunque no hayas cambiado el orden original."
+                                : "Usa este boton cuando des por cerrado el grupo, incluso si lo dejas como viene."}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            className={closed ? styles.secondaryAction : styles.primaryAction}
+                            onClick={() => setGroupClosed(group.id, !closed)}
+                          >
+                            {closed ? "Reabrir grupo" : "Marcar grupo como listo"}
                           </button>
                         </div>
                       ) : null}

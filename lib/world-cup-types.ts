@@ -139,6 +139,7 @@ export interface FixtureState {
   groupOrders: Record<GroupId, TeamId[]>;
   groupMatchPredictions: Partial<Record<GroupMatchId, GroupMatchPrediction>>;
   groupPredictionModes: Partial<Record<GroupId, GroupPredictionMode>>;
+  closedGroups: Partial<Record<GroupId, boolean>>;
   qualifiedThirdPlaces: TeamId[];
   thirdPlaceAssignments: Partial<Record<ThirdPlaceMatchId, TeamId>>;
   knockoutWinners: Partial<Record<MatchId, TeamId>>;

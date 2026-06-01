@@ -152,6 +152,7 @@ export function createInitialFixtureState(): FixtureState {
     ) as FixtureState["groupOrders"],
     groupMatchPredictions: {},
     groupPredictionModes: {},
+    closedGroups: {},
     qualifiedThirdPlaces: [],
     thirdPlaceAssignments: {},
     knockoutWinners: {},
@@ -259,6 +260,20 @@ export function sanitizeGroupPredictionModes(
   for (const groupId of GROUP_IDS) {
     if (incoming?.[groupId] === "matches") {
       sanitized[groupId] = "matches";
+    }
+  }
+
+  return sanitized;
+}
+
+export function sanitizeClosedGroups(
+  incoming: Partial<Record<GroupId, boolean>> | undefined,
+) {
+  const sanitized: Partial<Record<GroupId, boolean>> = {};
+
+  for (const groupId of GROUP_IDS) {
+    if (incoming?.[groupId]) {
+      sanitized[groupId] = true;
     }
   }
 
@@ -403,6 +418,7 @@ export function normalizeFixtureState(source: Partial<FixtureState> | FixtureSta
     source.groupMatchPredictions,
   );
   const groupPredictionModes = sanitizeGroupPredictionModes(source.groupPredictionModes);
+  const closedGroups = sanitizeClosedGroups(source.closedGroups);
   const groupOrders = Object.fromEntries(
     GROUP_IDS.map((groupId) => {
       const order =
@@ -432,6 +448,7 @@ export function normalizeFixtureState(source: Partial<FixtureState> | FixtureSta
     groupOrders,
     groupMatchPredictions,
     groupPredictionModes,
+    closedGroups,
     qualifiedThirdPlaces,
     thirdPlaceAssignments,
     knockoutWinners: source.knockoutWinners ?? initial.knockoutWinners,
