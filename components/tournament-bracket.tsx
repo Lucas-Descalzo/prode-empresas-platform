@@ -1,7 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 
 import { knockoutSlots, stageLabels } from "@/data/world-cup-2026";
 import { getTeamFlagAsset } from "@/lib/team-flag-assets";
@@ -77,13 +85,15 @@ function getStageIndex(stage: StageId) {
   return focusableStages.indexOf(stage);
 }
 
+const matchDateFormatter = new Intl.DateTimeFormat("es-AR", {
+  weekday: "short",
+  day: "2-digit",
+  month: "short",
+  timeZone: "UTC",
+});
+
 function formatMatchDate(date: string) {
-  return new Intl.DateTimeFormat("es-AR", {
-    weekday: "short",
-    day: "2-digit",
-    month: "short",
-    timeZone: "UTC",
-  }).format(new Date(`${date}T12:00:00Z`));
+  return matchDateFormatter.format(new Date(`${date}T12:00:00Z`));
 }
 
 function getChildMatchIds(matchId: MatchId): [MatchId, MatchId] | null {
@@ -112,7 +122,7 @@ function getNodeStatus(match: DerivedMatch, teamId?: TeamId): NodeStatus {
   return "pending";
 }
 
-function BracketCountryNode({
+const BracketCountryNode = memo(function BracketCountryNode({
   teamId,
   abbreviation,
   label,
@@ -181,9 +191,9 @@ function BracketCountryNode({
       {content}
     </button>
   );
-}
+});
 
-function BracketMatchCard({
+const BracketMatchCard = memo(function BracketMatchCard({
   match,
   side,
   onPickWinner,
@@ -196,6 +206,21 @@ function BracketMatchCard({
   const matchReady = Boolean(match.sideA && match.sideB);
   const isInfoExpanded = expandedMatchInfoId === match.matchId;
   const showChampionTrophy = featured && match.stage === "final" && Boolean(match.winnerId);
+  const sideATeamId = match.sideA?.id;
+  const sideBTeamId = match.sideB?.id;
+  const handleToggleInfo = useCallback(() => {
+    onToggleInfo(match.matchId);
+  }, [match.matchId, onToggleInfo]);
+  const handleSelectSideA = useCallback(() => {
+    if (onPickWinner && sideATeamId) {
+      onPickWinner(match.matchId, sideATeamId);
+    }
+  }, [match.matchId, onPickWinner, sideATeamId]);
+  const handleSelectSideB = useCallback(() => {
+    if (onPickWinner && sideBTeamId) {
+      onPickWinner(match.matchId, sideBTeamId);
+    }
+  }, [match.matchId, onPickWinner, sideBTeamId]);
 
   return (
     <article
@@ -238,7 +263,7 @@ function BracketMatchCard({
               styles.matchInfoButton,
               isInfoExpanded && styles.matchInfoButtonExpanded,
             )}
-            onClick={() => onToggleInfo(match.matchId)}
+            onClick={handleToggleInfo}
             aria-expanded={isInfoExpanded}
             aria-label={`Ver más información del partido ${match.matchId}`}
           >
@@ -278,8 +303,8 @@ function BracketMatchCard({
           selected={match.winnerId === match.sideA?.id}
           disabled={!matchReady}
           onSelect={
-            !readOnly && onPickWinner && match.sideA?.id
-              ? () => onPickWinner(match.matchId, match.sideA!.id)
+            !readOnly && onPickWinner && sideATeamId
+              ? handleSelectSideA
               : undefined
           }
         />
@@ -292,17 +317,17 @@ function BracketMatchCard({
           selected={match.winnerId === match.sideB?.id}
           disabled={!matchReady}
           onSelect={
-            !readOnly && onPickWinner && match.sideB?.id
-              ? () => onPickWinner(match.matchId, match.sideB!.id)
+            !readOnly && onPickWinner && sideBTeamId
+              ? handleSelectSideB
               : undefined
           }
         />
       </div>
     </article>
   );
-}
+});
 
-function BracketMatchTree({
+const BracketMatchTree = memo(function BracketMatchTree({
   matchId,
   side,
   matchesById,
@@ -313,11 +338,15 @@ function BracketMatchTree({
   readOnly = false,
 }: BracketMatchTreeProps) {
   const match = matchesById[matchId];
-  const childMatchIds = getChildMatchIds(matchId);
-  const visibleChildMatchIds =
-    childMatchIds?.filter(
-      (childMatchId) => getStageIndex(matchesById[childMatchId].stage) >= minVisibleStageIndex,
-    ) ?? null;
+  const visibleChildMatchIds = useMemo(() => {
+    const childMatchIds = getChildMatchIds(matchId);
+
+    return (
+      childMatchIds?.filter(
+        (childMatchId) => getStageIndex(matchesById[childMatchId].stage) >= minVisibleStageIndex,
+      ) ?? null
+    );
+  }, [matchId, matchesById, minVisibleStageIndex]);
 
   if (!visibleChildMatchIds || visibleChildMatchIds.length === 0) {
     return (
@@ -413,7 +442,7 @@ function BracketMatchTree({
       )}
     </div>
   );
-}
+});
 
 function DesktopTournamentBracket({
   matchesById,
@@ -448,6 +477,9 @@ function DesktopTournamentBracket({
           transform: `scale(${fit.scale})`,
         } as CSSProperties)
       : undefined;
+  const toggleInfo = useCallback((matchId: MatchId) => {
+    setExpandedMatchInfoId((current) => (current === matchId ? null : matchId));
+  }, []);
 
   useEffect(() => {
     const viewportElement = viewportRef.current;
@@ -501,7 +533,6 @@ function DesktopTournamentBracket({
 
     const resizeObserver = new ResizeObserver(scheduleUpdate);
     resizeObserver.observe(viewportElement);
-    resizeObserver.observe(contentElement);
     window.addEventListener("resize", scheduleUpdate);
 
     return () => {
@@ -565,9 +596,7 @@ function DesktopTournamentBracket({
                   matchesById={matchesById}
                   onPickWinner={onPickWinner}
                   expandedMatchInfoId={expandedMatchInfoId}
-                  onToggleInfo={(matchId) =>
-                    setExpandedMatchInfoId((current) => (current === matchId ? null : matchId))
-                  }
+                  onToggleInfo={toggleInfo}
                   minVisibleStageIndex={minVisibleStageIndex}
                   readOnly={readOnly}
                 />
@@ -584,9 +613,7 @@ function DesktopTournamentBracket({
                   side="center"
                   onPickWinner={onPickWinner}
                   expandedMatchInfoId={expandedMatchInfoId}
-                  onToggleInfo={(matchId) =>
-                    setExpandedMatchInfoId((current) => (current === matchId ? null : matchId))
-                  }
+                  onToggleInfo={toggleInfo}
                   featured
                   readOnly={readOnly}
                 />
@@ -599,9 +626,7 @@ function DesktopTournamentBracket({
                   side="center"
                   onPickWinner={onPickWinner}
                   expandedMatchInfoId={expandedMatchInfoId}
-                  onToggleInfo={(matchId) =>
-                    setExpandedMatchInfoId((current) => (current === matchId ? null : matchId))
-                  }
+                  onToggleInfo={toggleInfo}
                   compact
                   readOnly={readOnly}
                 />
@@ -616,9 +641,7 @@ function DesktopTournamentBracket({
                   matchesById={matchesById}
                   onPickWinner={onPickWinner}
                   expandedMatchInfoId={expandedMatchInfoId}
-                  onToggleInfo={(matchId) =>
-                    setExpandedMatchInfoId((current) => (current === matchId ? null : matchId))
-                  }
+                  onToggleInfo={toggleInfo}
                   minVisibleStageIndex={minVisibleStageIndex}
                   readOnly={readOnly}
                 />
@@ -662,6 +685,9 @@ function CompactTournamentBracket({
   readOnly = false,
 }: TournamentBracketProps) {
   const [expandedMatchInfoId, setExpandedMatchInfoId] = useState<MatchId | null>(null);
+  const toggleInfo = useCallback((matchId: MatchId) => {
+    setExpandedMatchInfoId((current) => (current === matchId ? null : matchId));
+  }, []);
 
   return (
     <div className={styles.compactBracket}>
@@ -704,11 +730,7 @@ function CompactTournamentBracket({
                   side="center"
                   onPickWinner={onPickWinner}
                   expandedMatchInfoId={expandedMatchInfoId}
-                  onToggleInfo={(matchId) =>
-                    setExpandedMatchInfoId((current) =>
-                      current === matchId ? null : matchId,
-                    )
-                  }
+                  onToggleInfo={toggleInfo}
                   featured={slot.matchId === "M104"}
                   compact={slot.matchId === "M103"}
                   readOnly={readOnly}
