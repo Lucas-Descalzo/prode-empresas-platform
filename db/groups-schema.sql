@@ -44,3 +44,11 @@ CREATE TABLE IF NOT EXISTS app_settings (
   value_json JSONB NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE public.groups ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.app_settings ENABLE ROW LEVEL SECURITY;
+
+REVOKE ALL ON public.groups FROM anon, authenticated;
+REVOKE ALL ON public.entries FROM anon, authenticated;
+REVOKE ALL ON public.app_settings FROM anon, authenticated;

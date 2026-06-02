@@ -4,6 +4,20 @@ export type SqlClient = postgres.Sql<Record<string, unknown>>;
 
 let sqlClient: SqlClient | null = null;
 let schemaReadyPromise: Promise<void> | null = null;
+const PUBLIC_TABLES_WITH_RLS = [
+  "groups",
+  "entries",
+  "app_settings",
+  "companies",
+  "company_branding",
+  "company_domains",
+  "company_users",
+  "company_user_credentials",
+  "company_predictions",
+  "company_official_results",
+  "company_signup_links",
+  "auth_rate_limits",
+] as const;
 
 function shouldAutoEnsureDatabaseSchema() {
   const override = process.env.RUNTIME_DB_SCHEMA_ENSURE?.trim().toLowerCase();
@@ -205,6 +219,12 @@ async function ensureB2BSchema(sql: SqlClient) {
   `;
 
   await sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS company_domains_one_primary_per_company_idx
+    ON company_domains (company_id)
+    WHERE is_primary = true
+  `;
+
+  await sql`
     CREATE TABLE IF NOT EXISTS company_users (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
@@ -242,6 +262,11 @@ async function ensureB2BSchema(sql: SqlClient) {
   `;
 
   await sql`
+    CREATE INDEX IF NOT EXISTS company_users_company_role_status_idx
+    ON company_users (company_id, role, status)
+  `;
+
+  await sql`
     CREATE UNIQUE INDEX IF NOT EXISTS company_users_unique_document_idx
     ON company_users (company_id, document_id)
     WHERE document_id IS NOT NULL
@@ -274,6 +299,11 @@ async function ensureB2BSchema(sql: SqlClient) {
   await sql`
     CREATE INDEX IF NOT EXISTS company_predictions_company_idx
     ON company_predictions (company_id, user_id)
+  `;
+
+  await sql`
+    CREATE INDEX IF NOT EXISTS company_predictions_lookup_idx
+    ON company_predictions (company_id, game_mode, scope_key)
   `;
 
   await sql`
@@ -316,6 +346,13 @@ async function ensureB2BSchema(sql: SqlClient) {
   `;
 }
 
+async function ensureSupabaseHardening(sql: SqlClient) {
+  for (const tableName of PUBLIC_TABLES_WITH_RLS) {
+    await sql.unsafe(`ALTER TABLE public.${tableName} ENABLE ROW LEVEL SECURITY`);
+    await sql.unsafe(`REVOKE ALL ON public.${tableName} FROM anon, authenticated`);
+  }
+}
+
 export async function ensureDatabaseSchema() {
   if (!isDatabaseConfigured()) {
     return;
@@ -332,6 +369,7 @@ export async function ensureDatabaseSchema() {
     schemaReadyPromise = (async () => {
       await ensureLegacySchema(sql);
       await ensureB2BSchema(sql);
+      await ensureSupabaseHardening(sql);
     })();
   }
 

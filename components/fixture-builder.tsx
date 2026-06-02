@@ -366,7 +366,7 @@ export function FixtureBuilder({
         thirdPlaceAssignments: {},
         knockoutWinners: {},
       });
-      onFeedback?.("SelecciÃ³n de terceros reiniciada.");
+      onFeedback?.("Selección de terceros reiniciada.");
     } else if (step === 3) {
       updateState({ knockoutWinners: {} });
       onFeedback?.("Cuadro reiniciado.");
@@ -474,7 +474,7 @@ export function FixtureBuilder({
       setPreviewFileName(fileName);
     } catch (error) {
       console.error(error);
-      setExportFeedback("No pude generar la imagen. ProbÃ¡ hacer una captura de pantalla.");
+      setExportFeedback("No pude generar la imagen. Probá hacer una captura de pantalla.");
     } finally {
       setIsPosterMounted(false);
       setIsExportingImage(false);
@@ -678,7 +678,7 @@ export function FixtureBuilder({
                       </div>
                     </div>
                     <span className={styles.groupChevron} aria-hidden>
-                      â–¼
+                      ▼
                     </span>
                   </button>
                 ) : (
@@ -688,7 +688,7 @@ export function FixtureBuilder({
                       <strong>
                         {fixtureState.groupOrders[group.id]
                           .map((teamId) => teamMap[teamId].code)
-                          .join(" Â· ")}
+                          .join(" · ")}
                       </strong>
                     </div>
                   </header>
@@ -765,7 +765,7 @@ export function FixtureBuilder({
                             {hasPointTie ? (
                               <div className={styles.groupTieNotice}>
                                 <span>Empate en puntos</span>
-                                <small>AjustÃ¡ el orden final con las flechas.</small>
+                                <small>Ajustá el orden final con las flechas.</small>
                               </div>
                             ) : null}
                           </div>
@@ -831,7 +831,7 @@ export function FixtureBuilder({
                           <div className={styles.groupTableMini}>
                             <div className={styles.groupTableHead}>
                               <span>Pos.</span>
-                              <span>SelecciÃ³n</span>
+                              <span>Selección</span>
                               <span>PJ</span>
                               <span>Pts</span>
                             </div>
@@ -860,8 +860,8 @@ export function FixtureBuilder({
                               <strong>Orden resultante</strong>
                               <span>
                                 {hasPointTie
-                                  ? "UsÃ¡ las flechas solo para resolver equipos empatados."
-                                  : "Calculado automÃ¡ticamente por puntos."}
+                                  ? "Usá las flechas solo para resolver equipos empatados."
+                                  : "Calculado automáticamente por puntos."}
                               </span>
                             </div>
                           </div>
@@ -908,7 +908,7 @@ export function FixtureBuilder({
                                         }
                                         disabled={!canMoveUp}
                                       >
-                                        â†‘
+                                        ↑
                                       </button>
                                       <button
                                         type="button"
@@ -918,7 +918,7 @@ export function FixtureBuilder({
                                         }
                                         disabled={!canMoveDown}
                                       >
-                                        â†“
+                                        ↓
                                       </button>
                                     </div>
                                   ) : null}
@@ -960,7 +960,7 @@ export function FixtureBuilder({
                                   onClick={() => moveTeamInGroup(group.id, index, -1)}
                                   disabled={!canMoveUp}
                                 >
-                                  â†‘
+                                  ↑
                                 </button>
                                 <button
                                   type="button"
@@ -968,7 +968,7 @@ export function FixtureBuilder({
                                   onClick={() => moveTeamInGroup(group.id, index, 1)}
                                   disabled={!canMoveDown}
                                 >
-                                  â†“
+                                  ↓
                                 </button>
                               </div>
                             ) : null}
@@ -1003,7 +1003,7 @@ export function FixtureBuilder({
                   className={styles.dangerAction}
                   onClick={() => resetCurrentStep(1)}
                 >
-                  SÃ­, limpiar grupos
+                  Sí, limpiar grupos
                 </button>
                 <button
                   type="button"
@@ -1052,7 +1052,7 @@ export function FixtureBuilder({
                   className={styles.dangerAction}
                   onClick={() => resetCurrentStep(2)}
                 >
-                  SÃ­, limpiar
+                  Sí, limpiar
                 </button>
                 <button
                   type="button"
@@ -1069,7 +1069,7 @@ export function FixtureBuilder({
                 onClick={() => setConfirmingStepReset(2)}
                 disabled={fixtureState.qualifiedThirdPlaces.length === 0}
               >
-                Limpiar selecciÃ³n
+                Limpiar selección
               </button>
             )
           ) : null}
@@ -1099,10 +1099,10 @@ export function FixtureBuilder({
                   <TeamBadge teamId={team.id} />
                   <span>
                     <strong>{team.shortName}</strong>
-                    <small>3Â° del Grupo {team.group}</small>
+                    <small>3.º del Grupo {team.group}</small>
                   </span>
                 </span>
-                <span className={styles.thirdCheck}>{isSelected ? "âœ“" : "+"}</span>
+                <span className={styles.thirdCheck}>{isSelected ? "✓" : "+"}</span>
               </button>
             );
           })}
@@ -1133,7 +1133,7 @@ export function FixtureBuilder({
           {fixtureState.qualifiedThirdPlaces.length < 8
             ? "Elegí ocho terceros clasificados para ver dónde cae cada uno."
             : allThirdSlotsReady
-              ? "La matriz oficial del torneo ya ubico automaticamente a cada tercero."
+              ? "La matriz oficial del torneo ya ubicó automáticamente a cada tercero."
               : "La combinación elegida todavía no pudo resolverse con la matriz oficial."}
         </p>
 
@@ -1158,7 +1158,7 @@ export function FixtureBuilder({
 
                   <p className={styles.assignmentMeta}>
                     {assignedTeam
-                      ? `${assignedTeam.shortName} Â· Grupo ${assignedTeam.group}`
+                      ? `${assignedTeam.shortName} · Grupo ${assignedTeam.group}`
                       : "Sin tercero asignado"}
                   </p>
                 </article>
@@ -1181,14 +1181,14 @@ export function FixtureBuilder({
             {readOnly
               ? "Esta vista conserva las selecciones guardadas hasta la final."
               : isKnockoutReady
-                ? "Toc? el equipo que avanza en cada partido. Us? info para ver fecha, sede y n?mero de juego."
-                : "El cuadro se activa cuando eleg?s los ocho mejores terceros clasificados."}
+                ? "Tocá el equipo que avanza en cada partido. Usá info para ver fecha, sede y número de juego."
+                : "El cuadro se activa cuando elegís los ocho mejores terceros clasificados."}
           </p>
         </div>
 
         <div className={styles.championBand}>
           <div>
-            <p className={styles.sectionEyebrow}>Campe?n proyectado</p>
+            <p className={styles.sectionEyebrow}>Campeón proyectado</p>
             <h3>
               {!isKnockoutReady
                 ? "Cuadro pendiente"
@@ -1198,7 +1198,7 @@ export function FixtureBuilder({
             </h3>
             <p>
               {!isKnockoutReady
-                ? "Primero defini los mejores terceros para que aparezcan los cruces."
+                ? "Primero definí los mejores terceros para que aparezcan los cruces."
                 : champion
                 ? `Tu predicción levanta la copa en ${matches.M104.meta.city}.`
                 : "Hace falta completar todos los cruces hasta la final para cerrar la predicción."}
@@ -1232,7 +1232,7 @@ export function FixtureBuilder({
                   className={styles.dangerAction}
                   onClick={() => resetCurrentStep(3)}
                 >
-                  SÃ­, limpiar cuadro
+                  Sí, limpiar cuadro
                 </button>
                 <button
                   type="button"
@@ -1267,24 +1267,24 @@ export function FixtureBuilder({
             <h2>Resumen y compartir</h2>
           </div>
           <p className={styles.sectionHint}>
-            Cuando termines el cuadro, descargÃ¡ tu imagen, copiÃ¡ el link o guardÃ¡ la
-            predicciÃ³n para competir.
+            Cuando termines el cuadro, descargá tu imagen, copiá el link o guardá la
+            predicción para competir.
           </p>
         </div>
 
         <div className={styles.summaryGridCards}>
           <article className={styles.summaryCardGold}>
             <div className={styles.summaryCardTop}>
-              <span className={styles.summaryLabel}>CampeÃ³n</span>
-              <span className={styles.summaryRank}>1.Âº</span>
+              <span className={styles.summaryLabel}>Campeón</span>
+              <span className={styles.summaryRank}>1.º</span>
             </div>
             <strong>{champion?.shortName ?? "Sin definir"}</strong>
             {champion ? <TeamBadge teamId={champion.id} /> : null}
           </article>
           <article className={styles.summaryCardSilver}>
             <div className={styles.summaryCardTop}>
-              <span className={styles.summaryLabel}>SubcampeÃ³n</span>
-              <span className={styles.summaryRank}>2.Âº</span>
+              <span className={styles.summaryLabel}>Subcampeón</span>
+              <span className={styles.summaryRank}>2.º</span>
             </div>
             <strong>{runnerUp?.shortName ?? "Sin definir"}</strong>
             {runnerUp ? <TeamBadge teamId={runnerUp.id} /> : null}
@@ -1292,7 +1292,7 @@ export function FixtureBuilder({
           <article className={styles.summaryCardBronze}>
             <div className={styles.summaryCardTop}>
               <span className={styles.summaryLabel}>Tercer puesto</span>
-              <span className={styles.summaryRank}>3.Âº</span>
+              <span className={styles.summaryRank}>3.º</span>
             </div>
             <strong>{thirdPlaceWinner?.shortName ?? "Sin definir"}</strong>
             {thirdPlaceWinner ? <TeamBadge teamId={thirdPlaceWinner.id} /> : null}
@@ -1302,9 +1302,9 @@ export function FixtureBuilder({
         <div className={styles.exportPanel}>
           <div className={styles.exportCopy}>
             <p className={styles.sectionEyebrow}>Exportar imagen</p>
-            <h3>GuardÃ¡ tu cuadro final como imagen</h3>
+            <h3>Guardá tu cuadro final como imagen</h3>
             <p>
-              GenerÃ¡ una imagen prolija del cuadro final con fechas y calidad lista para
+              Generá una imagen prolija del cuadro final con fechas y calidad lista para
               descargar.
             </p>
           </div>
@@ -1319,10 +1319,10 @@ export function FixtureBuilder({
               {isExportingImage
                 ? "Generando imagen..."
                 : !isKnockoutReady
-                  ? "ElegÃ­ los 8 terceros para exportar"
+                  ? "Elegí los 8 terceros para exportar"
                   : isComplete
                     ? "Ver y descargar imagen"
-                    : "CompletÃ¡ el cuadro para exportar tu imagen"}
+                    : "Completá el cuadro para exportar tu imagen"}
             </button>
             {exportFeedback ? <p className={styles.exportFeedback}>{exportFeedback}</p> : null}
           </div>
@@ -1335,7 +1335,7 @@ export function FixtureBuilder({
             <FixturePoster
               ref={exportPosterRef}
               matchesById={deferredMatches}
-              championName={champion?.shortName ?? "Sin campe?n definido"}
+              championName={champion?.shortName ?? "Sin campeón definido"}
               generatedAtLabel={generatedAtLabel}
               title={readOnly ? "Fixture guardado Mundial 2026" : "Tu fixture Mundial 2026"}
               companyLogoUrl={posterBrandLogoUrl}
@@ -1366,7 +1366,7 @@ export function FixtureBuilder({
                 onClick={closePreview}
                 aria-label="Cerrar"
               >
-                âœ•
+                ✕
               </button>
               <div className={styles.previewImageWrap}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1410,7 +1410,7 @@ export function FixtureBuilder({
                   setConfirmingFullReset(false);
                 }}
               >
-                SÃ­, empezar de cero
+                Sí, empezar de cero
               </button>
               <button
                 type="button"
