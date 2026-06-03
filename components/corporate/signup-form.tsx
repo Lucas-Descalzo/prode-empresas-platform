@@ -62,7 +62,7 @@ export function SignupForm({
 
       <div className={styles.formTitleBlock}>
         <span className={styles.formEyebrow}>Registro privado</span>
-        <h2 className={styles.formTitle}>Crea tu usuario para TM Boxing</h2>
+        <h2 className={styles.formTitle}>Crea tu usuario para {client.shortName}</h2>
       </div>
 
       <p className={styles.formHint}>
@@ -107,11 +107,11 @@ export function SignupForm({
             {areaOptions.length > 0 ? (
               <select id="signup-area" name="area" defaultValue="" required>
                 <option value="" disabled>
-                  Selecciona tu sede
+                  Selecciona tu {client.areaLabel.toLowerCase()}
                 </option>
                 {areaOptions.map((option) => (
                   <option key={option} value={option}>
-                    Sede {option}
+                    {client.areaLabel} {option}
                   </option>
                 ))}
               </select>
@@ -125,7 +125,7 @@ export function SignupForm({
               />
             )}
             <span className={styles.formFieldNote}>
-              Usa la sede con la que juegas habitualmente.
+              Usa la {client.areaLabel.toLowerCase()} con la que juegas habitualmente.
             </span>
           </div>
         ) : null}

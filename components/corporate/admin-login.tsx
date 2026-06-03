@@ -24,7 +24,7 @@ export function AdminLogin({
 
       <div className={styles.formTitleBlock}>
         <span className={styles.formEyebrow}>Panel operador</span>
-        <h2 className={styles.formTitle}>Administrar TM Boxing</h2>
+        <h2 className={styles.formTitle}>Administrar {client.displayName}</h2>
       </div>
 
       <p className={styles.formHint}>
