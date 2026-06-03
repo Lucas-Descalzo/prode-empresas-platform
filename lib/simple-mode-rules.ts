@@ -86,8 +86,8 @@ export const SIMPLE_MODE_FAQS: SimpleModeFaqItem[] = [
   {
     question: "¿Hasta cuándo puedo cargar mi prode?",
     answer: [
-      "Tenés tiempo hasta el inicio del primer partido del Mundial, el 11 de junio de 2026.",
-      "Una vez que arranca el torneo, las predicciones de grupos y cuadro quedan cerradas.",
+      "Tenés tiempo hasta el jueves 11 de junio de 2026 a las 12:00 del mediodía (hora de Argentina).",
+      "Una vez que se cumple ese horario, las predicciones de grupos y cuadro quedan cerradas y ya no se pueden editar.",
     ],
   },
   {
