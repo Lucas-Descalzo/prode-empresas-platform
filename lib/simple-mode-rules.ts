@@ -32,7 +32,7 @@ export interface SimpleModeFaqItem {
 
 export const SIMPLE_MODE_POINT_BLOCKS: SimpleModePointBlock[] = [
   {
-    title: "Pre-Mundial",
+    title: "Fase de grupos",
     maxPoints: SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS,
     rows: [
       {
@@ -115,7 +115,7 @@ export const SIMPLE_MODE_FAQS: SimpleModeFaqItem[] = [
     question: "¿Qué son los mejores terceros?",
     answer: [
       "En el Mundial 2026 pasan a 16avos los dos primeros de cada grupo más los 8 mejores terceros entre los 12 grupos.",
-      "Vos elegís cuáles crees que van a ser esos 8 terceros que avanzan. Cada acierto suma 2 puntos.",
+      "Vos elegís cuáles creés que van a ser esos 8 terceros que avanzan. Cada acierto suma 2 puntos.",
     ],
   },
   {
@@ -142,14 +142,14 @@ export const SIMPLE_MODE_FAQS: SimpleModeFaqItem[] = [
   {
     question: "¿Cuándo se actualiza el ranking?",
     answer: [
-      "Los puntos del pre-Mundial aparecen cuando termina la fase de grupos.",
+      "Los puntos de fase de grupos aparecen cuando termina la fase de grupos.",
       "La eliminatoria se va sumando ronda por ronda a medida que se cargan los resultados oficiales.",
     ],
   },
   {
     question: "¿Cómo se desempata si dos personas terminan con el mismo puntaje?",
     answer: [
-      "Primero desempata quien tenga más puntos del pre-Mundial.",
+      "Primero desempata quien tenga más puntos en fase de grupos.",
       "Si persiste, queda como empate compartido en esa posición.",
     ],
   },

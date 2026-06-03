@@ -12,7 +12,7 @@ export function SimpleModeGuide({ client }: { client: CompanyRecord }) {
     <section className={styles.sectionBlock}>
       <div>
         <span className={styles.sectionEyebrow}>Sistema de puntos</span>
-        <h2 className={styles.sectionTitle}>Como se gana el ranking</h2>
+        <h2 className={styles.sectionTitle}>Cómo se gana el ranking</h2>
         <p className={styles.simpleModeDeadline}>
           Cierre de carga: {formatSimpleModeCutoffLabel()}
         </p>
@@ -48,7 +48,7 @@ export function SimpleModeGuide({ client }: { client: CompanyRecord }) {
         <p>
           Importa hasta qué ronda bancaste a cada equipo, no por qué lado del cuadro
           llegó. En {client.shortName}, si dos personas empatan al final, primero
-          desempata quien tenga más puntos del pre-Mundial.
+          desempata quien tenga más puntos en fase de grupos.
         </p>
       </div>
 
