@@ -32,6 +32,7 @@ export function LeaderboardClient({
   scoringSummary,
 }: LeaderboardClientProps) {
   const [query, setQuery] = useState("");
+  const [visibleCount, setVisibleCount] = useState(30);
   const deferredQuery = useDeferredValue(query);
   const normalizedQuery = normalizeSearchValue(deferredQuery);
 
@@ -49,6 +50,13 @@ export function LeaderboardClient({
         : indexedRows,
     [indexedRows, normalizedQuery],
   );
+
+  const visibleRows = useMemo(
+    () => (normalizedQuery ? filteredRows : filteredRows.slice(0, visibleCount)),
+    [filteredRows, normalizedQuery, visibleCount],
+  );
+
+  const hasMoreRows = !normalizedQuery && filteredRows.length > visibleRows.length;
   const emptyAreaLabel = `Sin ${areaLabel.toLocaleLowerCase("es-AR")}`;
 
   return (
@@ -64,7 +72,7 @@ export function LeaderboardClient({
             autoComplete="off"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Escribe nombre o apellido"
+            placeholder="Nombre o apellido"
             className={styles.leaderboardSearchInput}
           />
         </label>
@@ -88,78 +96,81 @@ export function LeaderboardClient({
           No encontramos a nadie con ese nombre. Prueba con otro apellido o borra la búsqueda.
         </p>
       ) : (
-        <div className={styles.leaderboardTableWrap}>
-          <table className={styles.leaderboardTable}>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                {collectsArea ? <th>{areaLabel}</th> : null}
-                <th>Aciertos</th>
-                <th>Puntos</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRows.map(({ rank, row }) => {
-                const isSelf = currentParticipantId === row.id;
+        <div className={styles.leaderboardList}>
+          {visibleRows.map(({ rank, row }) => {
+            const isSelf = currentParticipantId === row.id;
+            const statusLabel =
+              row.predictionCount === 0
+                ? "Prode pendiente"
+                : row.totalPoints > 0
+                  ? "Puntaje actualizado"
+                  : "Esperando resultados oficiales";
 
-                return (
-                  <tr key={row.id} className={isSelf ? styles.leaderboardSelf : ""}>
-                    <td
-                      className={`${styles.leaderboardRank} ${styles.leaderboardRankCell}`}
-                      data-label="Posición"
-                    >
-                      <span className={styles.leaderboardRankValue}>#{rank}</span>
-                    </td>
-                    <td className={styles.leaderboardNameColumn} data-label="Nombre">
-                      <div className={styles.leaderboardNameCell}>
-                        <strong>
-                          {row.fullName}
-                          {isSelf ? " (vos)" : ""}
-                        </strong>
-                        <div className={styles.leaderboardMetaRail}>
-                          {collectsArea ? (
-                            <span className={styles.leaderboardMetaPill}>
-                              <span>{areaLabel}</span>
-                              <strong>{row.area ?? emptyAreaLabel}</strong>
-                            </span>
-                          ) : null}
+            return (
+              <article
+                key={row.id}
+                className={`${styles.leaderboardEntry} ${
+                  isSelf ? styles.leaderboardSelfCard : ""
+                }`}
+              >
+                <div className={styles.leaderboardEntryRank}>
+                  <span className={styles.leaderboardRankValue}>#{rank}</span>
+                </div>
+
+                <div className={styles.leaderboardEntryBody}>
+                  <div className={styles.leaderboardEntryHeader}>
+                    <div className={styles.leaderboardNameCell}>
+                      <strong>{row.fullName}</strong>
+                      <div className={styles.leaderboardMetaRail}>
+                        {collectsArea ? (
                           <span className={styles.leaderboardMetaPill}>
-                            <span>Aciertos</span>
-                            <strong>{row.predictionCount}</strong>
+                            <span>{areaLabel}</span>
+                            <strong>{row.area ?? emptyAreaLabel}</strong>
                           </span>
-                        </div>
-                        {gameMode === "simple" ? (
-                          <div className={styles.leaderboardSubline}>
-                            {row.preWorldCupPoints} pre-Mundial · {row.knockoutPoints} eliminatoria
-                          </div>
                         ) : null}
+                        {isSelf ? <span className={styles.leaderboardYouBadge}>Vos</span> : null}
                       </div>
-                    </td>
-                    {collectsArea ? (
-                      <td className={styles.leaderboardAreaCell} data-label={areaLabel}>
-                        {row.area ?? emptyAreaLabel}
-                      </td>
-                    ) : null}
-                    <td className={styles.leaderboardPredictionCell} data-label="Aciertos">
-                      {row.predictionCount}
-                    </td>
-                    <td
-                      className={`${styles.leaderboardPoints} ${styles.leaderboardPointsCell}`}
-                      data-label="Puntos"
-                    >
-                      <span className={styles.leaderboardPointsBadge}>
-                        <strong>{row.totalPoints}</strong>
-                        <span>pts</span>
+                    </div>
+
+                    <div className={styles.leaderboardPointsPanel}>
+                      <strong>{row.totalPoints}</strong>
+                      <span>PTS</span>
+                    </div>
+                  </div>
+
+                  <div className={styles.leaderboardDivider} />
+
+                  <div className={styles.leaderboardStatusRow}>
+                    <span className={styles.leaderboardStatusLabel}>{statusLabel}</span>
+                    {gameMode === "simple" ? (
+                      <span className={styles.leaderboardSubline}>
+                        Fase de grupos: {row.preWorldCupPoints} pts · Eliminatoria: {row.knockoutPoints} pts
                       </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                    ) : (
+                      <span className={styles.leaderboardSubline}>
+                        {row.predictionCount}{" "}
+                        {row.predictionCount === 1 ? "partido cargado" : "partidos cargados"}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
+
+      {hasMoreRows ? (
+        <div className={styles.leaderboardLoadMoreWrap}>
+          <button
+            type="button"
+            className={styles.secondaryAction}
+            onClick={() => setVisibleCount((current) => current + 30)}
+          >
+            Mostrar 30 más
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

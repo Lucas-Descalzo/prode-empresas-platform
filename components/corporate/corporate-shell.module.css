@@ -1713,35 +1713,28 @@
   text-transform: uppercase;
 }
 
-.leaderboardTableWrap {
-  width: 100%;
+.leaderboardList {
+  display: grid;
+  gap: 0.95rem;
 }
 
-.leaderboardTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.92rem;
+.leaderboardEntry {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 1rem 1.05rem;
+  border: 1px solid var(--client-line);
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-surface) 44%, transparent), transparent 55%),
+    color-mix(in srgb, var(--brand-surface) 72%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
-.leaderboardTable th {
-  text-align: left;
-  padding: 0.7rem 0.85rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--client-muted-strong);
-  border-bottom: 1px solid var(--client-line-strong);
-}
-
-.leaderboardTable td {
-  padding: 0.75rem 0.85rem;
-  border-bottom: 1px solid var(--client-line);
-  color: var(--client-fg);
-}
-
-.leaderboardTable tr:hover td {
-  background: var(--client-card-soft);
+.leaderboardEntryRank {
+  display: flex;
+  align-items: flex-start;
 }
 
 .leaderboardRank {
@@ -1757,17 +1750,30 @@
 }
 
 .leaderboardRankValue {
-  display: inline;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.2rem;
+  min-width: 3.2rem;
+  padding-inline: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--brand-primary-border);
+  background: color-mix(in srgb, var(--brand-primary-muted) 76%, transparent);
+  color: var(--brand-text);
+  font-size: 1rem;
 }
 
-.leaderboardSelf td {
-  background: color-mix(in srgb, var(--brand-primary-muted) 80%, transparent) !important;
-  font-weight: 600;
+.leaderboardEntryBody {
+  min-width: 0;
+  display: grid;
+  gap: 0.8rem;
 }
 
-.leaderboardTable tr.leaderboardSelf {
-  outline: 1px solid var(--brand-primary-border);
-  outline-offset: -1px;
+.leaderboardEntryHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .leaderboardEmpty {
@@ -1783,19 +1789,27 @@
   color: var(--client-fg);
 }
 
-.leaderboardPointsBadge {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.22rem;
+.leaderboardPointsPanel {
+  display: inline-grid;
+  justify-items: end;
+  gap: 0.02rem;
+  min-width: 4.85rem;
+  padding: 0.62rem 0.72rem 0.54rem;
+  border-radius: 1rem;
+  border: 1px solid var(--brand-primary-border);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 92%, white 8%), var(--client-primary-hover));
+  color: var(--client-on-primary);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--brand-primary-shadow) 38%, transparent);
 }
 
-.leaderboardPointsBadge strong {
+.leaderboardPointsPanel strong {
   font-family: var(--font-heading), sans-serif;
-  font-size: 1em;
-  line-height: 1;
+  font-size: 1.7rem;
+  line-height: 0.95;
 }
 
-.leaderboardPointsBadge span {
+.leaderboardPointsPanel span {
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1803,11 +1817,10 @@
 }
 
 .leaderboardSubline {
-  margin-top: 0.2rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.28rem 0.7rem;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--client-muted);
   line-height: 1.45;
 }
@@ -1818,13 +1831,15 @@
 
 .leaderboardNameCell {
   display: grid;
-  gap: 0.28rem;
+  gap: 0.35rem;
   min-width: 0;
 }
 
 .leaderboardNameCell strong {
   display: block;
   overflow-wrap: anywhere;
+  font-size: 1.2rem;
+  line-height: 1.04;
 }
 
 .leaderboardNameColumn {
@@ -1832,7 +1847,9 @@
 }
 
 .leaderboardMetaRail {
-  display: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
 }
 
 .leaderboardMetaPill {
@@ -1859,6 +1876,53 @@
   color: var(--client-fg);
 }
 
+.leaderboardYouBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffe726, #f4d500);
+  color: #1c1602;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.leaderboardDivider {
+  block-size: 1px;
+  inline-size: 100%;
+  background: var(--client-line);
+}
+
+.leaderboardStatusRow {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.leaderboardStatusLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--client-muted-strong);
+}
+
+.leaderboardSelfCard {
+  border-color: color-mix(in srgb, var(--brand-primary-border) 78%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-primary-muted) 52%, transparent), transparent 56%),
+    color-mix(in srgb, var(--brand-surface) 72%, transparent);
+}
+
+.leaderboardLoadMoreWrap {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
 @media (max-width: 760px) {
   .leaderboardCard {
     padding: 1rem;
@@ -1879,67 +1943,10 @@
     text-align: left;
   }
 
-  .leaderboardTable,
-  .leaderboardTable thead,
-  .leaderboardTable tbody,
-  .leaderboardTable tr,
-  .leaderboardTable th,
-  .leaderboardTable td {
-    display: block;
-  }
-
-  .leaderboardTable thead {
-    display: none;
-  }
-
-  .leaderboardTable tbody {
-    display: grid;
-    gap: 0.72rem;
-  }
-
-  .leaderboardTable tr {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-areas: "rank name points";
-    gap: 0.8rem;
-    align-items: start;
-    padding: 0.9rem 0.95rem;
-    border: 1px solid var(--client-line);
-    border-radius: 1.1rem;
-    background:
-      linear-gradient(180deg, color-mix(in srgb, var(--brand-surface) 52%, transparent), transparent 55%),
-      var(--client-card-soft);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  }
-
-  .leaderboardTable td {
-    display: block;
-    padding: 0;
-    border-bottom: none;
-  }
-
-  .leaderboardTable td::before {
-    display: none;
-  }
-
-  .leaderboardRankCell {
-    grid-area: rank;
-  }
-
   .leaderboardRankValue {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 2.15rem;
-    padding-inline: 0.7rem;
-    border-radius: 999px;
-    border: 1px solid var(--brand-primary-border);
-    background: color-mix(in srgb, var(--brand-primary-muted) 74%, transparent);
-    font-size: 0.94rem;
-  }
-
-  .leaderboardNameColumn {
-    grid-area: name;
+    min-height: 2.6rem;
+    min-width: 2.6rem;
+    font-size: 0.92rem;
   }
 
   .leaderboardNameCell {
@@ -1952,65 +1959,41 @@
   }
 
   .leaderboardMetaRail {
-    display: flex;
-    flex-wrap: wrap;
     gap: 0.45rem;
   }
 
-  .leaderboardTable .leaderboardAreaCell,
-  .leaderboardTable .leaderboardPredictionCell {
-    display: none;
+  .leaderboardEntry {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.85rem;
+    padding: 0.9rem 0.95rem;
   }
 
   .leaderboardSubline {
-    margin-top: 0;
     gap: 0.24rem 0.6rem;
     font-size: 0.74rem;
   }
 
-  .leaderboardPointsCell {
-    grid-area: points;
-    justify-self: end;
+  .leaderboardEntryHeader {
+    gap: 0.85rem;
   }
 
-  .leaderboardPointsBadge {
-    display: inline-grid;
-    justify-items: end;
-    gap: 0.02rem;
-    min-width: 4.65rem;
-    padding: 0.62rem 0.72rem 0.54rem;
-    border-radius: 1rem;
-    border: 1px solid var(--brand-primary-border);
-    background:
-      linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 92%, white 8%), var(--client-primary-hover));
-    color: var(--client-on-primary);
-    box-shadow: 0 4px 10px color-mix(in srgb, var(--brand-primary-shadow) 38%, transparent);
+  .leaderboardPointsPanel {
+    min-width: 4.35rem;
+    padding: 0.58rem 0.68rem 0.5rem;
   }
 
-  .leaderboardPointsBadge strong {
-    font-size: 1.55rem;
-    line-height: 0.95;
+  .leaderboardPointsPanel strong {
+    font-size: 1.5rem;
   }
 
-  .leaderboardSelf {
-    border-color: color-mix(in srgb, var(--brand-primary-border) 78%, transparent);
-    background:
-      linear-gradient(180deg, color-mix(in srgb, var(--brand-primary-muted) 58%, transparent), transparent 56%),
-      var(--client-card-soft);
+  .leaderboardStatusLabel {
+    font-size: 0.74rem;
   }
 
-  .leaderboardSelf td {
-    background: transparent !important;
-  }
-
-  .leaderboardTable tr:hover td {
-    background: transparent;
-  }
-
-  .leaderboardRank,
-  .leaderboardPoints {
-    width: auto;
-    font-size: 1rem;
+  .leaderboardYouBadge {
+    min-height: 1.8rem;
+    padding-inline: 0.68rem;
+    font-size: 0.74rem;
   }
 }
 

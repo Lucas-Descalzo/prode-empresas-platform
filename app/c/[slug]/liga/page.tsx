@@ -73,7 +73,7 @@ export default async function LigaPage({
         gameMode={client.gameMode}
         scoringSummary={
           client.gameMode === "simple"
-            ? `${SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS} pts pre-Mundial + ${SIMPLE_MODE_KNOCKOUT_MAX_POINTS} pts eliminatoria. Si empatan en el total, desempata quien tenga mas puntos del pre-Mundial.`
+            ? `${SIMPLE_MODE_PRE_WORLD_CUP_MAX_POINTS} pts fase de grupos + ${SIMPLE_MODE_KNOCKOUT_MAX_POINTS} pts eliminatoria. Si empatan en el total, desempata quien tenga más puntos en fase de grupos.`
             : null
         }
       />
