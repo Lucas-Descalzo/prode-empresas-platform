@@ -1,7 +1,12 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
+import {
+  ADMIN_SESSION_COOKIE,
+  isValidAdminSession,
+} from "@/lib/admin-auth";
 import {
   createCompany,
   importCompanyUsers,
@@ -35,6 +40,11 @@ export interface ResetUserPasswordState {
 export interface UpdateCompanyActionState {
   error?: string;
   success?: string;
+}
+
+async function isGlobalAdminAuthenticated() {
+  const jar = await cookies();
+  return isValidAdminSession(jar.get(ADMIN_SESSION_COOKIE)?.value);
 }
 
 function normalizeSlug(value: string) {
@@ -129,6 +139,10 @@ export async function createCompanyAction(
   formData: FormData,
 ): Promise<CreateCompanyActionState> {
   try {
+    if (!(await isGlobalAdminAuthenticated())) {
+      return { error: "No autorizado." };
+    }
+
     const displayName = String(formData.get("displayName") ?? "").trim();
     const shortName = String(formData.get("shortName") ?? "").trim();
     const slug = normalizeSlug(String(formData.get("slug") ?? ""));
@@ -192,6 +206,10 @@ export async function updateCompanyAction(
   formData: FormData,
 ): Promise<UpdateCompanyActionState> {
   try {
+    if (!(await isGlobalAdminAuthenticated())) {
+      return { error: "No autorizado." };
+    }
+
     const companyId = String(formData.get("companyId") ?? "").trim();
     const displayName = String(formData.get("displayName") ?? "").trim();
     const shortName = String(formData.get("shortName") ?? "").trim();
@@ -251,6 +269,10 @@ export async function importUsersAction(
   formData: FormData,
 ): Promise<ImportUsersActionState> {
   try {
+    if (!(await isGlobalAdminAuthenticated())) {
+      return { error: "No autorizado." };
+    }
+
     const companyId = String(formData.get("companyId") ?? "").trim();
     const companyName = String(formData.get("companyName") ?? "").trim();
     const rows = parseImportedUsers(String(formData.get("rows") ?? ""));
@@ -283,6 +305,10 @@ export async function resetUserPasswordAction(
   formData: FormData,
 ): Promise<ResetUserPasswordState> {
   try {
+    if (!(await isGlobalAdminAuthenticated())) {
+      return { error: "No autorizado." };
+    }
+
     const companyId = String(formData.get("companyId") ?? "").trim();
     const userId = String(formData.get("userId") ?? "").trim();
     const fullName = String(formData.get("fullName") ?? "").trim();

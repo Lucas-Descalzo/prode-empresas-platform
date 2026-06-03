@@ -13,7 +13,9 @@ const TOURNAMENT_END = "2026-07-19";
 
 function isAuthorized(request: Request): boolean {
   const secret = process.env.CRON_SECRET;
-  if (!secret) return true; // dev: allow without secret
+  if (!secret) {
+    return process.env.NODE_ENV !== "production";
+  }
   const auth = request.headers.get("Authorization");
   return auth === `Bearer ${secret}`;
 }

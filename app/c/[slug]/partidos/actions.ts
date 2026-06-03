@@ -9,6 +9,7 @@ import {
 } from "@/lib/corporate/db";
 import {
   clearParticipantSession,
+  getCurrentParticipant,
   setParticipantSession,
 } from "@/lib/corporate/session";
 
@@ -79,6 +80,11 @@ export async function changePasswordAction(
   const client = await getCorporateClient(slug);
   if (!client || client.id !== companyId) {
     return { error: "Empresa no encontrada." };
+  }
+
+  const participant = await getCurrentParticipant(companyId);
+  if (!participant || participant.id !== userId) {
+    return { error: "No autorizado." };
   }
 
   if (password.length < 8) {

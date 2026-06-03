@@ -13,7 +13,7 @@ function getSessionSecret() {
     process.env.SESSION_SECRET ??
     process.env.SUPABASE_JWT_SECRET ??
     process.env.POSTGRES_PASSWORD ??
-    ""
+    null
   );
 }
 
@@ -69,6 +69,9 @@ export interface ParticipantSessionPayload {
 
 function signPayload(payload: string) {
   const secret = getSessionSecret();
+  if (!secret) {
+    throw new Error("SESSION_SECRET is not configured.");
+  }
   return createHmac("sha256", secret).update(payload).digest("base64url");
 }
 
