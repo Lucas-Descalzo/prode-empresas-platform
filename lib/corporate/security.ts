@@ -26,11 +26,12 @@ export function normalizeEmail(email: string) {
 }
 
 export function buildCompanySignupToken(companyId: string) {
-  if (!isSessionSecretConfigured()) {
+  const secret = getSessionSecret();
+  if (!secret) {
     throw new Error("SESSION_SECRET is not configured.");
   }
 
-  return createHmac("sha256", getSessionSecret())
+  return createHmac("sha256", secret)
     .update(`signup-link:${companyId}`)
     .digest("base64url");
 }
