@@ -82,7 +82,7 @@ export async function POST(
   const body = payload as { matchId?: unknown; prediction?: unknown };
 
   if (client.gameMode === "simple") {
-    if (isSimpleModeLocked()) {
+    if (isSimpleModeLocked(new Date(), client.slug)) {
       return NextResponse.json({ error: "simple_mode_locked" }, { status: 409 });
     }
 

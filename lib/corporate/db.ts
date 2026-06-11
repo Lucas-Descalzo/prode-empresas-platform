@@ -805,7 +805,8 @@ export async function createSignupLinkParticipant(input: {
       document_id,
       area,
       status,
-      must_change_password
+      must_change_password,
+      last_login_at
     )
     VALUES (
       ${input.companyId},
@@ -816,7 +817,8 @@ export async function createSignupLinkParticipant(input: {
       ${documentId},
       ${input.area?.trim() || null},
       'active',
-      false
+      false,
+      NOW()
     )
     RETURNING
       id,

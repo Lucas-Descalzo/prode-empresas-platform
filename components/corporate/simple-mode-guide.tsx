@@ -14,7 +14,7 @@ export function SimpleModeGuide({ client }: { client: CompanyRecord }) {
         <span className={styles.sectionEyebrow}>Sistema de puntos</span>
         <h2 className={styles.sectionTitle}>Cómo se gana el ranking</h2>
         <p className={styles.simpleModeDeadline}>
-          Cierre de carga: {formatSimpleModeCutoffLabel()}
+          Cierre de carga: {formatSimpleModeCutoffLabel(client.slug)}
         </p>
       </div>
 

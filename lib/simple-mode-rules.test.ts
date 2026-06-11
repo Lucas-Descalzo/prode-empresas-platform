@@ -76,6 +76,18 @@ describe("simple mode rules", () => {
     expect(isSimpleModeLocked(atCutoff)).toBe(true);
   });
 
+  it("extends the TM Boxing cutoff until June 12 at 16:00 Argentina time", () => {
+    expect(getSimpleModeCutoffDate("tm-boxing").toISOString()).toBe(
+      "2026-06-12T19:00:00.000Z",
+    );
+    expect(isSimpleModeLocked(new Date("2026-06-12T18:59:00Z"), "tm-boxing")).toBe(
+      false,
+    );
+    expect(isSimpleModeLocked(new Date("2026-06-12T19:00:00Z"), "tm-boxing")).toBe(
+      true,
+    );
+  });
+
   it("returns a closed countdown label once the cutoff passed", () => {
     const afterCutoff = new Date(getSimpleModeCutoffDate().getTime() + 1);
 

@@ -6,8 +6,8 @@ import { FixtureBuilder } from "@/components/fixture-builder";
 import type { CompanyRecord } from "@/lib/corporate/types";
 import { getRemainingKnockoutMatchesCount } from "@/lib/group-utils";
 import {
-  formatSimpleModeCutoffLabel,
-  getSimpleModeCountdownLabel,
+  formatSimpleModeCutoffLabel as formatSimpleModeCutoffLabelForSlug,
+  getSimpleModeCountdownLabel as getSimpleModeCountdownLabelForSlug,
   isSimpleModeLocked,
 } from "@/lib/simple-mode-rules";
 import {
@@ -108,7 +108,15 @@ export function SimpleModeApp({
   const saveRequestRef = useRef(0);
   const fixtureStateRef = useRef(fixtureState);
   const saveStateRef = useRef(saveState);
-  const locked = isSimpleModeLocked(now);
+  const locked = isSimpleModeLocked(now, client.slug);
+  const formatSimpleModeCutoffLabel = useCallback(
+    () => formatSimpleModeCutoffLabelForSlug(client.slug),
+    [client.slug],
+  );
+  const getSimpleModeCountdownLabel = useCallback(
+    (value: Date) => getSimpleModeCountdownLabelForSlug(value, client.slug),
+    [client.slug],
+  );
 
   useEffect(() => {
     fixtureStateRef.current = fixtureState;

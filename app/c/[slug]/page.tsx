@@ -110,7 +110,7 @@ export default async function CorporateLandingPage({
         progressDetail: isComplete
           ? "Tu prode ya está cargado y entra en competencia."
           : "Todavía te faltan selecciones antes del cierre.",
-        deadlineLabel: formatSimpleModeCutoffLabel(),
+        deadlineLabel: formatSimpleModeCutoffLabel(client.slug),
         nextAction: participant.mustChangePassword
           ? "Cambiá tu clave temporal para seguir."
           : isComplete

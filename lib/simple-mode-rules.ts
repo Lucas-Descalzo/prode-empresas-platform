@@ -14,6 +14,7 @@ const firstGroupMatchDate = [...groupMatchSchedule]
   .sort()[0];
 
 export const SIMPLE_MODE_CUTOFF_AT = `${firstGroupMatchDate}T${SIMPLE_MODE_KICKOFF_HOUR_UTC}`;
+const TM_BOXING_SIMPLE_MODE_CUTOFF_AT = "2026-06-12T19:00:00Z";
 
 export interface SimpleModePointBlock {
   title: string;
@@ -199,12 +200,14 @@ export function getSimpleModeFaqs(slug: string): SimpleModeFaqItem[] {
   return SIMPLE_MODE_FAQS;
 }
 
-export function getSimpleModeCutoffDate() {
-  return new Date(SIMPLE_MODE_CUTOFF_AT);
+export function getSimpleModeCutoffDate(slug?: string) {
+  return new Date(
+    slug === "tm-boxing" ? TM_BOXING_SIMPLE_MODE_CUTOFF_AT : SIMPLE_MODE_CUTOFF_AT,
+  );
 }
 
-export function isSimpleModeLocked(now = new Date()) {
-  return now.getTime() >= getSimpleModeCutoffDate().getTime();
+export function isSimpleModeLocked(now = new Date(), slug?: string) {
+  return now.getTime() >= getSimpleModeCutoffDate(slug).getTime();
 }
 
 export function isSimpleModePredictionComplete(
@@ -218,16 +221,16 @@ export function isSimpleModePredictionComplete(
   );
 }
 
-export function formatSimpleModeCutoffLabel() {
+export function formatSimpleModeCutoffLabel(slug?: string) {
   return new Intl.DateTimeFormat("es-AR", {
     dateStyle: "long",
     timeStyle: "short",
     timeZone: "America/Argentina/Buenos_Aires",
-  }).format(getSimpleModeCutoffDate());
+  }).format(getSimpleModeCutoffDate(slug));
 }
 
-export function getSimpleModeCountdownLabel(now = new Date()) {
-  const diffMs = getSimpleModeCutoffDate().getTime() - now.getTime();
+export function getSimpleModeCountdownLabel(now = new Date(), slug?: string) {
+  const diffMs = getSimpleModeCutoffDate(slug).getTime() - now.getTime();
 
   if (diffMs <= 0) {
     return "Predicción cerrada";
