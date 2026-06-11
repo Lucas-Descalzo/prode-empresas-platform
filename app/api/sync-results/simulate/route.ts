@@ -59,7 +59,6 @@ function makeMatch(
 
 // Simulate all 72 group matches — home team wins every match
 function buildSimulatedGroupMatches(): ApiMatch[] {
-  const { groupMatchSchedule } = require("@/lib/corporate/group-schedule");
   return groupMatchSchedule.map((match: { id: string; homeTeamId: string; awayTeamId: string; date: string }, index: number) =>
     makeMatch(
       1000 + index,

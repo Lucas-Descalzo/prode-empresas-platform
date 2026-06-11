@@ -21,7 +21,8 @@ function isAuthorized(request: Request): boolean {
 }
 
 // GET /api/sync-results
-// Called by Vercel Cron every 10 minutes.
+// Called by Vercel Cron. Hobby projects can only run this daily; use an
+// external scheduler or a Pro plan for a higher-frequency sync.
 // Also accepts ?dry=1 for dry runs and ?test=qatar2022 for validation.
 export async function GET(request: Request) {
   if (!isAuthorized(request)) {
