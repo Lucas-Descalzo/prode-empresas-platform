@@ -2197,6 +2197,73 @@
   text-transform: uppercase;
 }
 
+.adminResultLoadedMeta {
+  color: var(--state-success);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.adminLoadedResultsPanel {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.95rem;
+  border-radius: 1rem;
+  border: 1px solid var(--brand-primary-border);
+  background: color-mix(in srgb, var(--brand-primary-muted) 34%, transparent);
+}
+
+.adminLoadedResultsHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.adminLoadedResultsTitle {
+  margin: 0.2rem 0 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1rem;
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--client-fg);
+}
+
+.adminLoadedResultsList {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.adminLoadedResultItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--client-line);
+  background: var(--client-card-soft);
+}
+
+.adminLoadedResultMain {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.adminLoadedResultMain strong {
+  color: var(--client-fg);
+  font-size: 0.95rem;
+}
+
+.adminLoadedResultMain span {
+  color: var(--client-muted-strong);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+}
+
 .adminSummaryGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -2552,6 +2619,11 @@
 @media (max-width: 760px) {
   .formCard {
     padding: 1.25rem;
+  }
+
+  .adminLoadedResultItem {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .formSubmit,

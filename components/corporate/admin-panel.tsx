@@ -157,6 +157,13 @@ function formatLastLogin(value: string | null) {
   });
 }
 
+function formatResultSavedAt(value: string) {
+  return new Date(value).toLocaleString("es-AR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+}
+
 function formatAreaLabel(areaLabel: string, value: string | null) {
   if (!value) {
     return `Sin ${areaLabel.toLocaleLowerCase("es-AR")}`;
@@ -208,12 +215,31 @@ export function AdminPanel({
   signupLink,
   initialTab = "access",
 }: AdminPanelProps) {
+  const totalLoaded = Object.keys(officialResults).length;
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
-  const [filter, setFilter] = useState<Filter>("pending");
-  const [showResultsList, setShowResultsList] = useState(false);
+  const [filter, setFilter] = useState<Filter>(() =>
+    totalLoaded > 0 ? "loaded" : "pending",
+  );
+  const [showResultsList, setShowResultsList] = useState(totalLoaded > 0);
   const participantUsers = useMemo(
     () => users.filter((user) => user.role === "participant"),
     [users],
+  );
+
+  const loadedMatches = useMemo(
+    () =>
+      matches
+        .map((match) => ({ match, result: officialResults[match.id] ?? null }))
+        .filter(
+          (item): item is { match: UnifiedMatch; result: OfficialResultRow } =>
+            item.result !== null,
+        )
+        .sort(
+          (left, right) =>
+            new Date(right.result.savedAt).getTime() -
+            new Date(left.result.savedAt).getTime(),
+        ),
+    [matches, officialResults],
   );
 
   const filteredMatches = useMemo(() => {
@@ -234,7 +260,6 @@ export function AdminPanel({
     return groups;
   }, [filteredMatches]);
 
-  const totalLoaded = Object.keys(officialResults).length;
   const totalPlayable = matches.length;
   const activeUsers = participantUsers.filter((user) => user.status === "active").length;
   const invitedUsers = participantUsers.filter((user) => user.status === "invited").length;
@@ -302,6 +327,52 @@ export function AdminPanel({
                 <strong>{signupLink?.status === "active" ? "Activo" : "Inactivo"}</strong>
               </article>
             </div>
+
+            {loadedMatches.length > 0 ? (
+              <section className={styles.adminLoadedResultsPanel}>
+                <header className={styles.adminLoadedResultsHeader}>
+                  <div>
+                    <span className={styles.sectionEyebrow}>Control de carga</span>
+                    <h3 className={styles.adminLoadedResultsTitle}>
+                      Ultimos resultados guardados
+                    </h3>
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.adminSecondaryAction}
+                    onClick={() => {
+                      setShowResultsList(true);
+                      setFilter("loaded");
+                    }}
+                  >
+                    Ver cargados
+                  </button>
+                </header>
+
+                <div className={styles.adminLoadedResultsList}>
+                  {loadedMatches.slice(0, 5).map(({ match, result }) => (
+                    <div key={match.id} className={styles.adminLoadedResultItem}>
+                      <div className={styles.adminLoadedResultMain}>
+                        <strong>
+                          {teamLabel(match, "home", resolvedKnockoutTeams)}{" "}
+                          {result.homeScore}-{result.awayScore}{" "}
+                          {teamLabel(match, "away", resolvedKnockoutTeams)}
+                        </strong>
+                        <span>
+                          {match.id} - {STAGE_LABELS[match.stage] ?? match.stage} -{" "}
+                          {formatResultSavedAt(result.savedAt)}
+                        </span>
+                      </div>
+                      <span
+                        className={`${styles.adminStatusPill} ${styles.adminStatusPillActive}`}
+                      >
+                        Cargado
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
 
             <div className={styles.adminAccessActions}>
               <button
@@ -927,6 +998,12 @@ function ResultRow({
         <span className={styles.adminMatchMeta}>
           {match.id} · {formatDate(match.date)}
         </span>
+        {initial ? (
+          <span className={styles.adminResultLoadedMeta}>
+            Guardado en sistema: {initial.homeScore}-{initial.awayScore} -{" "}
+            {formatResultSavedAt(initial.savedAt)}
+          </span>
+        ) : null}
       </div>
 
       <form action={formAction} className={styles.adminScoreInputs}>
